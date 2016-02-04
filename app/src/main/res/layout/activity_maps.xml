@@ -1,8 +1,82 @@
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.cse403.matchonthestreet.MapsActivity" />
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:id="@+id/map_container"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.cse403.matchonthestreet.MapsActivity"
+        tools:layout="@layout/abc_action_bar_title_item" />
+
+    <!-- The search bar and search button -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="50dp"
+        android:background="#FFFFFF" >
+
+        <EditText
+            android:id="@+id/map_search_bar"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:contextClickable="true"
+            android:editable="true"
+            android:enabled="true"
+            android:hint="Search"
+            android:layout_weight="1"
+            />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:onClick="onSearch"
+            android:src="@android:drawable/ic_menu_search"
+            />
+
+    </LinearLayout>
+
+    <!-- The floating action buttons, using a workaround with image buttons since I encountered
+    problems getting the actual floating action buttons working -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="10dp">
+        <ImageButton
+            android:id="@+id/fab_update_location"
+            android:layout_width="@dimen/fab_button_diameter"
+            android:layout_height="@dimen/fab_button_diameter"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="@dimen/fab_button_margin_bottom"
+            android:layout_marginRight="@dimen/fab_button_margin_right"
+            android:background="@drawable/fab_shape"
+            android:src="@android:drawable/ic_menu_compass"
+            android:tint="@android:color/white"/>
+        <ImageButton
+            android:id="@+id/fab_add_event"
+            android:layout_width="@dimen/fab_button_diameter"
+            android:layout_height="@dimen/fab_button_diameter"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="@dimen/fab_button_margin_bottom"
+            android:layout_marginRight="@dimen/fab_button_margin_right"
+            android:background="@drawable/fab_shape"
+            android:src="@android:drawable/ic_input_add"
+            android:tint="@android:color/white"/>
+
+    </LinearLayout>
+
+
+</RelativeLayout>
