@@ -92,4 +92,12 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="action_settings">Settings</string>
+
+    <!-- Add Event Strings -->
+    <string name="event_title_hint">Enter Title:</string>
+    <string name="event_datetime_hint">Enter Time:</string>
+    <string name="event_location_hint">Enter Location:</string>
+    <string name="event_description_hint">Enter Description:</string>
+    <string name="event_time_from_label">Start Time:</string>
+    <string name="event_time_to_label">Start Time:</string>
 </resources>
