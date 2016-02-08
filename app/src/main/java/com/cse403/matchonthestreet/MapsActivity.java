@@ -31,11 +31,13 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -51,6 +53,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
@@ -61,7 +64,8 @@ import java.util.List;
 
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
+        LocationListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
 
     /** Tag used for printing to debugger */
     protected static final String TAG = "MainActivity";
@@ -85,6 +89,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     // If continuous location updates are needed
     protected boolean mRequestingLocationUpdates = true;
 
+
+    private MapDetailFragment mapDetailFragment;
     /**
      *
      * @param savedInstanceState
@@ -105,6 +111,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         createLocationRequest();
         // Creates the buttons that look like floating action buttons
         createButtons();
+
+        mapDetailFragment = new MapDetailFragment();
+
+        FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
+        fl.setVisibility(View.GONE);
 
     }
 
@@ -145,7 +156,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      */
     @Override
     public void onConnected(Bundle connectionHint) {
+
         Log.d(TAG, "onConnected");
+
+        mMap.setOnMarkerClickListener(this);
+        mMap.setOnMapClickListener(this);
         // Provides a simple way of getting a device's location and is well suited for
         // applications that do not require a fine-grained location and that do not need location
         // updates. Gets the best and most recent location currently available, which may be null
@@ -389,5 +404,27 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    public boolean onMarkerClick(Marker marker) {
+        Log.d(TAG, "marker clicked: " + marker.getTitle());
+
+       // mapDetailFragment.setDetailText(marker.getTitle());
+
+        FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
+        fl.setVisibility(View.VISIBLE);
+       // MapDetailFragment mdf = new MapDetailFragment();
+       //getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, mapDetailFragment, "HELLO").commit();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        //ft.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
+        ft.replace(R.id.fragment_container, mapDetailFragment, "detailFragment");
+        ft.commit();
+        return false;
+    }
+
+    public void onMapClick(LatLng latLng) {
+        Log.d(TAG, "map clicked ");
+        FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
+        fl.setVisibility(View.GONE);
+        //return false;
+    }
 }
 
