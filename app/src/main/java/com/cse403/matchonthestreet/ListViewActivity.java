@@ -24,7 +24,7 @@ public class ListViewActivity extends ListActivity {
         setContentView(R.layout.activity_list_view);
 
         // get ListView obj from xml
-        listView = (ListView) findViewById(R.id.list_view);
+        listView = (ListView) findViewById(android.R.id.list);
 
         // Sample string values to store in list
         String[] sampleVal = new String[]{"Tennis match @ Denny",
