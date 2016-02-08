@@ -62,6 +62,7 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
@@ -91,7 +92,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected boolean mRequestingLocationUpdates = true;
 
 
-    private MapDetailFragment mapDetailFragment;
+   // private MapDetailFragment mapDetailFragment;
     /**
      *
      * @param savedInstanceState
@@ -113,7 +114,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Creates the buttons that look like floating action buttons
         createButtons();
 
-        mapDetailFragment = new MapDetailFragment();
+        //mapDetailFragment = new MapDetailFragment();
 
         FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
         fl.setVisibility(View.GONE);
@@ -188,8 +189,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             mMap.addMarker(new MarkerOptions().position(sydney).title("Marker"));
             Log.d(TAG, "" + mLastLocation.getLatitude() + ", " + mLastLocation.getLongitude());
         } else {
-            // Toast can be used for debugging or displaying an in app notification
-            Toast.makeText(this, "hi", Toast.LENGTH_LONG).show();
+
         }
 
         // Start requesting location updates
@@ -417,27 +417,33 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+
     public boolean onMarkerClick(Marker marker) {
         Log.d(TAG, "marker clicked: " + marker.getTitle());
 
-       // mapDetailFragment.setDetailText(marker.getTitle());
+
 
         FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
         fl.setVisibility(View.VISIBLE);
-       // MapDetailFragment mdf = new MapDetailFragment();
-       //getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, mapDetailFragment, "HELLO").commit();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        //ft.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
+        //ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);  // Animation works, but need to find way to remove fragment onMapClick
+
+        Bundle args = new Bundle();
+        args.putString("detailText", marker.getTitle());
+        MapDetailFragment mapDetailFragment = new MapDetailFragment();
+        mapDetailFragment.setArguments(args);
         ft.replace(R.id.fragment_container, mapDetailFragment, "detailFragment");
+
         ft.commit();
+
         return false;
     }
 
     public void onMapClick(LatLng latLng) {
         Log.d(TAG, "map clicked ");
+
         FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
         fl.setVisibility(View.GONE);
-        //return false;
     }
 }
 
