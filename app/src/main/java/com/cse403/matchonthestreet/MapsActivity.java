@@ -25,6 +25,7 @@
 package com.cse403.matchonthestreet;
 
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -351,12 +352,24 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "Add button pressed");
+                Intent intent = new Intent(MapsActivity.this, AddEventActivity.class);
+                startActivity(intent);
                 if (mCurrentLocation != null) {
                     Log.d(TAG, "" + mCurrentLocation.getLatitude() + mCurrentLocation.getLongitude());
                     createPin(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
                 } else {
                     Log.d(TAG, "No last known location");
                 }
+            }
+        });
+
+        ImageButton fabListMap = (ImageButton) findViewById(R.id.fab_map_to_list);
+        fabListMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "map to list pressed");
+                Intent intent = new Intent(MapsActivity.this, ListViewActivity.class);
+                startActivity(intent);
             }
         });
 

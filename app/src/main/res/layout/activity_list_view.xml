@@ -7,18 +7,19 @@
     android:layout_height="match_parent">
 
     <ListView
-        android:id="@+id/list_view"
-        android:layout_height="wrap_content"
+        android:id="@android:id/list"
+        android:layout_height="match_parent"
         android:layout_width="match_parent">
     </ListView>
 
     <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_list_to_map"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:layout_margin="16dp"
         android:src="@drawable/ic_map"
-        app:layout_anchor="@id/list_view"
+        app:layout_anchor="@android:id/list"
         app:layout_anchorGravity="bottom|right|end" />
 
 </android.support.design.widget.CoordinatorLayout>
