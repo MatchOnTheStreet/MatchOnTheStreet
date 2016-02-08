@@ -2,7 +2,9 @@ package com.cse403.matchonthestreet;
 
 import android.app.ListActivity;
 //import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -23,22 +25,28 @@ public class ListViewActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_view);
 
+        getActionBar().show();
+
         // get ListView obj from xml
         listView = (ListView) findViewById(android.R.id.list);
 
+        // Floating action button to the map view
+        FloatingActionButton fabToMap =
+                (FloatingActionButton) this.findViewById(R.id.fab_list_to_map);
+
         // Sample string values to store in list
         String[] sampleVal = new String[]{"Tennis match @ Denny",
-                                        "Casual pool play",
-                                        "Team Potato needs a goalkeeper",
-                                        "Basket ball IMA 5v5",
-                                        "Tennis match @ Denny",
-                                        "Casual pool play",
-                                        "Team Potato needs a goalkeeper",
-                                        "Basket ball IMA 5v5",
-                                        "Tennis match @ Denny",
-                                        "Casual pool play",
-                                        "Team Potato needs a goalkeeper",
-                                        "Basket ball IMA 5v5"};
+                "Casual pool play",
+                "Team Potato needs a goalkeeper",
+                "Basket ball IMA 5v5",
+                "Tennis match @ Denny",
+                "Casual pool play",
+                "Team Potato needs a goalkeeper",
+                "Basket ball IMA 5v5",
+                "Tennis match @ Denny",
+                "Casual pool play",
+                "Team Potato needs a goalkeeper",
+                "Basket ball IMA 5v5"};
 
         // Adapter for the list
         // Params: (Context, Layout for a row, ID of the TextView, Array of data)
@@ -69,5 +77,14 @@ public class ListViewActivity extends ListActivity {
 
         });
 
+        fabToMap.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(ListViewActivity.this, MapsActivity.class);
+
+                // TODO: send extra msg to map view, e.g. user location
+
+                startActivity(intent);
+            }
+        });
     }
 }
