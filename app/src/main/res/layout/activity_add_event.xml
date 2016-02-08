@@ -134,4 +134,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <!-- Publish -->
+    <Button
+        android:id="@+id/event_publish_button"
+        android:text="@string/event_publish_text"
+        android:layout_marginTop="8dip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
 </LinearLayout>
