@@ -48,7 +48,17 @@ public class LoginActivity extends Activity {
 
             @Override
             public void onCancel() {
+
                 info.setText("Login attempt cancelled.");
+                //TODO: Remove for final release
+                SharedPreferences mPrefs = getSharedPreferences("userPrefs", 0);
+                SharedPreferences.Editor mEditor = mPrefs.edit();
+                mEditor.putString("userID", "temp account");
+                mEditor.commit();
+
+                Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
+                startActivity(intent);
+
             }
 
             @Override

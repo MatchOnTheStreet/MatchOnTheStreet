@@ -50,6 +50,7 @@ android:layout_height="match_parent">
         android:orientation="vertical"
         android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true">
+
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_update_location"
             android:layout_width="@dimen/fab_button_diameter"
