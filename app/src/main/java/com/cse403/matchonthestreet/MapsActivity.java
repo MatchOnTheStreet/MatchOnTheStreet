@@ -30,6 +30,7 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -91,8 +92,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     // If continuous location updates are needed
     protected boolean mRequestingLocationUpdates = true;
 
-
-   // private MapDetailFragment mapDetailFragment;
     /**
      *
      * @param savedInstanceState
@@ -113,8 +112,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         createLocationRequest();
         // Creates the buttons that look like floating action buttons
         createButtons();
-
-        //mapDetailFragment = new MapDetailFragment();
 
         FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
         fl.setVisibility(View.GONE);
@@ -330,7 +327,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      */
     protected void createButtons() {
         // The button that pans to the users current location
-        ImageButton fabImageButton = (ImageButton) findViewById(R.id.fab_update_location);
+        FloatingActionButton fabImageButton = (FloatingActionButton) findViewById(R.id.fab_update_location);
         fabImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -347,7 +344,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // The button that adds a pin to the current location
         // Should redirect to add event screen
-        ImageButton fabAddButton = (ImageButton) findViewById(R.id.fab_add_event);
+        FloatingActionButton fabAddButton = (FloatingActionButton) findViewById(R.id.fab_add_event);
         fabAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -363,7 +360,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
-        ImageButton fabListMap = (ImageButton) findViewById(R.id.fab_map_to_list);
+        FloatingActionButton fabListMap = (FloatingActionButton) findViewById(R.id.fab_map_to_list);
         fabListMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
