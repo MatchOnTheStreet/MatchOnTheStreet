@@ -1,13 +1,17 @@
 #!/bin/bash
 
-dirName="THIS_IS_A_TMP_DIR_NAME"
-cd $HOME
-mkdir -p $dirName
-cd $dirName
+baseDir=$1
+tmpDir=$2
+sdkLocation=$3
+
+cd $baseDir
+mkdir -p $tmpDir
+cd $tmpDir
 git clone https://github.com/MatchOnTheStreet/MatchOnTheStreet.git
 cd MatchOnTheStreet
-echo "sdk.dir=/Users/larioj/Library/Android/sdk" > local.properties
+echo "sdk.dir=$sdkLocation" > local.properties
+cat local.properties
 ./gradlew test
-cd $HOME
-rm -rf $dirName
+cd $baseDir
+rm -rf $tmpDir
 
