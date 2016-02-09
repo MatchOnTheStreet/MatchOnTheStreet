@@ -1,5 +1,19 @@
 /**
  *
+ * This is the Maps view for MOTS, this is the first screen the app will open to.
+ * The first time a user runs the app, they will be prompted with the Facebook login screen.
+ * Currently in the developer release this can be bypassed by clicking the cancel button upon loggin in.
+ * The Maps view provides the user with a high level overview of all the events nearby them or
+ * near a specified location.
+ *
+ * The search bar is used to find events around the searched location.
+ * There are 4 buttons, and 3 are used to navigate the app:
+ *   * The target icon will center the map on the users current location, provided MOTS has the permissions
+ *   * The plus icon will change to the add event view
+ *   * The square icon will change to the list view where you can sort and filter events
+ *   * The face icon will change to the user profile view where you can view your events
+ *
+ *
  * Note: to get the location services working, you will need to follow these steps first
  * Open the settings app within the emulator
  * Under the 'Device' subheading click the 'Apps'
@@ -18,13 +32,13 @@
  *  The format is: geo fix longitude latitude
  *  so doing 'geo fix -122.31544733 47.6528135881'  will show your location on UW campus
  *
- *
+ * Lance Ogoshi
  */
 
 
 package com.cse403.matchonthestreet;
 
-
+import android.support.annotation.NonNull;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -32,7 +46,6 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -41,8 +54,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.Toast;
 
 
 import com.google.android.gms.common.ConnectionResult;
@@ -61,10 +72,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
 import java.text.DateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
@@ -72,26 +81,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         LocationListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
 
     /** Tag used for printing to debugger */
-    protected static final String TAG = "MainActivity";
+    private static final String TAG = "MainActivity";
 
     /** Google Maps object */
     private GoogleMap mMap;
 
-    /**
-     * Provides the entry point to Google Play services.
-     */
-    protected GoogleApiClient mGoogleApiClient;
+    /** Provides the entry point to Google Play services.*/
+    private GoogleApiClient mGoogleApiClient;
 
-    /**
-     * Represents a geographical location.
-     */
-    protected Location mLastLocation;
-    // Location Requests
-    protected LocationRequest mLocationRequest;
-    // Current location of the user (updated when position is changed)
-    protected Location mCurrentLocation;
-    // If continuous location updates are needed
-    protected boolean mRequestingLocationUpdates = true;
+    /** Represents a geographical location */
+    private Location mLastLocation;
+    /** Location Request sent to google play services*/
+    private LocationRequest mLocationRequest;
+    /** Current location of the user (updated when position is changed) */
+    private Location mCurrentLocation;
+    /** If continuous location updates are needed */
+    private boolean mRequestingLocationUpdates = true;
 
     /**
      *
@@ -102,8 +107,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
+        // Set the view to the xml layout file
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -116,9 +120,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Creates the buttons that look like floating action buttons
         createButtons();
 
+        // Set the DetailFragment to be invisible
         FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
         fl.setVisibility(View.GONE);
-
     }
 
     /**
@@ -161,12 +165,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         Log.d(TAG, "onConnected");
 
+        // Setup callbacks for interactions with the map. Primarily for the MapDetailFragment
         mMap.setOnMarkerClickListener(this);
         mMap.setOnMapClickListener(this);
-        // Provides a simple way of getting a device's location and is well suited for
-        // applications that do not require a fine-grained location and that do not need location
-        // updates. Gets the best and most recent location currently available, which may be null
-        // in rare cases when a location is not available.
+
+        // Check permissions both Coarse and Fine
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "Have COARSE LOCATION permission");
         } else {
@@ -178,8 +181,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             Log.d(TAG, "Have FINE LOCATION permission");
         } else {
-            // display error message
-            Log.d(TAG, "do not have permission");
+            Log.d(TAG, "do not have FINE LOCATION permission");
         }
 
         // Checking for the users last known location and if there is non then creates a
@@ -189,7 +191,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             mMap.addMarker(new MarkerOptions().position(sydney).title("Marker"));
             Log.d(TAG, "" + mLastLocation.getLatitude() + ", " + mLastLocation.getLongitude());
         } else {
-
+            Log.d(TAG, "No last known location");
         }
 
         // Start requesting location updates
@@ -197,6 +199,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             startLocationUpdates();
         }
 
+        // Display the Facebook login activity if the user has not logged in before
         SharedPreferences mPrefs = getSharedPreferences("userPrefs", 0);
         String mString = mPrefs.getString("userID", "not found");
         if (mString.equals("not found")) {
@@ -272,7 +275,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      *
      */
     @Override
-    public void onConnectionFailed(ConnectionResult result) {
+    public void onConnectionFailed(@NonNull ConnectionResult result) {
         // Refer to the javadoc for ConnectionResult to see what error codes might be returned in
         // onConnectionFailed.
         Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
@@ -316,7 +319,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      * @param lon the longitude of the pin
      */
     private void createPin(double lat, double lon) {
-
         String date = DateFormat.getTimeInstance().format(new Date());
         mMap.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).title(date));
     }
@@ -337,6 +339,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      * Creates the floating buttons and sets up their callback methods
      */
     protected void createButtons() {
+
         // The button that pans to the users current location
         FloatingActionButton fabImageButton = (FloatingActionButton) findViewById(R.id.fab_update_location);
         fabImageButton.setOnClickListener(new View.OnClickListener() {
@@ -372,6 +375,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
+        // The button that moves to the ListViewActivity
         FloatingActionButton fabListMap = (FloatingActionButton) findViewById(R.id.fab_map_to_list);
         fabListMap.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -382,6 +386,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
+        // The button that moves to the UserProfileActivity
         FloatingActionButton fabEvents = (FloatingActionButton) findViewById(R.id.fab_map_to_myevents);
         fabEvents.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -427,37 +432,42 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                  For a more robust search use a larger list size for the addressList, get the user location
                   compare it with the coordinates of the search results and choose based on what is closer to the user
                   and/or add it to a popup list.
-
                  */
-
                 createPin(address.getLatitude(), address.getLongitude());
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
             }
         }
     }
 
-
+    /**
+     * Callback when a marker is pressed. Displays the info on the DetailFragment
+     * @param marker the marker object that has been clicked
+     * @return whether or not to override the default behavior of the onMarkerClick.
+     */
     public boolean onMarkerClick(Marker marker) {
         Log.d(TAG, "marker clicked: " + marker.getTitle());
 
-
-
+        // Show the MapDetailFragment when a marker is pressed
         FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
         fl.setVisibility(View.VISIBLE);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         //ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);  // Animation works, but need to find way to remove fragment onMapClick
 
+        // Send the details of the event to the fragment
         Bundle args = new Bundle();
         args.putString("detailText", marker.getTitle());
         MapDetailFragment mapDetailFragment = new MapDetailFragment();
         mapDetailFragment.setArguments(args);
         ft.replace(R.id.fragment_container, mapDetailFragment, "detailFragment");
-
         ft.commit();
 
         return false;
     }
 
+    /**
+     * Callback when the map is tapped. Hides the DetailFragment
+     * @param latLng the lat and longitude of where the map was pressed
+     */
     public void onMapClick(LatLng latLng) {
         Log.d(TAG, "map clicked ");
 

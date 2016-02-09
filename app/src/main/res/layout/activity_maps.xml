@@ -28,8 +28,6 @@ android:layout_height="match_parent">
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:clickable="true"
-            android:contextClickable="true"
-            android:editable="true"
             android:enabled="true"
             android:hint="Search"
             android:layout_weight="1"
@@ -49,12 +47,13 @@ android:layout_height="match_parent">
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true">
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_update_location"
-            android:layout_width="@dimen/fab_button_diameter"
-            android:layout_height="@dimen/fab_button_diameter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:src="@android:drawable/ic_menu_compass"
             android:tint="@android:color/white"
             android:layout_margin="10dp"
@@ -78,7 +77,7 @@ android:layout_height="match_parent">
             android:id="@+id/fab_map_to_myevents"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_map_to_list"
+            android:src="@drawable/ic_user_profile"
             android:layout_margin="10dp"
             android:layout_gravity="bottom|start"
             />
