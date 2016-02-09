@@ -33,4 +33,5 @@ dependencies {
     compile 'com.google.android.gms:play-services-gcm:8.4.0'
     compile 'com.facebook.android:facebook-android-sdk:4.6.0'
 
+    androidTestCompile 'junit:junit:4.12'
 }

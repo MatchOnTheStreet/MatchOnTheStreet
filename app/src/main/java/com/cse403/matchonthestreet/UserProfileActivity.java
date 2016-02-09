@@ -8,6 +8,10 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class gives the user a view of their profile. Their profile includes their
+ * name and a list of events they are currently signed up to attend.
+ */
 public class UserProfileActivity extends AppCompatActivity {
     ListView listView;
 
