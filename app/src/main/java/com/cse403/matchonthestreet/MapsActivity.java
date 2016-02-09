@@ -382,7 +382,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
-
+        FloatingActionButton fabEvents = (FloatingActionButton) findViewById(R.id.fab_map_to_myevents);
+        fabEvents.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "map to list pressed");
+                Intent intent = new Intent(MapsActivity.this, UserProfileActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
 

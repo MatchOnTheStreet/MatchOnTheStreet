@@ -74,6 +74,14 @@ android:layout_height="match_parent">
             android:layout_margin="10dp"
             android:layout_gravity="bottom|start"
             />
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_map_to_myevents"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_map_to_list"
+            android:layout_margin="10dp"
+            android:layout_gravity="bottom|start"
+            />
 
         <FrameLayout
             android:id="@+id/fragment_container"
