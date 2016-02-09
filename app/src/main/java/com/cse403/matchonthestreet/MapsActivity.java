@@ -26,6 +26,7 @@ package com.cse403.matchonthestreet;
 
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -196,6 +197,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             startLocationUpdates();
         }
 
+        SharedPreferences mPrefs = getSharedPreferences("userPrefs", 0);
+        String mString = mPrefs.getString("userID", "not found");
+        if (mString.equals("not found")) {
+            Intent intent = new Intent(MapsActivity.this, LoginActivity.class);
+            startActivity(intent);
+        }
+
     }
 
     /**
@@ -335,9 +343,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "Location button pressed");
-                // TODO: move
-                Intent intent = new Intent(MapsActivity.this, LoginActivity.class);
-                startActivity(intent);
+
                 if (mCurrentLocation != null) {
                     Log.d(TAG, "" + mCurrentLocation.getLatitude() + mCurrentLocation.getLongitude());
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));

@@ -1,6 +1,7 @@
 package com.cse403.matchonthestreet;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.app.Activity;
 import com.facebook.login.widget.LoginButton;
@@ -36,6 +37,11 @@ public class LoginActivity extends Activity {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 info.setText("User ID:  " + loginResult.getAccessToken().getUserId());
+                SharedPreferences mPrefs = getSharedPreferences("userPrefs", 0);
+                SharedPreferences.Editor mEditor = mPrefs.edit();
+                mEditor.putString("userID", loginResult.getAccessToken().getUserId());
+                mEditor.commit();
+
                 Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
                 startActivity(intent);
             }
