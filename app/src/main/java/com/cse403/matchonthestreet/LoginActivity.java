@@ -36,6 +36,8 @@ public class LoginActivity extends Activity {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 info.setText("User ID:  " + loginResult.getAccessToken().getUserId());
+                Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
+                startActivity(intent);
             }
 
             @Override

@@ -25,7 +25,7 @@ public class ListViewActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_view);
 
-        getActionBar().show();
+       // getActionBar().show();
 
         // get ListView obj from xml
         listView = (ListView) findViewById(android.R.id.list);
