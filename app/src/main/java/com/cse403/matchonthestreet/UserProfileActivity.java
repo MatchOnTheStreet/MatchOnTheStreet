@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UserProfileActivity extends AppCompatActivity {
     ListView listView;
 
@@ -15,14 +18,11 @@ public class UserProfileActivity extends AppCompatActivity {
 
         listView = (ListView) findViewById(android.R.id.list);
 
-        String[] sampleVal = new String[]{"Tennis match @ Denny",
-                "Casual pool play",
-                "Team Potato needs a goalkeeper",
-                "Basket ball IMA 5v5",
-                "Tennis match @ Denny"};
+        List<String> sampleVals = new ArrayList<String>();
+        sampleVals.add("Basketball at 4:30");
+        sampleVals.add("Soccer at 6");
 
-        ArrayAdapter<String> listAdapter = new ArrayAdapter<String>(this,
-                android.R.layout.activity_list_item, android.R.id.text1);
+        ArrayAdapter<String> listAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, sampleVals);
 
         listView.setAdapter(listAdapter);
     }
