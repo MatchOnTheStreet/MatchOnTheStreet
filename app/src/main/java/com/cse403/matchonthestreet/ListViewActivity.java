@@ -3,6 +3,7 @@ package com.cse403.matchonthestreet;
 import android.app.ListActivity;
 //import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.view.View;
@@ -11,7 +12,14 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+
 /**
+ * Created by Hao on 2/6/16.
+ *
  * This is the list activity of the application.
  * A representation of all available events in a list format.
  *
@@ -25,7 +33,7 @@ public class ListViewActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_view);
 
-       // getActionBar().show();
+        //getActionBar().show();
 
         // get ListView obj from xml
         listView = (ListView) findViewById(android.R.id.list);
@@ -50,8 +58,30 @@ public class ListViewActivity extends ListActivity {
 
         // Adapter for the list
         // Params: (Context, Layout for a row, ID of the TextView, Array of data)
-        ArrayAdapter<String> listAdapter = new ArrayAdapter<>(this,
+        /* ArrayAdapter<String> listAdapter = new ArrayAdapter<>(this,
                 android.R.layout.activity_list_item, android.R.id.text1, sampleVal);
+         */
+
+        List<ListItem> listItems = new ArrayList<>();
+        Random rand = new Random();
+        String largeStr = getString(R.string.large_text);
+
+        /* Hardcoded population of list items */
+        for (String s : sampleVal) {
+            Location l = new Location("dummy");
+            l.setLatitude(rand.nextDouble() * 90);
+            l.setLongitude(rand.nextDouble() * 90);
+            l.setAltitude(rand.nextDouble() * 90);
+
+            int start = rand.nextInt(largeStr.length() - s.length());
+            String d = largeStr.substring(start, start + s.length());
+
+            Event e = new Event(s, l, new Date(2000 + rand.nextInt(17), rand.nextInt(12) + 1, rand.nextInt(28) + 1), d);
+
+            listItems.add(new ListItem(e));
+        }
+
+        ListViewAdapter listAdapter = new ListViewAdapter(this, R.layout.list_item_layout, listItems);
 
         listView.setAdapter(listAdapter);
 
@@ -66,11 +96,11 @@ public class ListViewActivity extends ListActivity {
                 int itemPosition = position;
 
                 // ListView Clicked item value
-                String itemValue = (String) listView.getItemAtPosition(position);
+                String itemValue = ((ListItem) listView.getItemAtPosition(position)).event.location.toString();
 
                 // Show Alert
                 Toast.makeText(getApplicationContext(),
-                        "Position :" + itemPosition + "  ListItem : " + itemValue, Toast.LENGTH_LONG)
+                        "Item index :" + itemPosition + "  Location : " + itemValue, Toast.LENGTH_LONG)
                         .show();
 
             }

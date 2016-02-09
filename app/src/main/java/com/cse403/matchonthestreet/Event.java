@@ -14,16 +14,16 @@ public class Event {
     public String title;
 
     // Where the event is held.
-    private Location location;
+    protected Location location;
 
     // The time of the event
-    private Date time;
+    protected Date time;
 
     // A description of the event.
-    private String description;
+    protected String description;
 
     // A list of accounts who have said they will be attending the event.
-    private List<Account> attending;
+    protected List<Account> attending;
 
     public Event(String title, Location location, Date time, String description) {
         this.title = title;
@@ -31,6 +31,10 @@ public class Event {
         this.time = time;
         this.description = description;
         this.attending = null;
+    }
+
+    public String getDescription() {
+        return this.description;
     }
 
     public boolean isAttendedBy(Account account) {
