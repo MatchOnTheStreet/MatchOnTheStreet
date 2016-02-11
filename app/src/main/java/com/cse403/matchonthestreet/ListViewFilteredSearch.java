@@ -9,46 +9,67 @@ import java.util.*;
  */
 public class ListViewFilteredSearch {
     // Current search/filter result list
-    private List<ListItem> currentSearch;
+    private List<Event> currentResults;
 
-    // Current query String
-    private String search;
-
-    // Current Filters
-    private Date startTime;
-    private Date endTime;
-    private Location centralLocation;
-    private List<String> tags;
+    // Current Search
+    private ListViewFilteredSearchData currentSearch;
 
 
-    public List<ListItem> FilterAndSearch(ListViewFilteredSearchViewModel newSearch) {
+    public List<Event> FilterAndSearch(ListViewFilteredSearchData newSearch) {
+        int changeInSearch = currentSearch.compareTo(newSearch);
 
-        /* search within current results if the only changed things are a narrowing of the
-           time interval, the search string has changed, or tags have been removed */
-        if (false) {
-            SearchWithinCurrentResults();
+        if (searchIsTheSame(changeInSearch)) {
+            return currentResults;
         }
 
-        SearchInDatabase();
+        if (searchHasBeenNarrowed(changeInSearch)) {
+            SearchWithinCurrentResults();
+        } else {
+            SearchInDatabase();
+        }
 
-        return currentSearch;
+        return currentResults;
     }
 
-    public void SearchWithinCurrentResults() {
+    /* iterate through current results and remove anything that does not
+     * fit the new criteria*/
+    private void SearchWithinCurrentResults() {
+        for(Event e : currentResults) {
+            if (!meetsFilterAndSearchCriteria(e)) {
+                currentResults.remove(e);
+            }
+        }
     }
 
-    public void SearchInDatabase() {
+    private void SearchInDatabase() {
     }
 
-    protected boolean isAfterStartTime(Event event) {
-        return event.time.after(startTime) || event.time.equals(startTime);
+    private boolean meetsFilterAndSearchCriteria(Event event) {
+        return isAfterStartTime(event) && isBeforeEndTime(event) && containsAllTags(event)
+                && containsQueryString(event);
     }
 
-    protected boolean isBeforeEndTime(Event event) {
-        return event.time.before(endTime);
+    private boolean isAfterStartTime(Event event) {
+        return event.time.after(currentSearch.startTime) || event.time.equals(currentSearch.startTime);
     }
 
-    protected boolean containsAllTags(Event event) {
+    private boolean isBeforeEndTime(Event event) {
+        return event.time.before(currentSearch.endTime);
+    }
+
+    private boolean containsAllTags(Event event) {
         return true;
+    }
+
+    private boolean containsQueryString(Event event) {
+        return true;
+    }
+
+    private boolean searchIsTheSame(int changeInSearch) {
+        return changeInSearch == 0;
+    }
+
+    private boolean searchHasBeenNarrowed(int changeInSearch) {
+        return  changeInSearch == -1;
     }
 }
