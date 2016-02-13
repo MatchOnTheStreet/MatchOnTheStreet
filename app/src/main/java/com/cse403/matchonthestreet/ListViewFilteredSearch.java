@@ -35,7 +35,7 @@ public class ListViewFilteredSearch {
      * fit the new criteria*/
     private void SearchWithinCurrentResults() {
         for(Event e : currentResults) {
-            if (!meetsFilterAndSearchCriteria(e)) {
+            if (!e.meetsFilterAndSearchCriteria(this.currentSearch)) {
                 currentResults.remove(e);
             }
         }
@@ -44,32 +44,11 @@ public class ListViewFilteredSearch {
     private void SearchInDatabase() {
     }
 
-    private boolean meetsFilterAndSearchCriteria(Event event) {
-        return isAfterStartTime(event) && isBeforeEndTime(event) && containsAllTags(event)
-                && containsQueryString(event);
-    }
-
-    private boolean isAfterStartTime(Event event) {
-        return event.time.after(currentSearch.startTime) || event.time.equals(currentSearch.startTime);
-    }
-
-    private boolean isBeforeEndTime(Event event) {
-        return event.time.before(currentSearch.endTime);
-    }
-
-    private boolean containsAllTags(Event event) {
-        return true;
-    }
-
-    private boolean containsQueryString(Event event) {
-        return true;
-    }
-
     private boolean searchIsTheSame(int changeInSearch) {
         return changeInSearch == 0;
     }
 
     private boolean searchHasBeenNarrowed(int changeInSearch) {
-        return  changeInSearch == -1;
+        return changeInSearch == -1;
     }
 }

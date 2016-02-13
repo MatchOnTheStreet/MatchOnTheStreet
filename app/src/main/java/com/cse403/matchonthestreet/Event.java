@@ -40,4 +40,31 @@ public class Event {
     public boolean isAttendedBy(Account account) {
         return true;
     }
+
+    public boolean isAfter(Date time) {
+        return this.time.after(time) || this.time.equals(time);
+    }
+
+    public boolean isBefore(Date time) {
+        return this.time.before(time);
+    }
+
+    public boolean isCloser(Location centralLocation, Event e) {
+        return true;
+    }
+
+    public boolean containsAllTags(List<String> tags) {
+        return true;
+    }
+
+    public boolean containsString(String s) {
+        return true;
+    }
+
+    public boolean meetsFilterAndSearchCriteria(ListViewFilteredSearchData currentSearch) {
+        return this.isAfter(currentSearch.startTime)
+                && this.isBefore(currentSearch.endTime)
+                && this.containsAllTags(currentSearch.tags)
+                && this.containsString(currentSearch.queryString);
+    }
 }

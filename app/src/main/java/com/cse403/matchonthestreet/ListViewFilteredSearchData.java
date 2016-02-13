@@ -9,7 +9,7 @@ import java.util.*;
  */
 public class ListViewFilteredSearchData implements Comparable<ListViewFilteredSearchData>{
     // New query String
-    protected String search;
+    protected String queryString;
 
     // New Filters
     protected Date startTime;
@@ -18,8 +18,8 @@ public class ListViewFilteredSearchData implements Comparable<ListViewFilteredSe
     protected List<String> tags;
 
     public ListViewFilteredSearchData
-            (String search, Date startTime, Date endTime, Location centralLocation, List<String> tags) {
-        this.search = search;
+            (String queryString, Date startTime, Date endTime, Location centralLocation, List<String> tags) {
+        this.queryString = queryString;
         this.startTime = startTime;
         this.endTime = endTime;
         this.centralLocation = centralLocation;
@@ -44,4 +44,5 @@ public class ListViewFilteredSearchData implements Comparable<ListViewFilteredSe
     private int compareQueryString(ListViewFilteredSearchData e1, ListViewFilteredSearchData e2) {
         return 0;
     }
+
 }
