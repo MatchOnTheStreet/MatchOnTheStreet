@@ -38,6 +38,8 @@
 
 package com.cse403.matchonthestreet;
 
+import android.app.ActionBar;
+import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -47,13 +49,21 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 
 import com.google.android.gms.common.ConnectionResult;
@@ -76,7 +86,7 @@ import java.util.Date;
 import java.util.List;
 
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
+public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         LocationListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
 
@@ -112,6 +122,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+
         mapFragment.getMapAsync(this);
         // Initialize the google api features
         buildGoogleApiClient();
@@ -123,6 +134,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Set the DetailFragment to be invisible
         FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
         fl.setVisibility(View.GONE);
+
     }
 
     /**
@@ -236,8 +248,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Set the users current location
         mCurrentLocation = location;
         // Move the view over this new location
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
-        // TODO: add zooming
+       // mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
 
     }
 
@@ -461,6 +472,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         ft.replace(R.id.fragment_container, mapDetailFragment, "detailFragment");
         ft.commit();
 
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        int height = dm.heightPixels;
+
+        SupportMapFragment mMapFragment = (SupportMapFragment) (getSupportFragmentManager()
+                .findFragmentById(R.id.map));
+        ViewGroup.LayoutParams params;
+        try {
+            params = mMapFragment.getView().getLayoutParams();
+            params.height = height - 150;
+            mMapFragment.getView().setLayoutParams(params);
+        }catch (NullPointerException e) {
+            Log.d(TAG, e.toString());
+        }
+
+
         return false;
     }
 
@@ -473,6 +500,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
         fl.setVisibility(View.GONE);
+
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        int height = dm.heightPixels;
+
+        SupportMapFragment mMapFragment = (SupportMapFragment) (getSupportFragmentManager()
+                .findFragmentById(R.id.map));
+        ViewGroup.LayoutParams params;
+        try {
+            params = mMapFragment.getView().getLayoutParams();
+            params.height = height + 150;
+            mMapFragment.getView().setLayoutParams(params);
+        }catch (NullPointerException e) {
+            Log.d(TAG, e.toString());
+        }
+
     }
+
 }
 

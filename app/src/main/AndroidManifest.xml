@@ -42,28 +42,27 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".AddEventActivity"
             android:label="AddEvent" />
-
-        <activity
-            android:name=".ListViewActivity" />
-
+        <activity android:name=".ListViewActivity" />
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".UserProfileActivity" />
         <activity
-            android:name=".UserProfileActivity" />
+            android:name=".NavActivity"
+            android:label="@string/title_activity_nav"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

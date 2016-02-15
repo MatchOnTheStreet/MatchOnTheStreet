@@ -108,4 +108,9 @@
     <string name="event_from_date_hint">From Date:</string>
     <string name="event_from_time_hint">From Time:</string>
     <string name="event_publish_text">Let\'s Play!</string>
+    <string name="title_activity_nav_drawer">NavDrawerActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="title_activity_nav">NavActivity</string>
 </resources>

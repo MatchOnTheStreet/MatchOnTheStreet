@@ -17,7 +17,7 @@ import java.util.Locale;
 /**
  * Created by larioj on 2/7/16.
  */
-public class AddEventActivity extends Activity implements OnClickListener {
+public class AddEventActivity extends NavActivity implements OnClickListener {
 
     private EditText fromDateET;
     private DatePickerDialog fromDatePD;
