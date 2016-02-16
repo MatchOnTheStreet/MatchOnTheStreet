@@ -25,6 +25,9 @@ public class Event {
     // A list of accounts who have said they will be attending the event.
     protected List<Account> attending;
 
+    // The time the event was created
+    protected Date timeStamp;
+
     public Event(String title, Location location, Date time, String description) {
         this.title = title;
         this.location = location;
@@ -53,18 +56,21 @@ public class Event {
         return true;
     }
 
-    public boolean containsAllTags(List<String> tags) {
+    public boolean wasCreatedAfter(Date timeStamp) {
         return true;
     }
 
-    public boolean containsString(String s) {
+    public boolean containsAllStrings(List<String> strings) {
+        return true;
+    }
+
+    private boolean containsString(String s) {
         return true;
     }
 
     public boolean meetsFilterAndSearchCriteria(ListViewFilteredSearchData currentSearch) {
         return this.isAfter(currentSearch.startTime)
                 && this.isBefore(currentSearch.endTime)
-                && this.containsAllTags(currentSearch.tags)
-                && this.containsString(currentSearch.queryString);
+                && this.containsAllStrings(currentSearch.queryStrings);
     }
 }

@@ -8,13 +8,15 @@ import java.util.*;
  * Created by hopecrandall on 2/11/16.
  */
 public class ListViewSorter {
-    public List<Event> sortEventsByLocation(List<Event> unsortedSearch, Location centralLocation) {
-        // sort by location
+    public List<Event> sortByDistance(List<Event> unsortedSearch, Location centralLocation) {
         return null;
     }
 
-    public List<Event> sortEventsByTime(List<Event> unsortedSearch) {
-        // sort by time
+    public List<Event> sortByTime(List<Event> unsortedSearch) {
+        return null;
+    }
+
+    public List<Event> sortByRecentlyCreated(List<Event> unsortedSearch) {
         return null;
     }
 }
