@@ -82,6 +82,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -393,6 +394,13 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             public void onClick(View view) {
                 Log.d(TAG, "map to list pressed");
                 Intent intent = new Intent(MapsActivity.this, ListViewActivity.class);
+
+                Event testEvent = new Event("Title", new Location("TestLocation"), new Date(), "Description");
+                List<Event> eventList = new ArrayList<Event>();
+                eventList.add(testEvent);
+
+//                intent.putExtra("Event", eventList);
+
                 startActivity(intent);
             }
         });
