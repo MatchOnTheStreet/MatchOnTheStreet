@@ -30,18 +30,28 @@ public class ListViewFilteredSearchData implements Comparable<ListViewFilteredSe
     // -1 if the search has been narrowed
     // 1 if the search has been widened
     public int compareTo(ListViewFilteredSearchData search) {
-      return 0;
+        int timeChange = this.compareTimeInterval(search);
+        int tagChange = this.compareTags(search);
+        int queryStringChange = this.compareQueryString(search);
+
+        if (timeChange == 0 && tagChange == 0 && queryStringChange == 0) {
+            return 0;
+        } else if (timeChange == 1 || tagChange == 1 || queryStringChange == 1) {
+            return 1;
+        } else {
+            return -1;
+        }
     }
 
-    private int compareTimeInterval(ListViewFilteredSearchData e1, ListViewFilteredSearchData e2) {
+    private int compareTimeInterval(ListViewFilteredSearchData search) {
         return 0;
     }
 
-    private int compareTags(ListViewFilteredSearchData e1, ListViewFilteredSearchData e2) {
+    private int compareTags(ListViewFilteredSearchData search) {
         return 0;
     }
 
-    private int compareQueryString(ListViewFilteredSearchData e1, ListViewFilteredSearchData e2) {
+    private int compareQueryString(ListViewFilteredSearchData search) {
         return 0;
     }
 
