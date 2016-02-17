@@ -113,4 +113,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_nav">NavActivity</string>
+
+    <!-- ListView search bar -->
+    <string name="list_search_title">Search for keyword</string>
 </resources>
