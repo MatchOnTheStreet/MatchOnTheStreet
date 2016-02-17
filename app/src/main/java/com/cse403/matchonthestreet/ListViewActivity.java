@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -24,9 +27,10 @@ import java.util.Random;
  * A representation of all available events in a list format.
  *
  */
-public class ListViewActivity extends ListActivity {
+public class ListViewActivity extends AppCompatActivity {
 
-    ListView listView;
+    RecyclerView listView;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,9 +38,11 @@ public class ListViewActivity extends ListActivity {
         setContentView(R.layout.activity_list_view);
 
         //getActionBar().show();
+        toolbar = (Toolbar) findViewById(R.id.list_view_toolbar);
+        setSupportActionBar(toolbar);
 
         // get ListView obj from xml
-        listView = (ListView) findViewById(android.R.id.list);
+        listView = (RecyclerView) findViewById(android.R.id.list);
 
         // Floating action button to the map view
         FloatingActionButton fabToMap =
