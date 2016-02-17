@@ -6,6 +6,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
 import android.view.Menu;
@@ -32,7 +34,7 @@ import java.util.Random;
  */
 public class ListViewActivity extends AppCompatActivity {
 
-    ListView listView;
+    RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,36 +45,22 @@ public class ListViewActivity extends AppCompatActivity {
         //ViewCompat.setTransitionName(findViewById(R.id.app_bar_layout), );
 
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // TODO: Could change title to transparent instead
+        getSupportActionBar().setTitle("List & Filter");
 
         // get ListView obj from xml
-        listView = (ListView) findViewById(android.R.id.list);
+        recyclerView = (RecyclerView) findViewById(R.id.list_recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(this, populateDummyData());
+        recyclerView.setAdapter(recyclerViewAdapter);
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, null));
 
         // Floating action button to the map view
         FloatingActionButton fabToMap =
                 (FloatingActionButton) this.findViewById(R.id.fab_list_to_map);
 
-
-        ListViewAdapter listAdapter = new ListViewAdapter(this, R.layout.list_item_layout, populateDummyData());
-        listView.setAdapter(listAdapter);
-
-        // ListView Item Click Listener
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                // ListView Clicked item value
-                String itemValue = ((ListItem) listView.getItemAtPosition(position)).event.location.toString();
-
-                // Show Alert
-                Toast.makeText(getApplicationContext(),
-                        "Item index :" + position + "  Location : " + itemValue, Toast.LENGTH_LONG)
-                        .show();
-
-            }
-
-        });
 
         fabToMap.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
