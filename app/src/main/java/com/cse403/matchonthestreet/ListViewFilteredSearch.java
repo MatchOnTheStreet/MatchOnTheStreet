@@ -9,7 +9,7 @@ import java.util.*;
  */
 public class ListViewFilteredSearch {
     // Current search/filter result list
-    private List<Event> currentResults;
+    private Set<Event> currentResults;
 
     // Current Search
     private ListViewFilteredSearchData currentSearch;
@@ -17,7 +17,7 @@ public class ListViewFilteredSearch {
 
     /* Takes in the user's filter and search criteria and returns a list of
        events that fit that criteria */
-    public List<Event> FilterAndSearch(ListViewFilteredSearchData newSearch) {
+    public Set<Event> FilterAndSearch(ListViewFilteredSearchData newSearch) {
         Date timeOfLastSearch = currentSearch.timeStamp;
 
         int changeInSearch = newSearch.compareTo(currentSearch);
@@ -32,7 +32,7 @@ public class ListViewFilteredSearch {
             SearchWithinCurrentResults();
             SearchInDatabase(timeOfLastSearch);
         } else {
-            currentResults = new ArrayList<Event>();
+            currentResults = new TreeSet<>();
             SearchInDatabase();
         }
 
