@@ -32,6 +32,7 @@
                 android:layout_margin="10dp" />
 
             <TextView
+                android:id="@+id/event_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Enter Description Here:\ndetail1 detail2"
@@ -47,6 +48,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
+            android:id="@+id/event_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="From XX:XX to XX:XX"

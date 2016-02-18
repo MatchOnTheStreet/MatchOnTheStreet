@@ -38,8 +38,6 @@
 
 package com.cse403.matchonthestreet;
 
-import android.app.ActionBar;
-import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -49,21 +47,15 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 
 import com.google.android.gms.common.ConnectionResult;
@@ -84,12 +76,14 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
-        LocationListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
+        LocationListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener {
 
     /** Tag used for printing to debugger */
     private static final String TAG = "MainActivity";
@@ -109,6 +103,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     /** If continuous location updates are needed */
     private boolean mRequestingLocationUpdates = true;
 
+    private Map<Marker, Event> mapMarkerEvent;
     /**
      *
      * @param savedInstanceState
@@ -136,6 +131,14 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
         fl.setVisibility(View.GONE);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            Log.d(TAG,"Toolbar Found");
+        } else {
+            Log.d(TAG,"Toolbar Not Found");
+        }
+
+        mapMarkerEvent = new HashMap<>();
     }
 
     /**
@@ -181,7 +184,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         // Setup callbacks for interactions with the map. Primarily for the MapDetailFragment
         mMap.setOnMarkerClickListener(this);
         mMap.setOnMapClickListener(this);
-
+        mMap.setOnMapLongClickListener(this);
         // Check permissions both Coarse and Fine
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "Have COARSE LOCATION permission");
@@ -363,6 +366,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                     Log.d(TAG, "" + mCurrentLocation.getLatitude() + mCurrentLocation.getLongitude());
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
                     // TODO: add zooming here
+
+                    addEventsToMap(new ArrayList<Event>());
                 } else {
                     Log.d(TAG, "No last known location");
                 }
@@ -380,7 +385,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                 startActivity(intent);
                 if (mCurrentLocation != null) {
                     Log.d(TAG, "" + mCurrentLocation.getLatitude() + mCurrentLocation.getLongitude());
-                    createPin(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+                    //createPin(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
                 } else {
                     Log.d(TAG, "No last known location");
                 }
@@ -475,6 +480,12 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         // Send the details of the event to the fragment
         Bundle args = new Bundle();
         args.putString("detailText", marker.getTitle());
+        if (mapMarkerEvent.containsKey(marker)) {
+            Event event = mapMarkerEvent.get(marker);
+            args.putString("date", event.time.toString());
+            args.putString("description", event.description);
+        }
+
         MapDetailFragment mapDetailFragment = new MapDetailFragment();
         mapDetailFragment.setArguments(args);
         ft.replace(R.id.fragment_container, mapDetailFragment, "detailFragment");
@@ -523,6 +534,61 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         }catch (NullPointerException e) {
             Log.d(TAG, e.toString());
         }
+
+    }
+
+    private void removeAllMarkers() {
+        mMap.clear();
+        mapMarkerEvent.clear();
+    }
+
+    private void addEventsToMap(ArrayList<Event> workingSet) {
+        //ArrayList<Event> workingSet = EventDBManager.getEvents();
+
+        removeAllMarkers();
+
+        Location loc = new Location("testProvider1");
+        loc.setLatitude(47.6543485);
+        loc.setLongitude(-122.3155853);
+
+        Location loc2 = new Location("testProvider2");
+        loc2.setLatitude(47.7543485);
+        loc2.setLongitude(-122.3155853);
+        Event e1 = new Event("TestEvent 1", loc, new Date(), "This is a description for TestEvent 1");
+        Event e2 = new Event("TestEvent 2", loc2, new Date(), "This is a description for TestEvent 2");
+
+        workingSet.add(e1);
+        workingSet.add(e2);
+
+        for (int i = 0; i < workingSet.size(); i++) {
+            Event temp = workingSet.get(i);
+            Location tLoc = temp.location;
+            Log.d(TAG, "The location is: " + tLoc.getLongitude() + " " + tLoc.getLatitude());
+            Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(tLoc.getLatitude(), tLoc.getLongitude())).title(temp.title));
+            mapMarkerEvent.put(marker, temp);
+        }
+    }
+
+    @Override
+    public void onMapLongClick(LatLng latLng) {
+        Log.d(TAG, "onMapLongClick");
+        double lat = latLng.latitude;
+        double lon = latLng.longitude;
+
+        Intent intent = new Intent(MapsActivity.this, AddEventActivity.class);
+        intent.putExtra("latitude", lat);
+        intent.putExtra("longitude", lon);
+
+
+        startActivity(intent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // data is a list of Events
+        ArrayList<Event> newEvents = new ArrayList<>();
+
+        addEventsToMap(newEvents);
 
     }
 

@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 /**
  * Created by Lance on 2/7/16.
  *
@@ -30,6 +32,18 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
         String passedText = getArguments().getString("detailText");
         if (passedText != null) {
             tv.setText(passedText);
+        }
+
+        String eventDate = getArguments().getString("date");
+        if (eventDate != null) {
+            TextView dateText = (TextView) mView.findViewById(R.id.event_date);
+            dateText.setText(eventDate);
+        }
+
+        String description = getArguments().getString("description");
+        if (description != null) {
+            TextView descriptionText = (TextView) mView.findViewById(R.id.event_description);
+            descriptionText.setText(description);
         }
 
         return mView;

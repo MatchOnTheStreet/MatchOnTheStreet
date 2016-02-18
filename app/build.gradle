@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion "23.0.1"
 
     defaultConfig {
         applicationId "com.cse403.matchonthestreet"
@@ -32,6 +32,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-identity:8.4.0'
     compile 'com.google.android.gms:play-services-gcm:8.4.0'
     compile 'com.facebook.android:facebook-android-sdk:4.6.0'
+    compile 'com.android.support:cardview-v7:23.+'
 
     androidTestCompile 'junit:junit:4.12'
 }
