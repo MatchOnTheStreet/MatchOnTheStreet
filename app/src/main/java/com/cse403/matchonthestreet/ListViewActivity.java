@@ -128,7 +128,7 @@ public class ListViewActivity extends AppCompatActivity {
             int start = rand.nextInt(largeStr.length() - s.length());
             String d = largeStr.substring(start, start + s.length());
 
-            Event e = new Event(s, l, new Date(2000 + rand.nextInt(17), rand.nextInt(12) + 1, rand.nextInt(28) + 1), d);
+            Event e = new Event(s.hashCode(), s, l, new Date(2000 + rand.nextInt(17), rand.nextInt(12) + 1, rand.nextInt(28) + 1), d);
 
             listItems.add(new ListItem(e));
         }
