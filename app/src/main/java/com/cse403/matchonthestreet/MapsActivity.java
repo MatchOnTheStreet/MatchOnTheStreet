@@ -84,7 +84,9 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class MapsActivity extends NavActivity implements OnMapReadyCallback,
@@ -109,6 +111,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     /** If continuous location updates are needed */
     private boolean mRequestingLocationUpdates = true;
 
+    private Map<Marker, Event> mapMarkerEvent;
     /**
      *
      * @param savedInstanceState
@@ -136,6 +139,14 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
         fl.setVisibility(View.GONE);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            Log.d(TAG,"Toolbar Found");
+        } else {
+            Log.d(TAG,"Toolbar Not Found");
+        }
+
+        mapMarkerEvent = new HashMap<>();
     }
 
     /**
@@ -363,6 +374,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                     Log.d(TAG, "" + mCurrentLocation.getLatitude() + mCurrentLocation.getLongitude());
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
                     // TODO: add zooming here
+
+                    getAndAddEvents();
                 } else {
                     Log.d(TAG, "No last known location");
                 }
@@ -475,6 +488,12 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         // Send the details of the event to the fragment
         Bundle args = new Bundle();
         args.putString("detailText", marker.getTitle());
+        if (mapMarkerEvent.containsKey(marker)) {
+            Event event = mapMarkerEvent.get(marker);
+            args.putString("date", event.time.toString());
+            args.putString("description", event.description);
+        }
+
         MapDetailFragment mapDetailFragment = new MapDetailFragment();
         mapDetailFragment.setArguments(args);
         ft.replace(R.id.fragment_container, mapDetailFragment, "detailFragment");
@@ -524,6 +543,32 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             Log.d(TAG, e.toString());
         }
 
+    }
+
+    private void getAndAddEvents() {
+        //ArrayList<Event> workingSet = EventDBManager.getEvents();
+        mMap.clear();
+        ArrayList<Event> workingSet = new ArrayList<>();
+        Location loc = new Location("testProvider1");
+        loc.setLatitude(47.6543485);
+        loc.setLongitude(-122.3155853);
+
+        Location loc2 = new Location("testProvider2");
+        loc2.setLatitude(47.7543485);
+        loc2.setLongitude(-122.3155853);
+        Event e1 = new Event("TestEvent 1", loc, new Date(), "This is a description for TestEvent 1");
+        Event e2 = new Event("TestEvent 2", loc2, new Date(), "This is a description for TestEvent 2");
+
+        workingSet.add(e1);
+        workingSet.add(e2);
+
+        for (int i = 0; i < workingSet.size(); i++) {
+            Event temp = workingSet.get(i);
+            Location tLoc = temp.location;
+            Log.d(TAG, "The location is: " + tLoc.getLongitude() + " " + tLoc.getLatitude());
+            Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(tLoc.getLatitude(), tLoc.getLongitude())).title(temp.title));
+            mapMarkerEvent.put(marker, temp);
+        }
     }
 
 }
