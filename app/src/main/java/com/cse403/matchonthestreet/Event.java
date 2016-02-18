@@ -10,6 +10,10 @@ import java.util.*;
  * Represents a sporting Event.
  */
 public class Event {
+
+    // The id number of the event
+    public int eid;
+
     // The title of the event
     public String title;
 
@@ -28,7 +32,8 @@ public class Event {
     // The time the event was created
     protected Date timeStamp;
 
-    public Event(String title, Location location, Date time, String description) {
+    public Event(int eid, String title, Location location, Date time, String description) {
+        this.eid = eid;
         this.title = title;
         this.location = location;
         this.time = time;
