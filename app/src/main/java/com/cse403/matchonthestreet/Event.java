@@ -1,7 +1,10 @@
 package com.cse403.matchonthestreet;
 
 import android.location.Location;
+import android.os.Parcel;
+import android.os.Parcelable;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -9,7 +12,8 @@ import java.util.*;
  *
  * Represents a sporting Event.
  */
-public class Event {
+public class Event implements Parcelable {
+
     // The title of the event
     public String title;
 
@@ -73,4 +77,51 @@ public class Event {
                 && this.isBefore(currentSearch.endTime)
                 && this.containsAllStrings(currentSearch.queryStrings);
     }
+
+    public int describeContents() {
+        return 0;
+    }
+
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeString(title);
+        parcel.writeString(description);
+        double lat = location.getLatitude();
+        double lon = location.getLongitude();
+        parcel.writeDouble(lat);
+        parcel.writeDouble(lon);
+        parcel.writeString(time.toString());
+
+    }
+
+    private Event(Parcel in) {
+        this.title = in.readString();
+        this.description = in.readString();
+        double lat = in.readDouble();
+        double lon = in.readDouble();
+        Location location = new Location("created in parcel");
+        location.setLatitude(lat);
+        location.setLongitude(lon);
+        this.location = location;
+        String dateString = in.readString();
+        this.time = new Date(); //TODO: convert the string to a date
+
+        this.attending = null;
+    }
+
+    public static final Parcelable.Creator<Event> CREATOR
+            = new Parcelable.Creator<Event>() {
+
+        // This simply calls our new constructor (typically private) and
+        // passes along the unmarshalled `Parcel`, and then returns the new object!
+        @Override
+        public Event createFromParcel(Parcel in) {
+            return new Event(in);
+        }
+
+        // We just need to copy this and change the type to match our class.
+        @Override
+        public Event[] newArray(int size) {
+            return new Event[size];
+        }
+    };
 }

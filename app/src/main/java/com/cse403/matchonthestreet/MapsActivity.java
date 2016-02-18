@@ -85,6 +85,9 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         LocationListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener {
 
+    public static final int ADD_EVENT_REQUEST_CODE = 1;
+    public static final int LIST_VIEW_REQUEST_CODE = 2;
+
     /** Tag used for printing to debugger */
     private static final String TAG = "MainActivity";
 
@@ -562,11 +565,16 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
         for (int i = 0; i < workingSet.size(); i++) {
             Event temp = workingSet.get(i);
-            Location tLoc = temp.location;
-            Log.d(TAG, "The location is: " + tLoc.getLongitude() + " " + tLoc.getLatitude());
-            Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(tLoc.getLatitude(), tLoc.getLongitude())).title(temp.title));
-            mapMarkerEvent.put(marker, temp);
+            addEventToMap(temp);
         }
+    }
+
+    private void addEventToMap(Event event) {
+        Location tLoc = event.location;
+        Log.d(TAG, "The location is: " + tLoc.getLongitude() + " " + tLoc.getLatitude());
+        Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(tLoc.getLatitude(), tLoc.getLongitude())).title(event.title));
+        mapMarkerEvent.put(marker, event);
+
     }
 
     @Override
@@ -579,17 +587,50 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         intent.putExtra("latitude", lat);
         intent.putExtra("longitude", lon);
 
+       // stopLocationUpdates();
 
-        startActivity(intent);
+        startActivityForResult(intent, ADD_EVENT_REQUEST_CODE);
+        //startActivity(intent);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // data is a list of Events
-        ArrayList<Event> newEvents = new ArrayList<>();
+        if (requestCode == ADD_EVENT_REQUEST_CODE) {
+            Log.d(TAG, "add event returned to onActivityResult");
+        }
 
-        addEventsToMap(newEvents);
+        if (resultCode == RESULT_CANCELED) {
+            Log.d(TAG, "add event result: result canceled");
+        }
 
+        if (resultCode == RESULT_FIRST_USER) {
+            Log.d(TAG, "add event result: result first user");
+        }
+
+        if (resultCode == RESULT_OK && requestCode == ADD_EVENT_REQUEST_CODE) {
+            //Event newEvents = (Event) data.getSerializableExtra("newEvent"); //(ArrayList<Event>) data.getSerializableExtra("newEvent");  //data.getExtras().getSerializable("newEvent");
+            Log.d(TAG, "add event result: ok");
+            //addEventsToMap(newEvents);
+            Event newEvent = data.getParcelableExtra("event");
+            ArrayList<Event> listEvent = data.getParcelableArrayListExtra("eventList");
+
+            if (listEvent != null && listEvent.size() > 0) {
+                Log.d(TAG, "event list has: " + listEvent.get(0).title);
+                Log.d(TAG, "event coords: " + listEvent.get(0).location.getLatitude() + ", " + listEvent.get(0).location.getLongitude());
+            } else {
+                Log.d(TAG, "eventList is null or no elements");
+            }
+
+            if (newEvent == null) {
+                Log.d(TAG, "newEvent is null");
+            } else {
+                Log.d(TAG, "Received event: " + newEvent.title);
+            }
+
+        } else {
+            Log.d(TAG, "not result OK");
+        }
     }
 
 }

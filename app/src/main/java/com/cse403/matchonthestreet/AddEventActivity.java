@@ -3,16 +3,25 @@ package com.cse403.matchonthestreet;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
+
+import com.google.android.gms.maps.model.LatLng;
+
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Created by larioj on 2/7/16.
@@ -33,10 +42,22 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
     private SimpleDateFormat timeFormatter;
     private Calendar calendar;
 
+
+    private Location location;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_event);
+
+        Intent intent = getIntent();
+        double lat = intent.getDoubleExtra("latitude", 0.0);
+        double lon = intent.getDoubleExtra("longitude", 0.0);
+
+        location = new Location("userCreatedLocation");
+        location.setLatitude(lat);
+        location.setLongitude(lon);
+
 
         calendar  = Calendar.getInstance();
         dateFormatter = new SimpleDateFormat("dd-MM-yy", Locale.US);
@@ -118,5 +139,46 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
         } else if (v == fromTimeET) {
             fromTimePD.show();
         }
+    }
+
+    public void createEvent(View view) {
+
+        //TODO: Check that all the fields were filled out
+
+        String timerange = fromDateET.getText().toString() + " " + fromTimeET.getText().toString() +
+                toDateET.getText().toString() + " " + toTimeET.getText().toString();
+        EditText titleET = (EditText)findViewById(R.id.event_title);
+        String title = titleET.getText().toString();
+
+        EditText eventDescET = (EditText)findViewById(R.id.event_description);
+        String description = eventDescET.getText().toString();
+
+        Event event = new Event("this is a title", location, new Date(), "this is a description");
+        Intent resultIntent = new Intent(); //new Intent(AddEventActivity.this, MapsActivity.class);
+
+        ArrayList<Event> list = new ArrayList<>();
+        list.add(event);
+
+        // resultIntent.putExtra("newEvent", list);
+
+        //resultIntent.putExtra("newEvent", event);
+        resultIntent.putExtra("newEventString", "string");
+
+
+        Bundle bundle = new Bundle();
+        //bundle.putParcelable("event", event);
+        //resultIntent.putExtra("eventBundle", bundle);
+        resultIntent.putExtra("event",event);
+        resultIntent.putParcelableArrayListExtra("eventList", list);
+
+        if (resultIntent == null) {
+            Log.d("Addeventactivity", "result intent is null");
+        }
+
+        //setResult(RESULT_OK);
+        setResult(RESULT_OK, resultIntent);
+
+        finish();
+
     }
 }
