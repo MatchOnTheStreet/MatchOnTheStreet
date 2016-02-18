@@ -10,7 +10,7 @@ import java.util.List;
 public class Account {
 
     // User ID given by facebook.
-    public String identifier;
+    public String uid;
 
     // The name of the user whose account this is.
     public String name;
@@ -18,8 +18,8 @@ public class Account {
     // A list of events the user is planning on attending.
     public List<Event> events;
 
-    public Account(String identifier) {
-        this.identifier = identifier;
+    public Account(String uid) {
+        this.uid = uid;
         this.name = null;
         this.events = null;
     }

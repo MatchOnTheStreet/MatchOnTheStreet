@@ -403,7 +403,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                 Log.d(TAG, "map to list pressed");
                 Intent intent = new Intent(MapsActivity.this, ListViewActivity.class);
 
-                Event testEvent = new Event("Title", new Location("TestLocation"), new Date(), "Description");
+                Event testEvent = new Event(0, "Title", new Location("TestLocation"), new Date(), "Description");
                 List<Event> eventList = new ArrayList<Event>();
                 eventList.add(testEvent);
 
@@ -557,8 +557,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         Location loc2 = new Location("testProvider2");
         loc2.setLatitude(47.7543485);
         loc2.setLongitude(-122.3155853);
-        Event e1 = new Event("TestEvent 1", loc, new Date(), "This is a description for TestEvent 1");
-        Event e2 = new Event("TestEvent 2", loc2, new Date(), "This is a description for TestEvent 2");
+        Event e1 = new Event(1, "TestEvent 1", loc, new Date(), "This is a description for TestEvent 1");
+        Event e2 = new Event(2, "TestEvent 2", loc2, new Date(), "This is a description for TestEvent 2");
 
         workingSet.add(e1);
         workingSet.add(e2);

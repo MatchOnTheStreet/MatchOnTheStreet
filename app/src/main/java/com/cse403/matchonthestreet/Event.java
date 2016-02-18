@@ -14,6 +14,9 @@ import java.util.*;
  */
 public class Event implements Parcelable {
 
+    // The id number of the event
+    public int eid;
+
     // The title of the event
     public String title;
 
@@ -32,7 +35,8 @@ public class Event implements Parcelable {
     // The time the event was created
     protected Date timeStamp;
 
-    public Event(String title, Location location, Date time, String description) {
+    public Event(int eid, String title, Location location, Date time, String description) {
+        this.eid = eid;
         this.title = title;
         this.location = location;
         this.time = time;
@@ -77,6 +81,7 @@ public class Event implements Parcelable {
                 && this.isBefore(currentSearch.endTime)
                 && this.containsAllStrings(currentSearch.queryStrings);
     }
+
 
     public int describeContents() {
         return 0;
