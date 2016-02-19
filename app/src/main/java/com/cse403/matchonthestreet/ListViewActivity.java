@@ -52,7 +52,6 @@ public class ListViewActivity extends AppCompatActivity {
 
     protected SearchView searchView;
     protected EditText dateFromEntry;
-    protected DatePickerDialog datePicker;
     protected EditText dateToEntry;
     protected SetTextDatePickerDialog datePickerFactory;
     protected Button applyButton;

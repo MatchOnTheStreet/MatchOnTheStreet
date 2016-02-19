@@ -16,7 +16,7 @@ import java.util.Set;
  * Created by Hao on 2/18/2016.
  */
 public class ViewController {
-    // TODO: We are using dummy data here
+
     protected Set<Event> eventSet = new HashSet<>();
 
     public Set<Event> getEventSet() {
