@@ -1,6 +1,7 @@
 package com.cse403.matchonthestreet;
 
 import android.location.Location;
+import android.os.AsyncTask;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -49,14 +50,50 @@ public class DBManager {
     private Connection conn;
 
     /* Connection code to MySQL.  */
-    public void openConnection() throws Exception {
-        Class.forName("com.mysql.jdbc.Driver");
-        System.out.println("Connecting to database...");
-        conn = DriverManager.getConnection(DB_URL, USER, PASS);
+    public AsyncTask<Void, Void, Void> openConnection() {
+        return new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                try {
+                    Class.forName("com.mysql.jdbc.Driver");
+                    System.out.println("Connecting to database...");
+                    conn=DriverManager.getConnection(DB_URL,USER,PASS);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
     }
 
-    public void closeConnection() throws Exception {
-        conn.close();
+    public AsyncTask<Void, Void, Void> closeConnection() {
+        return new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                try {
+                    conn.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
+    }
+
+    public AsyncTask<Void, Void, Void> printStatus() {
+        return new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                try {
+                    PreparedStatement statement = conn.prepareStatement("Select * From Accounts;");
+                    ResultSet result = statement.executeQuery();
+                    System.out.println(result);
+                } catch (Exception e) {
+                    System.out.println("--------------------------------------- PrintStatus Failed");
+                }
+                return null;
+            }
+        };
     }
 
     /* prepare all the SQL statements in this method.

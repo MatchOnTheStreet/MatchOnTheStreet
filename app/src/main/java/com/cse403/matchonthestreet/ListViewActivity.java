@@ -55,6 +55,11 @@ public class ListViewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Obtain the current instance of ViewController
+        ViewController viewController = ((MOTSApp)getApplicationContext()).getViewController();
+
+        // Initial interface setups
         initActivityTransitions();
         setContentView(R.layout.activity_list_view);
 
@@ -62,13 +67,15 @@ public class ListViewActivity extends AppCompatActivity {
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("List & Filter");
         }
-        getSupportActionBar().setTitle("List & Filter");
-
+        
         // Set up the list of events
         recyclerView = (RecyclerView) findViewById(R.id.list_recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerViewAdapter = new RecyclerViewAdapter(this, populateDummyData());
+        // TODO: Here the dummy date is used in the adapter
+        viewController.populateDummyData();
+        recyclerViewAdapter = new RecyclerViewAdapter(this, new ArrayList<>(viewController.getEventSet()));
         recyclerView.setAdapter(recyclerViewAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, null));
 
@@ -191,50 +198,5 @@ public class ListViewActivity extends AppCompatActivity {
                     calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
         }
 
-    }
-
-    private List<ListItem> populateDummyData() {
-        // Sample string values to store in list
-        List<String> sampleVal = new ArrayList<>();
-        String largeStr = getString(R.string.large_text);
-
-        String[] values = new String[]{"Tennis match @ Denny",
-                "Casual pool play",
-                "Team Potato needs a goalkeeper",
-                "Basket ball IMA 5v5",
-                "Tennis match @ Denny",
-                "Casual pool play",
-                "Team Potato needs a goalkeeper",
-                "Basket ball IMA 5v5",
-                "Tennis match @ Denny",
-                "Casual pool play",
-                "Team Potato needs a goalkeeper",
-                "Basket ball IMA 5v5"};
-
-        String[] sports = new String[]{"basketball", "tennis", "soccer", "football",
-            "badminton", "table tennis", "pool", "running", "swimming", "racket ball", "baseball",
-            ""};
-        sampleVal.addAll(Arrays.asList(values));
-
-
-        List<ListItem> listItems = new ArrayList<>();
-        Random rand = new Random();
-
-        /* Hardcoded population of list items */
-        for (String s : sampleVal) {
-            Location l = new Location("dummy");
-            l.setLatitude(rand.nextDouble() * 90);
-            l.setLongitude(rand.nextDouble() * 90);
-            l.setAltitude(rand.nextDouble() * 90);
-
-            int start = rand.nextInt(largeStr.length() - s.length());
-            String d = largeStr.substring(start, start + s.length());
-
-            Event e = new Event(s.hashCode(), s, l, new Date(2000 + rand.nextInt(17), rand.nextInt(12) + 1, rand.nextInt(28) + 1), d);
-
-            listItems.add(new ListItem(e));
-        }
-
-        return listItems;
     }
 }

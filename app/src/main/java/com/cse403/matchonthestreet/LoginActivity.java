@@ -16,7 +16,7 @@ import com.facebook.login.LoginResult;
 /**
  * Simple facebook login page. Allows the user to log into the app through Facebook.
  */
-public class LoginActivity extends Activity {
+public class LoginActivity extends NavActivity {
 
     private CallbackManager callbackManager;
     private TextView info;

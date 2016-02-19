@@ -73,6 +73,10 @@ public class Event implements Parcelable {
         return false;
     }
 
+    public String getTitle() { return this.title; }
+
+    public String getDesc() { return this.getDescription(); };
+
     public String getDescription() { return this.description; }
 
     public boolean isAfter(Date time) {

@@ -38,6 +38,7 @@
 
 package com.cse403.matchonthestreet;
 
+import android.os.AsyncTask;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.content.Intent;
@@ -116,6 +117,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Obtain the current instance of ViewController
+        ViewController viewController = ((MOTSApp)getApplicationContext()).getViewController();
         // Set the view to the xml layout file
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -149,15 +152,11 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
         // Database Test
         DBManager db = new DBManager();
-        try {
-            System.out.println("-------------------------------- Connecting to Database");
-            db.openConnection();
-            db.closeConnection();
-            System.out.println("-------------------------------- Done connecting to Database");
-        } catch (Exception e) {
-            System.out.println("-------------------------------- Failed to connect to Database");
-            e.printStackTrace();
-        }
+        System.out.println("-------------------------------- Connecting to Database");
+        db.openConnection().execute();
+        db.printStatus().execute();
+        db.closeConnection().execute();
+        System.out.println("-------------------------------- Done connecting to Database");
     }
 
     /**
@@ -332,6 +331,13 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         UiSettings mapSettings = mMap.getUiSettings();
         mapSettings.setZoomControlsEnabled(true);
         mapSettings.setMyLocationButtonEnabled(false);
+
+
+        ViewController vc = new ViewController();
+        vc.populateDummyData();
+        ArrayList<Event> list = new ArrayList<>(vc.getEventSet());
+
+        addEventsToMap(list);
     }
 
     /**
