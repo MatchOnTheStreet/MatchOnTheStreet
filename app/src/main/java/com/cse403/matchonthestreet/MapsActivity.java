@@ -38,6 +38,7 @@
 
 package com.cse403.matchonthestreet;
 
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -146,15 +147,11 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
         // Database Test
         DBManager db = new DBManager();
-        try {
-            System.out.println("-------------------------------- Connecting to Database");
-            db.openConnection();
-            db.closeConnection();
-            System.out.println("-------------------------------- Done connecting to Database");
-        } catch (Exception e) {
-            System.out.println("-------------------------------- Failed to connect to Database");
-            e.printStackTrace();
-        }
+        System.out.println("-------------------------------- Connecting to Database");
+        db.openConnection().execute();
+        db.printStatus().execute();
+        db.closeConnection().execute();
+        System.out.println("-------------------------------- Done connecting to Database");
     }
 
     /**
