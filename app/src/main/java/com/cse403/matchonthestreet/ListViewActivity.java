@@ -137,13 +137,17 @@ public class ListViewActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                return false;
+                recyclerViewAdapter.getFilter().filter(query);
+                viewController.updateEventList(new HashSet<>(recyclerViewAdapter.getFilteredItems()));
+                return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                recyclerViewAdapter.getFilter().filter(newText);
-                viewController.updateEventList(new HashSet<>(recyclerViewAdapter.getFilteredItems()));
+                if (newText.isEmpty()) {
+                    recyclerViewAdapter.getFilter().filter(newText);
+                    viewController.updateEventList(new HashSet<Event>(recyclerViewAdapter.getAllItems()));
+                }
                 return true;
             }
         });

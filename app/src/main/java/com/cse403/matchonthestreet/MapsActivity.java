@@ -92,6 +92,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     public static final int LIST_VIEW_REQUEST_CODE = 2;
 
     private boolean FROM_LIST;
+    private static boolean FIRST_LAUNCH = true;
 
     /** Tag used for printing to debugger */
     private static final String TAG = "MainActivity";
@@ -131,7 +132,10 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         viewController = ((MOTSApp)getApplicationContext()).getViewController();
         // TODO: Here the dummy data is used in the ViewController, when the activity
         // is first launched.
-        if (!FROM_LIST) viewController.populateDummyData();
+        if (FIRST_LAUNCH) {
+            viewController.populateDummyData();
+            FIRST_LAUNCH = false;
+        }
 
         // Set the view to the xml layout file
         setContentView(R.layout.activity_maps);
