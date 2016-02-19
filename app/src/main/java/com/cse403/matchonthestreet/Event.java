@@ -81,28 +81,16 @@ public class Event implements Parcelable {
         return this.time.before(time);
     }
 
-    public boolean containsStrings(List<String> queryStrings) {
-        String lowerCaseTitle = title.toLowerCase();
-        String lowerCaseDesc = description.toLowerCase();
+    public boolean containsString(String s) {
+        s = s.toLowerCase();
 
-        for (String s: queryStrings) {
-            boolean containsString = containsString(lowerCaseTitle, lowerCaseDesc, s.toLowerCase());
-            if (!containsString) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private boolean containsString(String lowerCaseTitle, String lowerCaseDesc, String lowerCaseString) {
-        boolean titleContainsString = lowerCaseTitle.contains(lowerCaseString);
+        boolean titleContainsString = title.toLowerCase().contains(s);
         if (titleContainsString) {
             return true;
         }
 
-        boolean descriptionContainsString = lowerCaseDesc.contains(lowerCaseString);
-        if (descriptionContainsString) {
+        boolean descriptionCOntainsString = description.toLowerCase().contains(s);
+        if (descriptionCOntainsString) {
             return true;
         }
 

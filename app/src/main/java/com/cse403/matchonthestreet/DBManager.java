@@ -13,11 +13,11 @@ import java.util.List;
 public class DBManager {
     // JDBC driver name and database URL
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://c-24-16-210-83.hsd1.wa.comcast.net/ruijiw_MatchOnTheStreet";
+    static final String DB_URL = "jdbc:mysql://matchonthestreetdb.crqizzvrxges.us-east-1.rds.amazonaws.com:3306/motsdb";
 
     //  Database credentials
-    static final String USER = "ruijiw@c-24-16-210-83.hsd1.wa.comcast.net";
-    static final String PASS = "bZQf23xm";
+    static final String USER = "larioj";
+    static final String PASS = "motspassword";
 
     private String uid;
 
@@ -50,50 +50,14 @@ public class DBManager {
     private Connection conn;
 
     /* Connection code to MySQL.  */
-    public AsyncTask<Void, Void, Void> openConnection() {
-        return new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                try {
-                    Class.forName("com.mysql.jdbc.Driver");
-                    System.out.println("Connecting to database...");
-                    conn=DriverManager.getConnection(DB_URL,USER,PASS);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-        };
+    public void openConnection() throws ClassNotFoundException, SQLException {
+        Class.forName("com.mysql.jdbc.Driver");
+        System.out.println("Connecting to database...");
+        conn=DriverManager.getConnection(DB_URL,USER,PASS);
     }
 
-    public AsyncTask<Void, Void, Void> closeConnection() {
-        return new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                try {
-                    conn.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-        };
-    }
-
-    public AsyncTask<Void, Void, Void> printStatus() {
-        return new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                try {
-                    PreparedStatement statement = conn.prepareStatement("Select * From Accounts;");
-                    ResultSet result = statement.executeQuery();
-                    System.out.println(result);
-                } catch (Exception e) {
-                    System.out.println("--------------------------------------- PrintStatus Failed");
-                }
-                return null;
-            }
-        };
+    public void closeConnection() throws SQLException {
+        conn.close();
     }
 
     /* prepare all the SQL statements in this method.

@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
@@ -20,9 +21,10 @@ import java.util.List;
  * This class gives the user a view of their profile. Their profile includes their
  * name and a list of events they are currently signed up to attend.
  */
-public class UserProfileActivity extends AppCompatActivity {
+public class UserProfileActivity extends NavActivity {
     ListView listView;
     Button button;
+    TextView username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,10 +45,21 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         });
 
+        // TODO: change from dummy data to db data
+        Account dummyAccount = new Account("123");
+        Event e1 = new Event(123, "Basketball", null, null, "Cool 1v1 basketball");
+        Event e2 = new Event(123, "Soccer", null, null, "3v3 Soccer");
+        dummyAccount.addEvent(e1);
+        dummyAccount.addEvent(e2);
 
+        username = (TextView) findViewById(R.id.username);
+        username.setText("Pablo Neruda");
+
+        List<Event> eventsAttending = dummyAccount.getEvents();
         List<String> sampleVals = new ArrayList<String>();
-        sampleVals.add("Basketball at 4:30");
-        sampleVals.add("Soccer at 6");
+        for (Event e : eventsAttending) {
+            sampleVals.add(e.title + ": " + e.description);
+        }
 
         ArrayAdapter<String> listAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, sampleVals);
 
