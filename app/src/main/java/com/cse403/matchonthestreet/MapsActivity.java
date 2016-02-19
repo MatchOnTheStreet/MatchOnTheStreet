@@ -142,6 +142,19 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         }
 
         mapMarkerEvent = new HashMap<>();
+
+
+        // Database Test
+        DBManager db = new DBManager();
+        try {
+            System.out.println("-------------------------------- Connecting to Database");
+            db.openConnection();
+            db.closeConnection();
+            System.out.println("-------------------------------- Done connecting to Database");
+        } catch (Exception e) {
+            System.out.println("-------------------------------- Failed to connect to Database");
+            e.printStackTrace();
+        }
     }
 
     /**
