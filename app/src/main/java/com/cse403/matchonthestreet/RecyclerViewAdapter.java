@@ -119,7 +119,7 @@ public class RecyclerViewAdapter
 
 
         private FilterResults performFiltering(String queryString, Date startTime, Date endTime,
-                                                 Location centralLocation, int searchRadius) {
+                                               Location centralLocation, int searchRadius) {
             ListViewFilterAndSearch searcher
                     = new ListViewFilterAndSearch(queryString, startTime, endTime, centralLocation, searchRadius);
 

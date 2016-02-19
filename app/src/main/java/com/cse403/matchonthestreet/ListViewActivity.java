@@ -146,7 +146,7 @@ public class ListViewActivity extends AppCompatActivity {
             public boolean onQueryTextChange(String newText) {
                 if (newText.isEmpty()) {
                     recyclerViewAdapter.getFilter().filter(newText);
-                    viewController.updateEventList(new HashSet<Event>(recyclerViewAdapter.getAllItems()));
+                    viewController.updateEventList(new HashSet<>(recyclerViewAdapter.getAllItems()));
                 }
                 return true;
             }

@@ -28,20 +28,50 @@ public class Event implements Parcelable {
     // The time of the event
     protected Date time;
 
+    // The duration of the event, in minutes
+    protected int duration;
+
+    // The time stamp of the event creation
+    protected Date timeCreated;
+
     // A description of the event.
-    protected String description;
+    protected String description = "";
 
     // A list of accounts who have said they will be attending the event.
     protected List<Account> attending;
 
+    public Event(int eid, String title, Location location, Date time,
+                 int duration, Date timeCreated, String description) {
+        this.eid = eid;
+        this.title = title;
+        this.location = location;
+        this.time = time;
+        this.duration = duration;
+        this.timeCreated = timeCreated;
+        this.description = description;
+        this.attending = null;
+
+    }
+
+    public Event(String title, Location location, Date time, int duration,
+                 Date timeCreated, String description) {
+        this.eid = title.hashCode();
+        this.title = title;
+        this.location = location;
+        this.time = time;
+        this.duration = duration;
+        this.timeCreated = timeCreated;
+        this.description = description;
+        this.attending = null;
+
+    /*
     public Event(int eid, String title, Location location, Date time, String description) {
         this.eid = eid;
         this.title = title;
         this.location = location;
         this.time = time;
         this.description = description;
-        this.attending = null;
-
+        this.attending = new ArrayList<>();
     }
 
     public Event(String title, Location location, Date time, String description) {
@@ -50,9 +80,8 @@ public class Event implements Parcelable {
         this.location = location;
         this.time = time;
         this.description = description;
-        this.attending = null;
-
-    }
+        this.attending = new ArrayList<>();
+    }*/
 
     /**
      * Tests if an account is attending this event.
