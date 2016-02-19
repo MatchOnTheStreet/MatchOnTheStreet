@@ -149,14 +149,6 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(findViewById(R.id.map_search_bar).getWindowToken(), 0);
 
-
-        // Database Test
-        DBManager db = new DBManager();
-        System.out.println("-------------------------------- Connecting to Database");
-        db.openConnection().execute();
-        db.printStatus().execute();
-        db.closeConnection().execute();
-        System.out.println("-------------------------------- Done connecting to Database");
     }
 
     /**
