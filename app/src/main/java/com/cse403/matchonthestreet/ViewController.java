@@ -1,10 +1,12 @@
 package com.cse403.matchonthestreet;
 
+import android.content.res.Resources;
 import android.location.Location;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -13,7 +15,7 @@ import java.util.Set;
  * Created by Hao on 2/18/2016.
  */
 public class ViewController {
-    protected Set<Event> eventSet;
+    protected Set<Event> eventSet = new HashSet<>();
 
     public Set<Event> getEventSet() {
         return eventSet;
@@ -25,12 +27,12 @@ public class ViewController {
         return changed;
     }
 
-    /*
+
     public List<Event> populateDummyData() {
         // Sample string values to store in list
         List<String> sampleVal = new ArrayList<>();
         Random rand = new Random();
-        String largeStr = getString(R.string.large_text);
+        String largeStr = Resources.getSystem().getString(R.string.large_text);
 
         String[] values = new String[]{"Tennis match @ Denny",
                 "Casual pool play",
@@ -60,8 +62,7 @@ public class ViewController {
 
         List<Event> Events = new ArrayList<>();
 
-
-        /* Hardcoded population of list items /
+        // Hardcoded population of list items
         for (String s : sampleVal) {
             Location l = new Location("dummy");
             l.setLatitude(rand.nextDouble() * 90);
@@ -77,7 +78,7 @@ public class ViewController {
         }
 
         return Events;
-    }*/
+    }
 
     protected static String[] generateRandomWords(int numberOfWords) {
         String[] randomStrings = new String[numberOfWords];
