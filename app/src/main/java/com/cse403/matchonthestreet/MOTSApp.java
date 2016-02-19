@@ -1,6 +1,7 @@
 package com.cse403.matchonthestreet;
 
 import android.app.Application;
+import android.content.Context;
 
 import java.util.List;
 import java.util.Set;
@@ -10,7 +11,18 @@ import java.util.Set;
  */
 public class MOTSApp extends Application {
 
-    private ViewController viewController = new ViewController();
+    private static ViewController viewController = new ViewController();
+    private static Context mContext;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mContext = this;
+    }
+
+    public static Context getContext(){
+        return mContext;
+    }
 
     public ViewController getViewController() {
         return viewController;
