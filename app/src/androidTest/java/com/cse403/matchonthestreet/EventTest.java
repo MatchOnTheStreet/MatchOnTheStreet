@@ -27,7 +27,7 @@ public class EventTest extends TestCase {
 
     @Test
     public void testIsAttendedByFalse() throws Exception {
-        Account a = new Account("hello");
+        Account a = new Account("123", "John Doe");
         assertFalse(e.isAttendedBy(a));
     }
 

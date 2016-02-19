@@ -34,17 +34,13 @@ public class Event implements Parcelable {
     // A list of accounts who have said they will be attending the event.
     protected List<Account> attending;
 
-    // The time the event was created
-    protected Date timeStamp;
-
-
     public Event(int eid, String title, Location location, Date time, String description) {
         this.eid = eid;
         this.title = title;
         this.location = location;
         this.time = time;
         this.description = description;
-        this.attending = null;
+        this.attending = new ArrayList<Account>();
 
     }
 
@@ -54,7 +50,7 @@ public class Event implements Parcelable {
         this.location = location;
         this.time = time;
         this.description = description;
-        this.attending = null;
+        this.attending = new ArrayList<Account>();
 
     }
 
@@ -75,8 +71,6 @@ public class Event implements Parcelable {
 
     public String getTitle() { return this.title; }
 
-    public String getDesc() { return this.getDescription(); };
-
     public String getDescription() { return this.description; }
 
     public boolean isAfter(Date time) {
@@ -87,28 +81,21 @@ public class Event implements Parcelable {
         return this.time.before(time);
     }
 
-    public boolean isCloser(Location centralLocation, Event e) {
-        return true;
-    }
+    public boolean containsString(String s) {
+        s = s.toLowerCase();
 
-    public boolean wasCreatedAfter(Date timeStamp) {
-        return true;
-    }
+        boolean titleContainsString = title.toLowerCase().contains(s);
+        if (titleContainsString) {
+            return true;
+        }
 
-    public boolean containsAllStrings(List<String> strings) {
-        return true;
-    }
+        boolean descriptionCOntainsString = description.toLowerCase().contains(s);
+        if (descriptionCOntainsString) {
+            return true;
+        }
 
-    private boolean containsString(String s) {
-        return true;
+        return false;
     }
-
-    public boolean meetsFilterAndSearchCriteria(ListViewFilteredSearchData currentSearch) {
-        return this.isAfter(currentSearch.startTime)
-                && this.isBefore(currentSearch.endTime)
-                && this.containsAllStrings(currentSearch.queryStrings);
-    }
-
 
     public int describeContents() {
         return 0;
