@@ -11,6 +11,7 @@ package com.cse403.matchonthestreet;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -109,23 +110,24 @@ public class NavActivity extends AppCompatActivity implements NavigationView.OnN
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-            Log.d(TAG, "Nav_Camera selected");
-        } else if (id == R.id.nav_gallery) {
-            Log.d(TAG, "Nav_Gallery selected");
-        } else if (id == R.id.nav_slideshow) {
-            Log.d(TAG, "Nav_Slideshow selected");
-        } else if (id == R.id.nav_manage) {
-            Log.d(TAG, "Nav_Manage selected");
-            if (this.getClass() != AddEventActivity.class) {
-                Intent intent = new Intent(this, AddEventActivity.class);
+        if (id == R.id.my_events) {
+            if (this.getClass() != UserProfileActivity.class) {
+                Intent intent = new Intent(this, UserProfileActivity.class);
                 startActivity(intent);
             }
-        } else if (id == R.id.nav_share) {
-            Log.d(TAG, "Nav_Share selected");
-        } else if (id == R.id.nav_send) {
-            Log.d(TAG, "Nav_Send selected");
+
+        } else if (id == R.id.login) {
+            if (this.getClass() != LoginActivity.class) {
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
+            }
+
+        } else if (id == R.id.report_bug) {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://docs.google.com/forms/d/1CPT7NxY8I8A-K2fMJThhLn5p-UrRfgzGDtRDrNRUhhY/viewform"));
+            startActivity(browserIntent);
+
+        } else if (id == R.id.nav_manage) {
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

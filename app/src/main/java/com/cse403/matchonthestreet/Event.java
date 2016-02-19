@@ -40,7 +40,7 @@ public class Event implements Parcelable {
         this.location = location;
         this.time = time;
         this.description = description;
-        this.attending = null;
+        this.attending = new ArrayList<Account>();
 
     }
 
@@ -50,7 +50,7 @@ public class Event implements Parcelable {
         this.location = location;
         this.time = time;
         this.description = description;
-        this.attending = null;
+        this.attending = new ArrayList<Account>();
 
     }
 
@@ -69,6 +69,22 @@ public class Event implements Parcelable {
         return false;
     }
 
+    /**
+     * Marks an event as being attended by the given account.
+     *
+     * @param account The account attending this event
+     * @return true if the account was added as attending, false otherwise. If the account
+     * was already attending, returns false.
+     */
+    public boolean addAttendee(Account account) {
+        if (!this.isAttendedBy(account)) {
+            this.attending.add(account);
+            return true;
+        }
+
+        return false;
+    }
+
     public String getTitle() { return this.title; }
 
     public String getDescription() { return this.description; }
@@ -81,6 +97,13 @@ public class Event implements Parcelable {
         return this.time.before(time);
     }
 
+    /**
+     * Checks if provided string is contained in either the title or the description of this
+     * event.
+     *
+     * @param s The string that will or will not be contained
+     * @return True if the string is contained in the title or description. False otherwise.
+     */
     public boolean containsString(String s) {
         s = s.toLowerCase();
 
@@ -89,8 +112,8 @@ public class Event implements Parcelable {
             return true;
         }
 
-        boolean descriptionCOntainsString = description.toLowerCase().contains(s);
-        if (descriptionCOntainsString) {
+        boolean descriptionContainsString = description.toLowerCase().contains(s);
+        if (descriptionContainsString) {
             return true;
         }
 

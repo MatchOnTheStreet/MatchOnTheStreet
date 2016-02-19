@@ -323,6 +323,13 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         UiSettings mapSettings = mMap.getUiSettings();
         mapSettings.setZoomControlsEnabled(true);
         mapSettings.setMyLocationButtonEnabled(false);
+
+
+        ViewController vc = new ViewController();
+        vc.populateDummyData();
+        ArrayList<Event> list = new ArrayList<>(vc.getEventSet());
+
+        addEventsToMap(list);
     }
 
     /**
