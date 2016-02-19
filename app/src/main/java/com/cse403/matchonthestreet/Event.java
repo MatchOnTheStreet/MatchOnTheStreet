@@ -58,13 +58,22 @@ public class Event implements Parcelable {
 
     }
 
-    public String getDescription() {
-        return this.description;
+    /**
+     * Tests if an account is attending this event.
+     *
+     * @account The account to test is attending
+     * @return True if the account is attending this event, false otherwise.
+     */
+    public boolean isAttendedBy(Account account) {
+        for (Account attendee : attending) {
+            if (attendee.equals(account)) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    public boolean isAttendedBy(Account account) {
-        return true;
-    }
+    public String getDescription() { return this.description; }
 
     public boolean isAfter(Date time) {
         return this.time.after(time) || this.time.equals(time);

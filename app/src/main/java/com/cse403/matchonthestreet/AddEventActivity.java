@@ -179,8 +179,8 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
         EditText eventDescET = (EditText)findViewById(R.id.event_description);
         String description = eventDescET.getText().toString();
 
-        Event event = new Event(title, location, date, description);
-        Intent resultIntent = new Intent();
+        Event event = new Event("this is a title", location, new Date(), "this is a description");
+        Intent resultIntent = new Intent(); //new Intent(AddEventActivity.this, MapsActivity.class);
 
         Log.d("AddEventActivity", "Date toString is: " + event.time.toString());
 
