@@ -53,7 +53,7 @@ public class UserProfileActivity extends AppCompatActivity {
         dummyAccount.addEvent(e2);
 
         textView = (TextView) findViewById(R.id.username);
-        textView.setText("John Doe");
+        textView.setText(dummyAccount.getName());
 
         List<Event> eventsAttending = dummyAccount.getEvents();
         List<String> sampleVals = new ArrayList<String>();

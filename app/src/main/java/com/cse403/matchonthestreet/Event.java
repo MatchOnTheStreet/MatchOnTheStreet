@@ -40,7 +40,7 @@ public class Event implements Parcelable {
         this.location = location;
         this.time = time;
         this.description = description;
-        this.attending = null;
+        this.attending = new ArrayList<Account>();
 
     }
 
@@ -50,7 +50,7 @@ public class Event implements Parcelable {
         this.location = location;
         this.time = time;
         this.description = description;
-        this.attending = null;
+        this.attending = new ArrayList<Account>();
 
     }
 
