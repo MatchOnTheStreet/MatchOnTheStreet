@@ -20,13 +20,8 @@ public class Account {
     private List<Event> events;
 
     public Account(String uid) {
-        new Account(uid, null);
-    }
-
-    public Account(String uid, String name) {
         this.uid = uid;
-        this.name = name;
-        this.events = new ArrayList<Event>();
+        events = new ArrayList<Event>();
     }
 
     /**

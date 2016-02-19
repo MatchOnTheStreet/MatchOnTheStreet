@@ -24,7 +24,7 @@ import java.util.List;
 public class UserProfileActivity extends NavActivity {
     ListView listView;
     Button button;
-    TextView textView;
+    TextView username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,14 +46,14 @@ public class UserProfileActivity extends NavActivity {
         });
 
         // TODO: change from dummy data to db data
-        Account dummyAccount = new Account("123", "Pablo Neruda");
+        Account dummyAccount = new Account("123");
         Event e1 = new Event(123, "Basketball", null, null, "Cool 1v1 basketball");
         Event e2 = new Event(123, "Soccer", null, null, "3v3 Soccer");
         dummyAccount.addEvent(e1);
         dummyAccount.addEvent(e2);
 
-        textView = (TextView) findViewById(R.id.username);
-        textView.setText(dummyAccount.getName());
+        username = (TextView) findViewById(R.id.username);
+        username.setText("Pablo Neruda");
 
         List<Event> eventsAttending = dummyAccount.getEvents();
         List<String> sampleVals = new ArrayList<String>();
