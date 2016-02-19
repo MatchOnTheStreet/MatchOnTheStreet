@@ -38,6 +38,7 @@
 
 package com.cse403.matchonthestreet;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -54,6 +55,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 
@@ -97,8 +99,6 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     /** Provides the entry point to Google Play services.*/
     private GoogleApiClient mGoogleApiClient;
 
-    /** Represents a geographical location */
-    private Location mLastLocation;
     /** Location Request sent to google play services*/
     private LocationRequest mLocationRequest;
     /** Current location of the user (updated when position is changed) */
@@ -142,6 +142,9 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         }
 
         mapMarkerEvent = new HashMap<>();
+
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(findViewById(R.id.map_search_bar).getWindowToken(), 0);
     }
 
     /**
@@ -197,20 +200,9 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             Log.d(TAG, "Have FINE LOCATION permission");
         } else {
             Log.d(TAG, "do not have FINE LOCATION permission");
-        }
-
-        // Checking for the users last known location and if there is non then creates a
-        // sample pin in sydney
-        if (mLastLocation != null) {
-            LatLng sydney = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(sydney).title("Marker"));
-            Log.d(TAG, "" + mLastLocation.getLatitude() + ", " + mLastLocation.getLongitude());
-        } else {
-            Log.d(TAG, "No last known location");
         }
 
         // Start requesting location updates
@@ -254,8 +246,6 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
         // Set the users current location
         mCurrentLocation = location;
-        // Move the view over this new location
-       // mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
 
     }
 
@@ -376,7 +366,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                 }
             }
         });
-
+/*
         // The button that adds a pin to the current location
         // Should redirect to add event screen
         FloatingActionButton fabAddButton = (FloatingActionButton) findViewById(R.id.fab_add_event);
@@ -393,7 +383,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                     Log.d(TAG, "No last known location");
                 }
             }
-        });
+        }); */
 
         // The button that moves to the ListViewActivity
         FloatingActionButton fabListMap = (FloatingActionButton) findViewById(R.id.fab_map_to_list);
@@ -540,16 +530,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
     }
 
-    private void removeAllMarkers() {
-        mMap.clear();
-        mapMarkerEvent.clear();
-    }
-
-    private void addEventsToMap(ArrayList<Event> workingSet) {
-        //ArrayList<Event> workingSet = EventDBManager.getEvents();
-
-        removeAllMarkers();
-
+    private ArrayList<Event> createSampleEvents() {
+        ArrayList<Event> workingSet = new ArrayList<>();
         Location loc = new Location("testProvider1");
         loc.setLatitude(47.6543485);
         loc.setLongitude(-122.3155853);
@@ -557,12 +539,21 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         Location loc2 = new Location("testProvider2");
         loc2.setLatitude(47.7543485);
         loc2.setLongitude(-122.3155853);
-        Event e1 = new Event(1, "TestEvent 1", loc, new Date(), "This is a description for TestEvent 1");
-        Event e2 = new Event(2, "TestEvent 2", loc2, new Date(), "This is a description for TestEvent 2");
+        Event e1 = new Event("TestEvent 1", loc, new Date(), "This is a description for TestEvent 1");
+        Event e2 = new Event("TestEvent 2", loc2, new Date(), "This is a description for TestEvent 2");
 
         workingSet.add(e1);
         workingSet.add(e2);
 
+        return workingSet;
+    }
+
+    private void removeAllMarkers() {
+        mMap.clear();
+        mapMarkerEvent.clear();
+    }
+
+    private void addEventsToMap(ArrayList<Event> workingSet) {
         for (int i = 0; i < workingSet.size(); i++) {
             Event temp = workingSet.get(i);
             addEventToMap(temp);
@@ -587,45 +578,27 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         intent.putExtra("latitude", lat);
         intent.putExtra("longitude", lon);
 
-       // stopLocationUpdates();
-
         startActivityForResult(intent, ADD_EVENT_REQUEST_CODE);
-        //startActivity(intent);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // data is a list of Events
-        if (requestCode == ADD_EVENT_REQUEST_CODE) {
-            Log.d(TAG, "add event returned to onActivityResult");
-        }
-
-        if (resultCode == RESULT_CANCELED) {
-            Log.d(TAG, "add event result: result canceled");
-        }
-
-        if (resultCode == RESULT_FIRST_USER) {
-            Log.d(TAG, "add event result: result first user");
-        }
 
         if (resultCode == RESULT_OK && requestCode == ADD_EVENT_REQUEST_CODE) {
-            //Event newEvents = (Event) data.getSerializableExtra("newEvent"); //(ArrayList<Event>) data.getSerializableExtra("newEvent");  //data.getExtras().getSerializable("newEvent");
-            Log.d(TAG, "add event result: ok");
-            //addEventsToMap(newEvents);
-            Event newEvent = data.getParcelableExtra("event");
+
             ArrayList<Event> listEvent = data.getParcelableArrayListExtra("eventList");
 
             if (listEvent != null && listEvent.size() > 0) {
                 Log.d(TAG, "event list has: " + listEvent.get(0).title);
                 Log.d(TAG, "event coords: " + listEvent.get(0).location.getLatitude() + ", " + listEvent.get(0).location.getLongitude());
+                Log.d(TAG, "event date: " + listEvent.get(0).time.toString());
+
+               // removeAllMarkers();
+
+                addEventsToMap(listEvent);
+
             } else {
                 Log.d(TAG, "eventList is null or no elements");
-            }
-
-            if (newEvent == null) {
-                Log.d(TAG, "newEvent is null");
-            } else {
-                Log.d(TAG, "Received event: " + newEvent.title);
             }
 
         } else {

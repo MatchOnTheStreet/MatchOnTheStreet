@@ -3,6 +3,7 @@ package com.cse403.matchonthestreet;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
@@ -10,12 +11,14 @@ import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -103,7 +106,10 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
                 //time.set(Calendar.HOUR_OF_DAY, hourOfDay);
                 //time.set(Calendar.MINUTE, minute);
                 //toTimeET.setText(timeFormatter.format(time.getTime()));
-                toTimeET.setText(hourOfDay + ":" + minute);
+                String pad = "";
+                if (minute < 10) pad = "0";
+                String time = hourOfDay + ":" + pad + minute;
+                toTimeET.setText(time);
             }
         },
                 calendar.get(Calendar.HOUR_OF_DAY),
@@ -120,7 +126,10 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
                 //time.set(Calendar.HOUR_OF_DAY, hourOfDay);
                 //time.set(Calendar.MINUTE, minute);
                 //fromTimeET.setText(timeFormatter.format(time.getTime()));
-                fromTimeET.setText(hourOfDay + ":" + minute);
+                String pad = "";
+                if (minute < 10) pad = "0";
+                String time = hourOfDay + ":" + pad + minute;
+                fromTimeET.setText(time);
             }
         },
                 calendar.get(Calendar.HOUR_OF_DAY),
@@ -145,37 +154,41 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
 
         //TODO: Check that all the fields were filled out
 
-        String timerange = fromDateET.getText().toString() + " " + fromTimeET.getText().toString() +
-                toDateET.getText().toString() + " " + toTimeET.getText().toString();
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
+
+        String timerange = fromDateET.getText().toString() + " " + fromTimeET.getText().toString();
+
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yy HH:mm", Locale.US);
+        Date date;
+        try {
+            date = format.parse(timerange);
+
+        } catch (ParseException e) {
+            date = new Date();
+            e.printStackTrace();
+            Log.d("AddEventActivity", "Date parse failed");
+        }
+        Log.d("AddEventActivity", "Date toString is: " + date.toString());
+
         EditText titleET = (EditText)findViewById(R.id.event_title);
+
         String title = titleET.getText().toString();
 
         EditText eventDescET = (EditText)findViewById(R.id.event_description);
         String description = eventDescET.getText().toString();
 
-        Event event = new Event("this is a title", location, new Date(), "this is a description");
-        Intent resultIntent = new Intent(); //new Intent(AddEventActivity.this, MapsActivity.class);
+        Event event = new Event(title, location, date, description);
+        Intent resultIntent = new Intent();
+
+        Log.d("AddEventActivity", "Date toString is: " + event.time.toString());
 
         ArrayList<Event> list = new ArrayList<>();
         list.add(event);
 
-        // resultIntent.putExtra("newEvent", list);
-
-        //resultIntent.putExtra("newEvent", event);
-        resultIntent.putExtra("newEventString", "string");
-
-
-        Bundle bundle = new Bundle();
-        //bundle.putParcelable("event", event);
-        //resultIntent.putExtra("eventBundle", bundle);
-        resultIntent.putExtra("event",event);
         resultIntent.putParcelableArrayListExtra("eventList", list);
 
-        if (resultIntent == null) {
-            Log.d("Addeventactivity", "result intent is null");
-        }
-
-        //setResult(RESULT_OK);
         setResult(RESULT_OK, resultIntent);
 
         finish();
