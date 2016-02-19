@@ -10,7 +10,7 @@ import org.junit.Test;
 import java.util.Date;
 
 /**
- * Test cases for Eveestnt Class
+ * Test cases for Event Class
  */
 public class EventTest extends TestCase {
 
@@ -26,8 +26,10 @@ public class EventTest extends TestCase {
     }
 
     @Test
-    public void testIsAttendingFalse() throws Exception {
+    public void testIsAttendedByFalse() throws Exception {
         Account a = new Account("hello");
         assertFalse(e.isAttendedBy(a));
     }
+
+
 }
