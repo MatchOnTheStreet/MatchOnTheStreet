@@ -26,7 +26,47 @@ public class Account {
     public Account(String uid, String name) {
         this.uid = uid;
         this.name = name;
-        this.events = null;
+        this.events = new ArrayList<Event>();
+    }
+
+    /**
+     * Add an event to list of events this account is planning on attending.
+     *
+     * @param event The event to add
+     * @return true if the event was added, false otherwise. The event will not
+     * be added if it was already in the list of events the account was planning
+     * on attending.
+     */
+    public boolean addEvent(Event event) {
+        if (!events.contains(event)) {
+            events.add(event);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Get a deep copy of the events this account is attending.
+     *
+     * @return a deep copy of all the events this account is attending
+     */
+    public List<Event> getEvents() {
+        List<Event> copy = new ArrayList<Event>();
+        for (Event e : events) {
+            // TODO: Make this a deeper copy
+            copy.add(e);
+        }
+        return copy;
+    }
+
+    /**
+     * Get the name of this account
+     *
+     * @return the name of this account
+     */
+    public String getName() {
+        return name;
     }
 
     @Override

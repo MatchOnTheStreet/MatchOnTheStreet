@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
@@ -23,6 +24,7 @@ import java.util.List;
 public class UserProfileActivity extends AppCompatActivity {
     ListView listView;
     Button button;
+    TextView textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,10 +45,21 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         });
 
+        // TODO: change from dummy data to db data
+        Account dummyAccount = new Account("123", "Pablo Neruda");
+        Event e1 = new Event(123, "Basketball", null, null, "Cool 1v1 basketball");
+        Event e2 = new Event(123, "Soccer", null, null, "3v3 Soccer");
+        dummyAccount.addEvent(e1);
+        dummyAccount.addEvent(e2);
 
+        textView = (TextView) findViewById(R.id.username);
+        textView.setText("John Doe");
+
+        List<Event> eventsAttending = dummyAccount.getEvents();
         List<String> sampleVals = new ArrayList<String>();
-        sampleVals.add("Basketball at 4:30");
-        sampleVals.add("Soccer at 6");
+        for (Event e : eventsAttending) {
+            sampleVals.add(e.title + ": " + e.description);
+        }
 
         ArrayAdapter<String> listAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, sampleVals);
 
