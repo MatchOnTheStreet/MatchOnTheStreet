@@ -179,7 +179,8 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
         EditText eventDescET = (EditText)findViewById(R.id.event_description);
         String description = eventDescET.getText().toString();
 
-        Event event = new Event(title, location, date, description);
+        // TODO: Add duration attribute
+        Event event = new Event(title, location, date, 60, calendar.getTime(), description);
         Intent resultIntent = new Intent(); //new Intent(AddEventActivity.this, MapsActivity.class);
 
         Log.d("AddEventActivity", "Date toString is: " + event.time.toString());

@@ -420,13 +420,13 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                 public void onClick(View view) {
                     Log.d(TAG, "map to list pressed");
                     Intent intent = new Intent(MapsActivity.this, ListViewActivity.class);
-
+                    /*
                     Event testEvent = new Event(0, "Title", new Location("TestLocation"), new Date(), "Description");
                     List<Event> eventList = new ArrayList<Event>();
                     eventList.add(testEvent);
 
-//                intent.putExtra("Event", eventList);
-
+                    //intent.putExtra("Event", eventList);
+                    */
                     startActivity(intent);
                 }
             });
@@ -558,7 +558,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
     }
 
-    private ArrayList<Event> createSampleEvents() {
+    // TODO: If needed, modify the fields in sample events
+    /*private ArrayList<Event> createSampleEvents() {
         ArrayList<Event> workingSet = new ArrayList<>();
         Location loc = new Location("testProvider1");
         loc.setLatitude(47.6543485);
@@ -574,7 +575,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         workingSet.add(e2);
 
         return workingSet;
-    }
+    }*/
 
     private void removeAllMarkers() {
         mMap.clear();

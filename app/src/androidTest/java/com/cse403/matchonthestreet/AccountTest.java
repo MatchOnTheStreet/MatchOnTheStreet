@@ -36,8 +36,8 @@ public class AccountTest extends TestCase {
         location.setLatitude(0.0d);
         location.setLongitude(0.0d);
 
-        e1 = new Event(0, "Basketball", location, new Date(100), "fun");
-        e2 = new Event(0, "Soccer", location, new Date(100), "cool");
+        e1 = new Event(0, "Basketball", location, new Date(100), 60, new Date(80), "fun");
+        e2 = new Event(0, "Soccer", location, new Date(100), 80, new Date(50), "cool");
 
         a2.addEvent(e1);
 

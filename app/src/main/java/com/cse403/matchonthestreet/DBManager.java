@@ -135,9 +135,11 @@ public class DBManager {
             int eid = getEventResults.getInt("eid");
             String title = getEventResults.getString("title");
             Location loc = null;
-            Time time = null;
+            Date time = null;
+            int duration = 60;
+            Date timeCreated = null;
             String description = getEventResults.getString("description");
-            Event event = new Event(eid, title, loc, time, description);
+            Event event = new Event(eid, title, loc, time, duration, timeCreated, description);
             list.add(event);
         }
         return list;

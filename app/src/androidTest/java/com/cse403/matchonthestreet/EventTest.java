@@ -26,8 +26,8 @@ public class EventTest extends TestCase {
         location.setLatitude(0.0d);
         location.setLongitude(0.0d);
 
-        e1 = new Event(0, "Basketball", location, new Date(100), "fun");
-        e2 = new Event(0, "Basketball", location, new Date(100), "fun");
+        e1 = new Event(0, "Basketball", location, new Date(100), 100, new Date(80), "fun");
+        e2 = new Event(0, "Basketball", location, new Date(100), 200, new Date(23), "fun");
 
         a1 = new Account("123");
         a2 = new Account("456");
@@ -69,17 +69,17 @@ public class EventTest extends TestCase {
 
     @Test
     public void testContainsStringTitle() throws Exception {
-        assertTrue(e1.containsString("bask"));
+        assertTrue(e1.containsString("bask", null, null));
     }
 
     @Test
     public void testContainsStringDescription() throws Exception {
-        assertTrue(e1.containsString("un"));
+        assertTrue(e1.containsString("un", null, null));
     }
 
     @Test
     public void testContainsStringFalse() throws Exception {
-        assertFalse(e1.containsString("zzzz"));
+        assertFalse(e1.containsString("zzzz", null, null));
     }
 
 }

@@ -63,7 +63,7 @@ public class Event implements Parcelable {
         this.timeCreated = timeCreated;
         this.description = description;
         this.attending = null;
-
+    }
     /*
     public Event(int eid, String title, Location location, Date time, String description) {
         this.eid = eid;
@@ -95,6 +95,22 @@ public class Event implements Parcelable {
                 return true;
             }
         }
+        return false;
+    }
+
+    /**
+     * Marks an event as being attended by the given account.
+     *
+     * @param account The account attending this event
+     * @return true if the account was added as attending, false otherwise. If the account
+     * was already attending, returns false.
+     */
+    public boolean addAttendee(Account account) {
+        if (!this.isAttendedBy(account)) {
+            this.attending.add(account);
+            return true;
+        }
+
         return false;
     }
 
