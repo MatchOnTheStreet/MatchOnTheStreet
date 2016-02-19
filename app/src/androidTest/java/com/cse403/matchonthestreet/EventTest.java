@@ -22,7 +22,7 @@ public class EventTest extends TestCase {
         Location location = new Location("");
         location.setLatitude(0.0d);
         location.setLongitude(0.0d);
-        e = new Event("Basketball", location, new Date(100), "fun");
+        e = new Event(0, "Basketball", location, new Date(100), "fun");
     }
 
     @Test

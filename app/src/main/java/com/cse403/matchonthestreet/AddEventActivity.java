@@ -153,7 +153,7 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
         EditText eventDescET = (EditText)findViewById(R.id.event_description);
         String description = eventDescET.getText().toString();
 
-        Event event = new Event("this is a title", location, new Date(), "this is a description");
+        Event event = new Event(0, "this is a title", location, new Date(), "this is a description");
         Intent resultIntent = new Intent(); //new Intent(AddEventActivity.this, MapsActivity.class);
 
         ArrayList<Event> list = new ArrayList<>();
@@ -168,7 +168,7 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
         Bundle bundle = new Bundle();
         //bundle.putParcelable("event", event);
         //resultIntent.putExtra("eventBundle", bundle);
-        resultIntent.putExtra("event",event);
+        resultIntent.putExtra("event", event);
         resultIntent.putParcelableArrayListExtra("eventList", list);
 
         if (resultIntent == null) {
