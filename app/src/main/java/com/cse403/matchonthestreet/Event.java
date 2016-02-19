@@ -5,6 +5,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -35,6 +37,7 @@ public class Event implements Parcelable {
     // The time the event was created
     protected Date timeStamp;
 
+
     public Event(int eid, String title, Location location, Date time, String description) {
         this.eid = eid;
         this.title = title;
@@ -42,15 +45,35 @@ public class Event implements Parcelable {
         this.time = time;
         this.description = description;
         this.attending = null;
+
     }
 
-    public String getDescription() {
-        return this.description;
+    public Event(String title, Location location, Date time, String description) {
+        this.eid = title.hashCode();
+        this.title = title;
+        this.location = location;
+        this.time = time;
+        this.description = description;
+        this.attending = null;
+
     }
 
+    /**
+     * Tests if an account is attending this event.
+     *
+     * @account The account to test is attending
+     * @return True if the account is attending this event, false otherwise.
+     */
     public boolean isAttendedBy(Account account) {
-        return true;
+        for (Account attendee : attending) {
+            if (attendee.equals(account)) {
+                return true;
+            }
+        }
+        return false;
     }
+
+    public String getDescription() { return this.description; }
 
     public boolean isAfter(Date time) {
         return this.time.after(time) || this.time.equals(time);
@@ -94,7 +117,12 @@ public class Event implements Parcelable {
         double lon = location.getLongitude();
         parcel.writeDouble(lat);
         parcel.writeDouble(lon);
-        parcel.writeString(time.toString());
+
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yy HH:mm", Locale.US);
+
+        String datetime = format.format(time);
+
+        parcel.writeString(datetime);
 
     }
 
@@ -108,9 +136,16 @@ public class Event implements Parcelable {
         location.setLongitude(lon);
         this.location = location;
         String dateString = in.readString();
-        this.time = new Date(); //TODO: convert the string to a date
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yy HH:mm", Locale.US);
+        try {
+            this.time = format.parse(dateString);
+        } catch (ParseException e) {
+            this.time = new Date();
+            e.printStackTrace();
+        }
 
         this.attending = null;
+
     }
 
     public static final Parcelable.Creator<Event> CREATOR

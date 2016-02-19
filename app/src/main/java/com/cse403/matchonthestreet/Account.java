@@ -1,5 +1,6 @@
 package com.cse403.matchonthestreet;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,17 +11,31 @@ import java.util.List;
 public class Account {
 
     // User ID given by facebook.
-    public String uid;
+    private String uid;
 
     // The name of the user whose account this is.
-    public String name;
+    private String name;
 
     // A list of events the user is planning on attending.
-    public List<Event> events;
+    private List<Event> events;
 
     public Account(String uid) {
+        new Account(uid, null);
+    }
+
+    public Account(String uid, String name) {
         this.uid = uid;
-        this.name = null;
+        this.name = name;
         this.events = null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Account)) {
+            return false;
+        }
+
+        Account a = (Account) o;
+        return a.uid.equals(this.uid);
     }
 }

@@ -16,20 +16,7 @@
         android:minHeight="48dip"
         />
 
-    <!-- Location -->
-    <LinearLayout
-        android:id="@+id/event_location_row"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="48dip" >
-        <EditText
-            android:id="@+id/event_location"
-            android:hint="@string/event_location_hint"
-            android:inputType="textPostalAddress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+
 
     <!-- Date and Time -->
     <!-- From -->
