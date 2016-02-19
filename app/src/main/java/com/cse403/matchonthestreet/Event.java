@@ -97,6 +97,13 @@ public class Event implements Parcelable {
         return this.time.before(time);
     }
 
+    /**
+     * Checks if provided string is contained in either the title or the description of this
+     * event.
+     *
+     * @param s The string that will or will not be contained
+     * @return True if the string is contained in the title or description. False otherwise.
+     */
     public boolean containsString(String s) {
         s = s.toLowerCase();
 

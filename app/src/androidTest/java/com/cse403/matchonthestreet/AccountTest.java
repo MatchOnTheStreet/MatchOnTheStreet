@@ -11,21 +11,25 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Test cases for Event Class
+ * Test cases for Account Class
  */
 public class AccountTest extends TestCase {
 
     Account a1;
     Account a2;
     Account a3;
+    Account a4;
     Event e1;
+    Event e2;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
         a1 = new Account("123", "John Doe");
         a2 = new Account("456", "Mark Zuck");
-        a3 = new Account("123", "John Doe")
+        a3 = new Account("123", "John Doe");
+        a4 = new Account("789", "James Murphy");
+
 
 
         Location location = new Location("");
@@ -33,6 +37,12 @@ public class AccountTest extends TestCase {
         location.setLongitude(0.0d);
 
         e1 = new Event(0, "Basketball", location, new Date(100), "fun");
+        e2 = new Event(0, "Soccer", location, new Date(100), "cool");
+
+        a2.addEvent(e1);
+
+        a4.addEvent(e1);
+        a4.addEvent(e2);
     }
 
     @Test
@@ -41,5 +51,47 @@ public class AccountTest extends TestCase {
         assertTrue(events.isEmpty());
     }
 
+    @Test
+    public void testGetEventsOneElement() {
+        List<Event> events = a2.getEvents();
+        assertTrue(events.contains(e1));
+        assertTrue(events.size() == 1);
+    }
+
+    @Test
+    public void testGetEventsTwoElements() {
+        List<Event> events = a4.getEvents();
+        assertTrue(events.contains(e1));
+        assertTrue(events.contains(e2));
+        assertTrue(events.size() == 2);
+    }
+
+    @Test
+    public void testAddEventEmpty() {
+        assertTrue(a1.addEvent(e1));
+        assertTrue(a1.getEvents().contains(e1));
+    }
+
+    @Test
+    public void testAddEventNonEmpty() {
+        assertTrue(a2.addEvent(e2));
+        assertTrue(a2.getEvents().contains(e2));
+    }
+
+    @Test
+    public void testAddEventFalse() {
+        assertFalse(a2.addEvent(e1));
+        assertTrue(a2.getEvents().contains(e1));
+    }
+
+    @Test
+    public void testEqualsTrue() {
+        assertTrue(a1.equals(a3));
+    }
+
+    @Test
+    public void testEqualsFalse() {
+        assertFalse(a1.equals(a2));
+    }
 
 }

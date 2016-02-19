@@ -61,6 +61,13 @@ public class Account {
     }
 
     /**
+     * Get the unique id associated with this account
+     *
+     * @return the unique id of this account
+     */
+    public String getUid() { return uid; }
+
+    /**
      * Get the name of this account
      *
      * @return the name of this account
@@ -68,6 +75,7 @@ public class Account {
     public String getName() {
         return name;
     }
+
 
     @Override
     public boolean equals(Object o) {

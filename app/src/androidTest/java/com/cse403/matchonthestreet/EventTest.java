@@ -50,14 +50,14 @@ public class EventTest extends TestCase {
 
     @Test
     public void testAddAttendeeEmpty() throws Exception {
-        e1.addAttendee(a1);
+        assertTrue(e1.addAttendee(a1));
         assertTrue(e1.isAttendedBy(a1));
     }
 
 
     @Test
     public void testAddAttendeeNonEmpty() throws Exception {
-        e2.addAttendee(a2);
+        assertTrue(e2.addAttendee(a2));
         assertTrue(e2.isAttendedBy(a2));
     }
 
