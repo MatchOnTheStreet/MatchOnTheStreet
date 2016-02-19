@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -41,6 +42,10 @@ import java.util.Random;
  *
  */
 public class ListViewActivity extends AppCompatActivity {
+
+    public static final String EXTRA_MESSAGE = ".ListViewActivity.MESSAGE";
+
+    private ViewController viewController;
 
     RecyclerView recyclerView;
     protected RecyclerViewAdapter recyclerViewAdapter;
@@ -57,7 +62,7 @@ public class ListViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // Obtain the current instance of ViewController
-        ViewController viewController = ((MOTSApp)getApplicationContext()).getViewController();
+        viewController = ((MOTSApp)getApplicationContext()).getViewController();
 
         // Initial interface setups
         initActivityTransitions();
@@ -73,8 +78,6 @@ public class ListViewActivity extends AppCompatActivity {
         // Set up the list of events
         recyclerView = (RecyclerView) findViewById(R.id.list_recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        // TODO: Here the dummy date is used in the adapter
-        viewController.populateDummyData();
         recyclerViewAdapter = new RecyclerViewAdapter(this, new ArrayList<>(viewController.getEventSet()));
         recyclerView.setAdapter(recyclerViewAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, null));
@@ -107,9 +110,8 @@ public class ListViewActivity extends AppCompatActivity {
         fabToMap.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(ListViewActivity.this, MapsActivity.class);
-
                 // TODO: send extra msg to map view, e.g. user location
-
+                intent.putExtra(EXTRA_MESSAGE, true);
                 startActivity(intent);
             }
         });
@@ -135,12 +137,17 @@ public class ListViewActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                return false;
+                recyclerViewAdapter.getFilter().filter(query);
+                viewController.updateEventList(new HashSet<>(recyclerViewAdapter.getFilteredItems()));
+                return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                recyclerViewAdapter.getFilter().filter(newText);
+                if (newText.isEmpty()) {
+                    recyclerViewAdapter.getFilter().filter(newText);
+                    viewController.updateEventList(new HashSet<Event>(recyclerViewAdapter.getAllItems()));
+                }
                 return true;
             }
         });

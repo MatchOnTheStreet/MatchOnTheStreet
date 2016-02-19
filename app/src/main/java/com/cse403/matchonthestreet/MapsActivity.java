@@ -82,6 +82,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 public class MapsActivity extends NavActivity implements OnMapReadyCallback,
@@ -90,6 +91,9 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
     public static final int ADD_EVENT_REQUEST_CODE = 1;
     public static final int LIST_VIEW_REQUEST_CODE = 2;
+
+    private boolean FROM_LIST;
+    private static boolean FIRST_LAUNCH = true;
 
     /** Tag used for printing to debugger */
     private static final String TAG = "MainActivity";
@@ -102,12 +106,16 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
     /** Location Request sent to google play services*/
     private LocationRequest mLocationRequest;
+
     /** Current location of the user (updated when position is changed) */
     private Location mCurrentLocation;
+
     /** If continuous location updates are needed */
     private boolean mRequestingLocationUpdates = true;
 
     private Map<Marker, Event> mapMarkerEvent;
+
+    private ViewController viewController;
     /**
      *
      * @param savedInstanceState
@@ -117,8 +125,19 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Intent intent = getIntent();
+        FROM_LIST = intent.getBooleanExtra(ListViewActivity.EXTRA_MESSAGE, false);
+
         // Obtain the current instance of ViewController
-        ViewController viewController = ((MOTSApp)getApplicationContext()).getViewController();
+        viewController = ((MOTSApp)getApplicationContext()).getViewController();
+        // TODO: Here the dummy data is used in the ViewController, when the activity
+        // is first launched.
+        if (FIRST_LAUNCH) {
+            viewController.populateDummyData();
+            FIRST_LAUNCH = false;
+        }
+
         // Set the view to the xml layout file
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -318,18 +337,15 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+
+        Set<Event> currentEvents = viewController.getEventSet();
+        addEventsToMap(new ArrayList<>(currentEvents));
+
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
         UiSettings mapSettings = mMap.getUiSettings();
         mapSettings.setZoomControlsEnabled(true);
         mapSettings.setMyLocationButtonEnabled(false);
-
-
-        ViewController vc = new ViewController();
-        vc.populateDummyData();
-        ArrayList<Event> list = new ArrayList<>(vc.getEventSet());
-
-        addEventsToMap(list);
     }
 
     /**
@@ -397,23 +413,24 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         }); */
 
         // The button that moves to the ListViewActivity
-        FloatingActionButton fabListMap = (FloatingActionButton) findViewById(R.id.fab_map_to_list);
-        fabListMap.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "map to list pressed");
-                Intent intent = new Intent(MapsActivity.this, ListViewActivity.class);
+        if (!FROM_LIST) {
+            FloatingActionButton fabListMap = (FloatingActionButton) findViewById(R.id.fab_map_to_list);
+            fabListMap.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d(TAG, "map to list pressed");
+                    Intent intent = new Intent(MapsActivity.this, ListViewActivity.class);
 
-                Event testEvent = new Event(0, "Title", new Location("TestLocation"), new Date(), "Description");
-                List<Event> eventList = new ArrayList<Event>();
-                eventList.add(testEvent);
+                    Event testEvent = new Event(0, "Title", new Location("TestLocation"), new Date(), "Description");
+                    List<Event> eventList = new ArrayList<Event>();
+                    eventList.add(testEvent);
 
 //                intent.putExtra("Event", eventList);
 
-                startActivity(intent);
-            }
-        });
-
+                    startActivity(intent);
+                }
+            });
+        }
         // The button that moves to the UserProfileActivity
         FloatingActionButton fabEvents = (FloatingActionButton) findViewById(R.id.fab_map_to_myevents);
         fabEvents.setOnClickListener(new View.OnClickListener() {
