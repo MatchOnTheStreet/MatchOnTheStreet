@@ -34,17 +34,13 @@ public class Event implements Parcelable {
     // A list of accounts who have said they will be attending the event.
     protected List<Account> attending;
 
-    // The time the event was created
-    protected Date timeStamp;
-
-
     public Event(int eid, String title, Location location, Date time, String description) {
         this.eid = eid;
         this.title = title;
         this.location = location;
         this.time = time;
         this.description = description;
-        this.attending = null;
+        this.attending = new ArrayList<Account>();
 
     }
 
@@ -54,7 +50,7 @@ public class Event implements Parcelable {
         this.location = location;
         this.time = time;
         this.description = description;
-        this.attending = null;
+        this.attending = new ArrayList<Account>();
 
     }
 
@@ -73,9 +69,23 @@ public class Event implements Parcelable {
         return false;
     }
 
-    public String getTitle() { return this.title; }
+    /**
+     * Marks an event as being attended by the given account.
+     *
+     * @param account The account attending this event
+     * @return true if the account was added as attending, false otherwise. If the account
+     * was already attending, returns false.
+     */
+    public boolean addAttendee(Account account) {
+        if (!this.isAttendedBy(account)) {
+            this.attending.add(account);
+            return true;
+        }
 
-    public String getDesc() { return this.getDescription(); };
+        return false;
+    }
+
+    public String getTitle() { return this.title; }
 
     public String getDescription() { return this.description; }
 
@@ -87,28 +97,28 @@ public class Event implements Parcelable {
         return this.time.before(time);
     }
 
-    public boolean isCloser(Location centralLocation, Event e) {
-        return true;
-    }
+    /**
+     * Checks if provided string is contained in either the title or the description of this
+     * event.
+     *
+     * @param s The string that will or will not be contained
+     * @return True if the string is contained in the title or description. False otherwise.
+     */
+    public boolean containsString(String s) {
+        s = s.toLowerCase();
 
-    public boolean wasCreatedAfter(Date timeStamp) {
-        return true;
-    }
+        boolean titleContainsString = title.toLowerCase().contains(s);
+        if (titleContainsString) {
+            return true;
+        }
 
-    public boolean containsAllStrings(List<String> strings) {
-        return true;
-    }
+        boolean descriptionContainsString = description.toLowerCase().contains(s);
+        if (descriptionContainsString) {
+            return true;
+        }
 
-    private boolean containsString(String s) {
-        return true;
+        return false;
     }
-
-    public boolean meetsFilterAndSearchCriteria(ListViewFilteredSearchData currentSearch) {
-        return this.isAfter(currentSearch.startTime)
-                && this.isBefore(currentSearch.endTime)
-                && this.containsAllStrings(currentSearch.queryStrings);
-    }
-
 
     public int describeContents() {
         return 0;

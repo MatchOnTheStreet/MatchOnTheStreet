@@ -1,6 +1,7 @@
 package com.cse403.matchonthestreet;
 
 import android.location.Location;
+import android.os.AsyncTask;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,11 +13,11 @@ import java.util.List;
 public class DBManager {
     // JDBC driver name and database URL
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://c-24-16-210-83.hsd1.wa.comcast.net/ruijiw_MatchOnTheStreet";
+    static final String DB_URL = "jdbc:mysql://matchonthestreetdb.crqizzvrxges.us-east-1.rds.amazonaws.com:3306/motsdb";
 
     //  Database credentials
-    static final String USER = "ruijiw@c-24-16-210-83.hsd1.wa.comcast.net";
-    static final String PASS = "bZQf23xm";
+    static final String USER = "larioj";
+    static final String PASS = "motspassword";
 
     private String uid;
 
@@ -49,13 +50,13 @@ public class DBManager {
     private Connection conn;
 
     /* Connection code to MySQL.  */
-    public void openConnection() throws Exception {
+    public void openConnection() throws ClassNotFoundException, SQLException {
         Class.forName("com.mysql.jdbc.Driver");
         System.out.println("Connecting to database...");
-        conn = DriverManager.getConnection(DB_URL, USER, PASS);
+        conn=DriverManager.getConnection(DB_URL,USER,PASS);
     }
 
-    public void closeConnection() throws Exception {
+    public void closeConnection() throws SQLException {
         conn.close();
     }
 
