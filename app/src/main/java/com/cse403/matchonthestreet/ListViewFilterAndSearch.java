@@ -16,7 +16,7 @@ public class ListViewFilterAndSearch {
     private DBManager database;
 
     // List of query strings
-    protected String queryString;
+    protected List<String> queryStrings;
 
     // List of filters
     protected Date startTime;
@@ -28,7 +28,7 @@ public class ListViewFilterAndSearch {
     public ListViewFilterAndSearch
             (String queryString, Date startTime, Date endTime, Location centralLocation, int searchRadius) {
         this.database = new DBManager();
-        this.queryString = queryString;
+        this.queryStrings = SplitQueryString(queryString);
         this.centralLocation = centralLocation;
         this.searchRadius = searchRadius;
         this.startTime = startTime;
@@ -46,8 +46,23 @@ public class ListViewFilterAndSearch {
     }
 
     public boolean DoesNotMeetCriteria(Event e) {
-        return !e.isAfter(startTime)
-                || !e.isBefore(endTime)
-                || !e.containsString(queryString);
+        if (startTime != null && !e.isAfter(startTime)) {
+            return true;
+        }
+
+        if (endTime != null && !e.isBefore(endTime)) {
+            return true;
+        }
+
+        if (queryStrings.size() > 1 && !e.containsStrings(queryStrings)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private List<String> SplitQueryString(String queryStrings) {
+        String[] queries = queryStrings.split(" ");
+        return new ArrayList<String>(Arrays.asList(queries));
     }
 }
