@@ -8,22 +8,19 @@ import java.util.*;
  * Created by hopecrandall on 2/11/16.
  */
 public class ListViewSorter {
-    public SortedSet<Event> sortByDistance(Set<Event> unsortedSearch, Location centralLocation) {
-        SortedSet<Event> distanceSortedSearch = new TreeSet<Event>(new EventDistanceComparator(centralLocation));
-        distanceSortedSearch.addAll(unsortedSearch);
-        return distanceSortedSearch;
+    private List<Event> storedList;
+
+    public ListViewSorter(List<Event> unsortedList) {
+        this.storedList = unsortedList;
+    }
+    public List<Event> sortByDistance(Location centralLocation) {
+        Collections.sort(storedList, new EventDistanceComparator(centralLocation));
+        return storedList;
     }
 
-    public SortedSet<Event> sortByTime(Set<Event> unsortedSearch) {
-        SortedSet<Event> timeSortedSearch = new TreeSet<Event>(new EventTimeComparator());
-        timeSortedSearch.addAll(unsortedSearch);
-        return timeSortedSearch;
-    }
-
-    public SortedSet<Event> sortByRecentlyCreated(Set<Event> unsortedSearch) {
-        SortedSet<Event> creationTimeSortedSearch = new TreeSet<Event>(new EventCreationTimeComparator());
-        creationTimeSortedSearch.addAll(unsortedSearch);
-        return creationTimeSortedSearch;
+    public List<Event> sortByTime() {
+        Collections.sort(storedList, new EventTimeComparator());
+        return storedList;
     }
 
     private class EventDistanceComparator implements Comparator<Event> {
@@ -55,17 +52,4 @@ public class ListViewSorter {
             return lhs.time.compareTo(rhs.time);
         }
     }
-
-    private class EventCreationTimeComparator implements Comparator<Event> {
-
-        @Override
-        public int compare(Event lhs, Event rhs) {
-            return lhs.timeStamp.compareTo(rhs.timeStamp);
-        }
-    }
-
 }
-
-
-
-

@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -61,7 +62,7 @@ public class RecyclerViewAdapter
         viewHolder.currentItem = Event;
 
         // Set the title and description of the listed item
-        viewHolder.txtDesc.setText(Event.getDesc());
+        viewHolder.txtDesc.setText(Event.getDescription());
         viewHolder.txtTitle.setText(Event.getTitle());
 
         // TODO: Here I hardcoded the image resource
@@ -119,7 +120,7 @@ public class RecyclerViewAdapter
 
             for (Event item : originalList) {
                 String title = item.getTitle().toLowerCase();
-                String desc = item.getDesc().toLowerCase();
+                String desc = item.getDescription().toLowerCase();
 
                 if (title.contains(filterString) || desc.contains(filterString)) {
                     resultList.add(item);
