@@ -1,5 +1,8 @@
 package com.cse403.matchonthestreet;
 
+import android.app.DatePickerDialog;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Build;
@@ -14,13 +17,18 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.SearchView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 //import android.support.v7.app.AppCompatActivity;
@@ -35,6 +43,14 @@ import java.util.Random;
 public class ListViewActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
+    protected RecyclerViewAdapter recyclerViewAdapter;
+
+    protected SearchView searchView;
+    protected EditText dateFromEntry;
+    protected DatePickerDialog datePicker;
+    protected EditText dateToEntry;
+    protected SetTextDatePickerDialog datePickerFactory;
+    protected Button applyButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,25 +58,44 @@ public class ListViewActivity extends AppCompatActivity {
         initActivityTransitions();
         setContentView(R.layout.activity_list_view);
 
-        //ViewCompat.setTransitionName(findViewById(R.id.app_bar_layout), );
-
+        // Set up the tool bar
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        // TODO: Could change title to transparent instead
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         getSupportActionBar().setTitle("List & Filter");
 
-        // get ListView obj from xml
+        // Set up the list of events
         recyclerView = (RecyclerView) findViewById(R.id.list_recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(this, populateDummyData());
+        recyclerViewAdapter = new RecyclerViewAdapter(this, populateDummyData());
         recyclerView.setAdapter(recyclerViewAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, null));
+
+        // Text entries & button
+        searchView = (SearchView) findViewById(R.id.filter_search_bar);
+        dateFromEntry = (EditText) findViewById(R.id.filter_date_from);
+        dateToEntry = (EditText) findViewById(R.id.filter_date_to);
+        applyButton = (Button) findViewById(R.id.filter_apply_button);
+        datePickerFactory = new SetTextDatePickerDialog(this);
+
+        dateFromEntry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                datePickerFactory.getPicker(dateFromEntry).show();
+            }
+        });
+
+        dateToEntry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                datePickerFactory.getPicker(dateToEntry).show();
+            }
+        });
 
         // Floating action button to the map view
         FloatingActionButton fabToMap =
                 (FloatingActionButton) this.findViewById(R.id.fab_list_to_map);
-
 
         fabToMap.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -77,6 +112,31 @@ public class ListViewActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.list_view_search, menu);
+
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+
+        SearchView searchView =
+                (SearchView) findViewById(R.id.filter_search_bar);
+
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName())
+        );
+
+        searchView.setSubmitButtonEnabled(true);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                recyclerViewAdapter.getFilter().filter(newText);
+                return true;
+            }
+        });
 
         return true;
     }
@@ -99,9 +159,46 @@ public class ListViewActivity extends AppCompatActivity {
         }
     }
 
+
+    protected class ApplyButtonOnClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+
+        }
+    }
+
+    protected class SetTextDatePickerDialog {
+        private Context context;
+
+        private DatePickerDialog.OnDateSetListener listener;
+        private EditText dateEntry;
+        private Calendar calendar;
+
+        public SetTextDatePickerDialog(Context context) {
+            this.context = context;
+            this.calendar = Calendar.getInstance();
+        }
+
+        public DatePickerDialog getPicker(final EditText et) {
+            return new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                    Calendar date = Calendar.getInstance();
+                    date.set(year, monthOfYear, dayOfMonth);
+                    et.setText(new SimpleDateFormat("dd-MM-yy", Locale.US).format(date.getTime()));
+                }
+            }, calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        }
+
+    }
+
     private List<ListItem> populateDummyData() {
         // Sample string values to store in list
-        String[] sampleVal = new String[]{"Tennis match @ Denny",
+        List<String> sampleVal = new ArrayList<>();
+        String largeStr = getString(R.string.large_text);
+
+        String[] values = new String[]{"Tennis match @ Denny",
                 "Casual pool play",
                 "Team Potato needs a goalkeeper",
                 "Basket ball IMA 5v5",
@@ -114,9 +211,14 @@ public class ListViewActivity extends AppCompatActivity {
                 "Team Potato needs a goalkeeper",
                 "Basket ball IMA 5v5"};
 
+        String[] sports = new String[]{"basketball", "tennis", "soccer", "football",
+            "badminton", "table tennis", "pool", "running", "swimming", "racket ball", "baseball",
+            ""};
+        sampleVal.addAll(Arrays.asList(values));
+
+
         List<ListItem> listItems = new ArrayList<>();
         Random rand = new Random();
-        String largeStr = getString(R.string.large_text);
 
         /* Hardcoded population of list items */
         for (String s : sampleVal) {

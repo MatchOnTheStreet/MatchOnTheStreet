@@ -18,6 +18,7 @@ public class ListViewFilteredSearchData implements Comparable<ListViewFilteredSe
     protected Date endTime;
     protected Location centralLocation;
     protected int searchRadius; // in miles
+
     protected Date timeStamp;
 
     public ListViewFilteredSearchData
