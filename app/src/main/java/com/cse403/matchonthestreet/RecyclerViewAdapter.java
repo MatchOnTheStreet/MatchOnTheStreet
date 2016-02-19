@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -111,28 +112,60 @@ public class RecyclerViewAdapter
 
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-            String filterString = constraint.toString().toLowerCase();
+            // convert CharSequence constraint into the needed search parameters
+            // return this.performFiltering(.....)
+            return null;
+        }
 
-            FilterResults filterResults = new FilterResults();
 
-            final List<Event> originalList = items;
-            final List<Event> resultList = new ArrayList<>(originalList.size());
+        private FilterResults performFiltering(String queryString, Date startTime, Date endTime,
+                                                 Location centralLocation, int searchRadius) {
+            ListViewFilterAndSearch searcher
+                    = new ListViewFilterAndSearch(queryString, startTime, endTime, centralLocation, searchRadius);
 
-            for (Event item : originalList) {
-                String title = item.getTitle().toLowerCase();
-                String desc = item.getDescription().toLowerCase();
-
-                if (title.contains(filterString) || desc.contains(filterString)) {
-                    resultList.add(item);
-                }
+            List<Event> searchAndFilterResults = null;
+            try {
+                searchAndFilterResults = searcher.getFilterAndSearchResults();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
-            filterResults.values = resultList;
-            filterResults.count = resultList.size();
+            ListViewSorter sorter = new ListViewSorter(searchAndFilterResults);
+
+            List<Event> finalResultsList = sorter.sortByDistance(centralLocation);
+
+            FilterResults filterResults = new FilterResults();
+            filterResults.values = finalResultsList;
+            filterResults.count = finalResultsList.size();
 
             return filterResults;
         }
 
+
+        /* @Override
+                        protected FilterResults performFiltering(CharSequence constraint) {
+                            String filterString = constraint.toString().toLowerCase();
+
+                            FilterResults filterResults = new FilterResults();
+
+                            final List<Event> originalList = items;
+                            final List<Event> resultList = new ArrayList<>(originalList.size());
+
+                            for (Event item : originalList) {
+                                String title = item.getTitle().toLowerCase();
+                                String desc = item.getDescription().toLowerCase();
+
+                                if (title.contains(filterString) || desc.contains(filterString)) {
+                                    resultList.add(item);
+                                }
+                            }
+
+                            filterResults.values = resultList;
+                            filterResults.count = resultList.size();
+
+                            return filterResults;
+                        }
+                */
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             filteredItems = (List<Event>) results.values;
