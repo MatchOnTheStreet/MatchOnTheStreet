@@ -13,11 +13,11 @@ import java.util.List;
 public class DBManager {
     // JDBC driver name and database URL
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://c-24-16-210-83.hsd1.wa.comcast.net/ruijiw_MatchOnTheStreet";
+    static final String DB_URL = "jdbc:mysql://matchonthestreetdb.crqizzvrxges.us-east-1.rds.amazonaws.com:3306/motsdb";
 
     //  Database credentials
-    static final String USER = "ruijiw@c-24-16-210-83.hsd1.wa.comcast.net";
-    static final String PASS = "bZQf23xm";
+    static final String USER = "larioj";
+    static final String PASS = "motspassword";
 
     private String uid;
 
@@ -87,9 +87,11 @@ public class DBManager {
                 try {
                     PreparedStatement statement = conn.prepareStatement("Select * From Accounts;");
                     ResultSet result = statement.executeQuery();
-                    System.out.println(result);
+                    System.out.println(result.next());
+                    System.out.println("--------------------------------- gotten");
                 } catch (Exception e) {
                     System.out.println("--------------------------------------- PrintStatus Failed");
+                    e.printStackTrace();
                 }
                 return null;
             }
