@@ -81,6 +81,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 public class MapsActivity extends NavActivity implements OnMapReadyCallback,
@@ -101,12 +102,16 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
     /** Location Request sent to google play services*/
     private LocationRequest mLocationRequest;
+
     /** Current location of the user (updated when position is changed) */
     private Location mCurrentLocation;
+
     /** If continuous location updates are needed */
     private boolean mRequestingLocationUpdates = true;
 
     private Map<Marker, Event> mapMarkerEvent;
+
+    private ViewController viewController;
     /**
      *
      * @param savedInstanceState
@@ -117,7 +122,10 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Obtain the current instance of ViewController
-        ViewController viewController = ((MOTSApp)getApplicationContext()).getViewController();
+        viewController = ((MOTSApp)getApplicationContext()).getViewController();
+        // TODO: Here the dummy data is used in the ViewController
+        viewController.populateDummyData();
+
         // Set the view to the xml layout file
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -329,6 +337,14 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+
+        Set<Event> currentEvents = viewController.getEventSet();
+        for (Event e : currentEvents) {
+            mMap.addMarker(new MarkerOptions().position(
+                    new LatLng(e.location.getLatitude(), e.location.getLongitude())
+            ).title(e.title));
+        }
+
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
         UiSettings mapSettings = mMap.getUiSettings();

@@ -73,8 +73,6 @@ public class ListViewActivity extends AppCompatActivity {
         // Set up the list of events
         recyclerView = (RecyclerView) findViewById(R.id.list_recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        // TODO: Here the dummy date is used in the adapter
-        viewController.populateDummyData();
         recyclerViewAdapter = new RecyclerViewAdapter(this, new ArrayList<>(viewController.getEventSet()));
         recyclerView.setAdapter(recyclerViewAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, null));
