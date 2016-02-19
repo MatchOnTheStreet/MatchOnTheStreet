@@ -116,6 +116,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Obtain the current instance of ViewController
+        ViewController viewController = ((MOTSApp)getApplicationContext()).getViewController();
         // Set the view to the xml layout file
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.

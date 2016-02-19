@@ -28,15 +28,15 @@ public class RecyclerViewAdapter
         extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>
         implements Filterable {
 
-    private List<ListItem> items;
-    private List<ListItem> filteredItems;
+    private List<Event> items;
+    private List<Event> filteredItems;
 
     private ListViewFilter filter = new ListViewFilter();
 
     public Context context;
 
 
-    public RecyclerViewAdapter(Context context, List<ListItem> items) {
+    public RecyclerViewAdapter(Context context, List<Event> items) {
         this.items = items;
         this.filteredItems = items;
         this.context = context;
@@ -57,12 +57,12 @@ public class RecyclerViewAdapter
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int pos) {
-        ListItem listItem = filteredItems.get(pos);
-        viewHolder.currentItem = listItem;
+        Event Event = filteredItems.get(pos);
+        viewHolder.currentItem = Event;
 
         // Set the title and description of the listed item
-        viewHolder.txtDesc.setText(listItem.getDesc());
-        viewHolder.txtTitle.setText(listItem.getTitle());
+        viewHolder.txtDesc.setText(Event.getDesc());
+        viewHolder.txtTitle.setText(Event.getTitle());
 
         // TODO: Here I hardcoded the image resource
         viewHolder.imageView.setImageResource(R.mipmap.ic_launcher);
@@ -73,11 +73,11 @@ public class RecyclerViewAdapter
         return (filteredItems != null ? filteredItems.size() : 0);
     }
 
-    public List<ListItem> getAllItems() {
+    public List<Event> getAllItems() {
         return new ArrayList<>(this.items);
     }
 
-    public List<ListItem> getFilteredItems() {
+    public List<Event> getFilteredItems() {
         return new ArrayList<>(this.filteredItems);
     }
 
@@ -88,7 +88,7 @@ public class RecyclerViewAdapter
         ImageView imageView;
         TextView txtTitle;
         TextView txtDesc;
-        ListItem currentItem;
+        Event currentItem;
 
         public ViewHolder(View v) {
             super(v);
@@ -99,7 +99,7 @@ public class RecyclerViewAdapter
                 // TODO: dummy onClick
                 @Override
                 public void onClick(View v) {
-                    String locStr = currentItem.event.location.toString();
+                    String locStr = currentItem.location.toString();
                     Toast.makeText(v.getContext(), "Item selected, location: " + locStr, Toast.LENGTH_SHORT).show();
                 }
             });
@@ -114,10 +114,10 @@ public class RecyclerViewAdapter
 
             FilterResults filterResults = new FilterResults();
 
-            final List<ListItem> originalList = items;
-            final List<ListItem> resultList = new ArrayList<>(originalList.size());
+            final List<Event> originalList = items;
+            final List<Event> resultList = new ArrayList<>(originalList.size());
 
-            for (ListItem item : originalList) {
+            for (Event item : originalList) {
                 String title = item.getTitle().toLowerCase();
                 String desc = item.getDesc().toLowerCase();
 
@@ -134,7 +134,7 @@ public class RecyclerViewAdapter
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            filteredItems = (List<ListItem>) results.values;
+            filteredItems = (List<Event>) results.values;
             notifyDataSetChanged();
         }
     }
