@@ -15,6 +15,7 @@ import java.util.Set;
  * Created by Hao on 2/18/2016.
  */
 public class ViewController {
+    // TODO: We are using dummy data here
     protected Set<Event> eventSet = new HashSet<>();
 
     public Set<Event> getEventSet() {
@@ -27,12 +28,17 @@ public class ViewController {
         return changed;
     }
 
-
-    public List<Event> populateDummyData() {
+    /*
+    * Populate some random dummy events into the working set
+    *
+    * Only for testing
+    *
+    */
+    public void populateDummyData() {
         // Sample string values to store in list
         List<String> sampleVal = new ArrayList<>();
         Random rand = new Random();
-        String largeStr = Resources.getSystem().getString(R.string.large_text);
+        String largeStr = MOTSApp.getContext().getResources().getString(R.string.large_text);
 
         String[] values = new String[]{"Tennis match @ Denny",
                 "Casual pool play",
@@ -77,7 +83,7 @@ public class ViewController {
             Events.add(e);
         }
 
-        return Events;
+        eventSet.addAll(Events);
     }
 
     protected static String[] generateRandomWords(int numberOfWords) {
