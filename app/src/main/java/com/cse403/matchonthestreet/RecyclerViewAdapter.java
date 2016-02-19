@@ -3,6 +3,7 @@ package com.cse403.matchonthestreet;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
@@ -18,9 +19,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amulyakhare.textdrawable.TextDrawable;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Hao on 2/17/16.
@@ -66,8 +70,12 @@ public class RecyclerViewAdapter
         viewHolder.txtDesc.setText(Event.getDescription());
         viewHolder.txtTitle.setText(Event.getTitle());
 
-        // TODO: Here I hardcoded the image resource
-        viewHolder.imageView.setImageResource(R.mipmap.ic_launcher);
+        // Make an icon with the initial letter, colored randomly.
+        Random rand = new Random();
+        String firstLetter = "" + Event.getTitle().toUpperCase().charAt(0);
+        int randomColor = Color.rgb(rand.nextInt(255), rand.nextInt(255), rand.nextInt(255));
+        TextDrawable drawable = TextDrawable.builder().buildRound(firstLetter, randomColor);
+        viewHolder.imageView.setImageDrawable(drawable);
     }
 
     @Override

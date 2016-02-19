@@ -20,6 +20,9 @@ android {
 }
 repositories {
     mavenCentral()
+    maven {
+        url 'http://dl.bintray.com/amulyakhare/maven'
+    }
 }
 
 dependencies {
@@ -35,4 +38,7 @@ dependencies {
     compile 'com.android.support:cardview-v7:23.+'
     androidTestCompile 'junit:junit:4.12'
     compile files('libs/mysql-connector-java-3.0.17-ga-bin.jar')
+
+    // For the text icons
+    compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
 }
