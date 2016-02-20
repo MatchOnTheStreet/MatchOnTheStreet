@@ -30,13 +30,15 @@ public class DBManager {
     private PreparedStatement createAccountStatement;
 
     private static final String ADD_EVENT_SQL =
-            "INSERT INTO Events () VALUES(?,?,?,?,?,?,?,?)";
+            "INSERT INTO Events (eid, title, longitude, latitude, time, duration, timecreated, description) VALUES(?,?,?,?,?,?,?,?)";
     private PreparedStatement addEventStatement;
 
     private static final String GET_EVENT_SQL_BY_RADIUS =
-            "SELECT * FROM Events e WHERE";
-    private PreparedStatement getEventStatement;
-    // transactions
+            "SELECT * FROM Events e WHERE e.latitude < ? AND e.latitude > ? "
+            + "AND e.logitude < ? AND e.longitude > ?;";
+    private PreparedStatement getEventByRadiusStatement;
+
+    /* transactions */
     private static final String BEGIN_TRANSACTION_SQL =
             "SET TRANSACTION ISOLATION LEVEL SERIALIZABLE; BEGIN TRANSACTION";
     private PreparedStatement beginTransactionStatement;
@@ -70,7 +72,7 @@ public class DBManager {
         userLoginStatement = conn.prepareStatement(USER_LOGIN_SQL);
         createAccountStatement = conn.prepareStatement(CREATE_ACCOUNT_SQL);
         addEventStatement = conn.prepareStatement(ADD_EVENT_SQL);
-        getEventStatement = conn.prepareStatement(GET_EVENT_SQL_BY_RADIUS);
+        getEventByRadiusStatement = conn.prepareStatement(GET_EVENT_SQL_BY_RADIUS);
     }
 
     public void transaction_login(String uid, String name) throws Exception {
@@ -117,7 +119,7 @@ public class DBManager {
             addEventStatement.setInt(6, event.duration);
             addEventStatement.setString(7, event.timeCreated.toString());
             addEventStatement.setString(8, event.description);
-            addEventStatement.execute();
+            addEventStatement.executeUpdate();
             commitTransaction();
         } catch (SQLException e) {
             try {
@@ -128,10 +130,13 @@ public class DBManager {
         }
     }
 
-    public List<Event> transaction_getEvent(Location location, int radius) throws Exception {
-        getEventStatement.clearParameters();
-        getEventStatement.setString(1, null);
-        ResultSet getEventResults = getEventStatement.executeQuery();
+    public List<Event> transaction_getEventByRadius(Location location, int radius) throws Exception {
+        getEventByRadiusStatement.clearParameters();
+        getEventByRadiusStatement.setDouble(1, location.getLatitude() + radius);
+        getEventByRadiusStatement.setDouble(1, location.getLatitude() - radius);
+        getEventByRadiusStatement.setDouble(1, location.getLongitude() + radius);
+        getEventByRadiusStatement.setDouble(1, location.getLongitude() + radius);
+        ResultSet getEventResults = getEventByRadiusStatement.executeQuery();
         List<Event> list = new ArrayList<Event>();
         while (getEventResults.next()){
             int eid = getEventResults.getInt("eid");

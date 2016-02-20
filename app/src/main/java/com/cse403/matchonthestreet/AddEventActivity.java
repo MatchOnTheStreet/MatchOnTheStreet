@@ -6,14 +6,12 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.NumberPicker;
@@ -21,7 +19,6 @@ import android.widget.TimePicker;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,13 +45,11 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
     private NumberPicker durationPicker;
 
     private SimpleDateFormat dateFormatter;
+    private SimpleDateFormat timeFormatter;
     private Calendar calendar;
 
-    private Location location;
 
-    private Button button;
-    private EditText titleET;
-    private EditText descriptionET;
+    private Location location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +66,7 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
 
 
         calendar  = Calendar.getInstance();
-        dateFormatter = new SimpleDateFormat("yy-MM-dd", Locale.US);
+        dateFormatter = new SimpleDateFormat("dd-MM-yy", Locale.US);
 
         fromDateET = (EditText) findViewById(R.id.event_from_date);
         fromDateET.setInputType(InputType.TYPE_NULL);
@@ -91,8 +86,6 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
         toDateET = (EditText) findViewById(R.id.event_to_date);
         toDateET.setInputType(InputType.TYPE_NULL);
         toDateET.setOnClickListener(this);
-
-
         toDatePD = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
@@ -112,9 +105,13 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
         toTimePD = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                //Calendar time = Calendar.getInstance();
+                //time.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                //time.set(Calendar.MINUTE, minute);
+                //toTimeET.setText(timeFormatter.format(time.getTime()));
                 String pad = "";
                 if (minute < 10) pad = "0";
-                String time = hourOfDay + ":" + pad + minute + ":00";
+                String time = hourOfDay + ":" + pad + minute;
                 toTimeET.setText(time);
             }
         },
@@ -128,21 +125,19 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
         fromTimePD = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                //Calendar time = Calendar.getInstance();
+                //time.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                //time.set(Calendar.MINUTE, minute);
+                //fromTimeET.setText(timeFormatter.format(time.getTime()));
                 String pad = "";
                 if (minute < 10) pad = "0";
-                String time = hourOfDay + ":" + pad + minute + ":00";
+                String time = hourOfDay + ":" + pad + minute;
                 fromTimeET.setText(time);
             }
         },
                 calendar.get(Calendar.HOUR_OF_DAY),
                 calendar.get(Calendar.MINUTE),
                 false);
-
-        button = (Button) findViewById(R.id.event_publish_button);
-        button.setOnClickListener(this);
-
-        titleET = (EditText) findViewById(R.id.event_title);
-        descriptionET = (EditText) findViewById(R.id.event_description);
     }
 
     @Override
@@ -155,31 +150,7 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
             toTimePD.show();
         } else if (v == fromTimeET) {
             fromTimePD.show();
-        } else if (v == button) {
-            //simpleCreate(v);
-            createEvent(v);
         }
-    }
-
-    private void simpleCreate(View view) {
-        Log.d("AddEventActivity", "simple Create called");
-        final String title = titleET.getText().toString();
-        final String description = descriptionET.getText().toString();
-/*
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                DBManager db = new DBManager();
-                try {
-                    db.addEvent(title, description);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-        }.execute();*/
     }
 
     public void createEvent(View view) {
@@ -192,10 +163,11 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
 
         String timerange = fromDateET.getText().toString() + " " + fromTimeET.getText().toString();
 
-        SimpleDateFormat format = new SimpleDateFormat("yy-MM-dd HH:mm:ss", Locale.US);
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yy HH:mm", Locale.US);
         Date date;
         try {
             date = format.parse(timerange);
+
         } catch (ParseException e) {
             date = new Date();
             e.printStackTrace();
@@ -203,9 +175,12 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
         }
         Log.d("AddEventActivity", "Date toString is: " + date.toString());
 
+        EditText titleET = (EditText)findViewById(R.id.event_title);
+
         String title = titleET.getText().toString();
 
-        String description = descriptionET.getText().toString();
+        EditText eventDescET = (EditText)findViewById(R.id.event_description);
+        String description = eventDescET.getText().toString();
 
         // TODO: Add duration attribute
         Event event = new Event(title, location, date, 60, calendar.getTime(), description);
@@ -221,5 +196,6 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
         setResult(RESULT_OK, resultIntent);
 
         finish();
+
     }
 }
