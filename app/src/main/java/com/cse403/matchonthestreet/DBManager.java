@@ -4,8 +4,8 @@ import android.location.Location;
 import android.os.AsyncTask;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.Date;
 
 /**
  * Created by Iris on 2/7/16.
@@ -53,7 +53,7 @@ public class DBManager {
     public void openConnection() throws ClassNotFoundException, SQLException {
         Class.forName("com.mysql.jdbc.Driver");
         System.out.println("Connecting to database...");
-        conn=DriverManager.getConnection(DB_URL,USER,PASS);
+        conn=DriverManager.getConnection(DB_URL, USER, PASS);
     }
 
     public void closeConnection() throws SQLException {
@@ -140,7 +140,7 @@ public class DBManager {
             Location loc = new Location("new location");
             loc.setLongitude(getEventResults.getDouble("longitude"));
             loc.setLatitude(getEventResults.getDouble("latitude"));
-            Date time = new Date(getEventResults.getString("time"));
+            Date time = getEventResults.getTimestamp("time");
             int duration = 60;
             Date timeCreated = null;
             String description = getEventResults.getString("description");
