@@ -95,9 +95,11 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     public static final int LIST_VIEW_REQUEST_CODE = 2;
 
     public static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 10;
+    public static final int NO_SELECTED_EVENT = -1;
 
     private boolean FROM_LIST;
     private static boolean FIRST_LAUNCH = true;
+    private int selectedEventID = NO_SELECTED_EVENT;
 
     /** Tag used for printing to debugger */
     private static final String TAG = "MainActivity";
@@ -132,6 +134,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
         Intent intent = getIntent();
         FROM_LIST = intent.getBooleanExtra(ListViewActivity.EXTRA_MESSAGE, false);
+        selectedEventID = intent.getIntExtra(ListViewActivity.class.toString() + ".VIEW_EVENT",
+                NO_SELECTED_EVENT);
 
         // Obtain the current instance of ViewController
         viewController = ((MOTSApp)getApplicationContext()).getViewController();
@@ -139,7 +143,6 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         // is first launched.
         if (FIRST_LAUNCH) {
             viewController.populateDummyData();
-
             FIRST_LAUNCH = false;
         }
 
