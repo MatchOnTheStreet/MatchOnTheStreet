@@ -1,130 +1,87 @@
 package com.cse403.matchonthestreet;
 
-import junit.framework.Assert;
+import android.location.Location;
 
+import junit.framework.TestCase;
+
+import org.junit.Before;
 import org.junit.Test;
 
-public class EventTest {
+import java.util.Date;
 
-    @Test
-    public void Event_GetDescription() {
-        //Assert.assertEquals("Test Description", Event_GetDescription("Test Description"));
-        //Assert.assertEquals("", Event_GetDescription(""));
-        //Assert.assertEquals(null, Event_GetDescription(null));
-    }
+/**
+ * Test cases for Event Class
+ */
+public class EventTest extends TestCase {
 
-    private String Event_GetDescription(String testDescription) {
-        //Event event = new Event(null, null, null, testDescription);
-        //return event.getDescription();
-        return null;
-    }
+    Event e1;
+    Event e2;
+    Account a1;
+    Account a2;
 
-    @Test
-    public void Event_IsAttendedBy_True() {
-        // list with account (size 1)
-        // list with account (greater size)
-    }
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        Location location = new Location("");
 
+        // Throwing error
+        //location.setLatitude(0.0d);
+        //location.setLongitude(0.0d);
 
-    @Test
-    public void Event_IsAttendedBy_False() {
-        // null list
-        // empty list
-        // list without account
-    }
+        e1 = new Event(0, "Basketball", location, new Date(100), 100, new Date(80), "fun");
+        e2 = new Event(0, "Basketball", location, new Date(100), 200, new Date(23), "fun");
 
-    @Test
-    public void Event_IsAfter_True() {
+        a1 = new Account(123);
+        a2 = new Account(456);
+
+        e2.addAttendee(a1);
 
     }
 
-    @Test
-    public void Event_IsAfter_TimeIsEqual_True() {
 
+    @Test
+    public void testIsAttendedByFalse() throws Exception {
+        assertFalse(e1.isAttendedBy(a1));
     }
 
     @Test
-    public void Event_IsAfter_False() {
+    public void testIsAttendedByTrue() throws Exception {
+        assertTrue(e2.isAttendedBy(a1));
+    }
 
+
+    @Test
+    public void testAddAttendeeEmpty() throws Exception {
+        assertTrue(e1.addAttendee(a1));
+        assertTrue(e1.isAttendedBy(a1));
+    }
+
+
+    @Test
+    public void testAddAttendeeNonEmpty() throws Exception {
+        assertTrue(e2.addAttendee(a2));
+        assertTrue(e2.isAttendedBy(a2));
     }
 
     @Test
-    public void Event_IsBefore_True() {
-
+    public void testAddAttendeeFalse() throws Exception {
+        assertFalse(e2.addAttendee(a1));
+        assertTrue(e2.isAttendedBy(a1));
     }
 
     @Test
-    public void Event_IsBefore_False() {
-
+    public void testContainsStringTitle() throws Exception {
+        assertTrue(e1.containsString("bask"));
     }
 
     @Test
-    public void Event_IsCloser_True() {
-
+    public void testContainsStringDescription() throws Exception {
+        assertTrue(e1.containsString("un"));
     }
 
     @Test
-    public void Event_IsCloser_False() {
-
+    public void testContainsStringFalse() throws Exception {
+        assertFalse(e1.containsString("zzzz"));
     }
 
-    @Test
-    public void Event_IsCloser_LocationIsEqual_False() {
-
-    }
-
-    @Test
-    public void Event_ContainsAllTags_True() {
-
-    }
-
-    @Test
-      public void Event_ContainsAllTags_ContainsDifferentTags_False() {
-
-    }
-
-    @Test
-    public void Event_ContainsAllTags_TagsAreMissing_False() {
-
-    }
-
-    @Test
-    public void Event_ContainsString_StringInTitle_True() {
-
-    }
-
-    @Test
-    public void Event_ContainsString_StringInDescription_True() {
-
-    }
-
-    @Test
-    public void Event_ContainsString_False() {
-
-    }
-
-    @Test
-    public void Event_MeetsFilterAndSearchCriteria_True() {
-
-    }
-
-    @Test
-    public void Event_MeetsFilterAndSearchCriteria_TimeIsBefore_False() {
-
-    }
-
-    @Test
-    public void Event_MeetsFilterAndSearchCriteria_TimeIsAfter_False() {
-
-    }
-
-    @Test
-    public void Event_MeetsFilterAndSearchCriteria_DoesNotContainAllTags_False() {
-
-    }
-
-    @Test
-    public void Event_MeetsFilterAndSearchCriteria_DoesNotContainString_False() {
-
-    }
 }

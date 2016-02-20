@@ -79,6 +79,6 @@ public class Account {
         }
 
         Account a = (Account) o;
-        return uid == uid;
+        return a.uid == uid;
     }
 }
