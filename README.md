@@ -7,6 +7,7 @@ http://matchonthestreet.github.io/MatchOnTheStreet/
 ## Developer Webpage
 https://homes.cs.washington.edu/~liuh25/matchonthestreet/
 
+# Current release: Beta (v0.1)
 ## Features Working
 * Creating Events!
 * Identifying User Location!
@@ -23,5 +24,18 @@ https://homes.cs.washington.edu/~liuh25/matchonthestreet/
 * Filtering
 * Time Search
 * Tag Search
+
+## Major Changes:
+* Name changes:
+  * ListActivity ⇒  ListViewActivity
+  * EventDetailsFragment ⇒ MapDetailFragment
+  * SideBarActivity ⇒ NavActivity
+* Added MOTSApp class for cross-activity references.
+* Added duration, timestamp, and uniqueID properties to Event class.
+* In the map view, “Add event” button was removed. User can tap and hold on the map to call the AddEventActivity.
+* In the list view, “Filter” button was removed. User can scroll down from the top of list to access filter/search fields.
+* Used a Singleton DBManager instead of separating into EventDBManager and AccountDBManager.
+* For the backend we changed our hosting from cubist to AWS, since we found that cubist databases do not support connections from outside the department.
+
 
 
