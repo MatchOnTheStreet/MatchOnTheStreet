@@ -185,16 +185,15 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
 
         // TODO: Add duration attribute
         Event event = new Event(title, location, date, 60, calendar.getTime(), description);
-        Intent resultIntent = new Intent();
-/*
-        AsyncTask task = new AsyncTask() {
-            @Override
-            protected Object doInBackground(Object[] params) {
-                DBManager dbManager = new DBManager();
-                dbManager.transaction_addEvent(event);
-            }
-        };
-*/
+
+        // Adds this newly added event to ViewController
+        // So that it appears in the list view as well
+        ViewController viewController = ((MOTSApp)getApplicationContext()).getViewController();
+        viewController.addEventToSet(event);
+
+        Intent resultIntent = new Intent(); 
+
+        Log.d("AddEventActivity", "Date toString is: " + event.time.toString());
 
         ArrayList<Event> list = new ArrayList<>();
         list.add(event);

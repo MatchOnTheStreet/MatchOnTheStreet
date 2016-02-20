@@ -3,6 +3,7 @@ package com.cse403.matchonthestreet;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
+import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.widget.LoginButton;
 
@@ -22,9 +24,13 @@ import java.util.List;
  * name and a list of events they are currently signed up to attend.
  */
 public class UserProfileActivity extends NavActivity {
-    ListView listView;
-    Button button;
-    TextView username;
+    private ListView listView;
+    private Button button;
+    private TextView username;
+
+    private static final String TAG = "UserProfileActivity";
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +57,10 @@ public class UserProfileActivity extends NavActivity {
         Event e2 = new Event(123, "Soccer", null, null, 60, null, "3v3 Soccer");
         dummyAccount.addEvent(e1);
         dummyAccount.addEvent(e2);
-
+        Profile profile = Profile.getCurrentProfile();
         username = (TextView) findViewById(R.id.username);
-        username.setText("Pablo Neruda");
+
+        username.setText(profile.getName());
 
         List<Event> eventsAttending = dummyAccount.getEvents();
         List<String> sampleVals = new ArrayList<String>();
