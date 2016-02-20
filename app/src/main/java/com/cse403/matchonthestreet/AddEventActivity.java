@@ -151,10 +151,10 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
         } else if (v == fromTimeET) {
             fromTimePD.show();
         } else if (v == button) {
-            simpleCreate(v);
+            //simpleCreate(v);
         }
     }
-
+    /*
     private void simpleCreate(View view) {
         final String title = titleET.getText().toString();
         final String description = descriptionET.getText().toString();
@@ -173,7 +173,9 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
                 return null;
             }
         }.execute();
+        
     }
+    */
 
     public void createEvent(View view) {
 
