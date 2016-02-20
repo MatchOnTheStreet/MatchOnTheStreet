@@ -162,13 +162,6 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
         fl.setVisibility(View.GONE);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            Log.d(TAG,"Toolbar Found");
-        } else {
-            Log.d(TAG,"Toolbar Not Found");
-        }
-
         mapMarkerEvent = new HashMap<>();
 
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -625,25 +618,6 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         }
 
     }
-
-    // TODO: If needed, modify the fields in sample events
-    /*private ArrayList<Event> createSampleEvents() {
-        ArrayList<Event> workingSet = new ArrayList<>();
-        Location loc = new Location("testProvider1");
-        loc.setLatitude(47.6543485);
-        loc.setLongitude(-122.3155853);
-
-        Location loc2 = new Location("testProvider2");
-        loc2.setLatitude(47.7543485);
-        loc2.setLongitude(-122.3155853);
-        Event e1 = new Event("TestEvent 1", loc, new Date(), "This is a description for TestEvent 1");
-        Event e2 = new Event("TestEvent 2", loc2, new Date(), "This is a description for TestEvent 2");
-
-        workingSet.add(e1);
-        workingSet.add(e2);
-
-        return workingSet;
-    }*/
 
     private void removeAllMarkers() {
         mMap.clear();

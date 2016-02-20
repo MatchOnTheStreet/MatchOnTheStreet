@@ -181,7 +181,7 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
 
         // TODO: Add duration attribute
         Event event = new Event(title, location, date, 60, calendar.getTime(), description);
-        Intent resultIntent = new Intent(); //new Intent(AddEventActivity.this, MapsActivity.class);
+        Intent resultIntent = new Intent(); 
 
         Log.d("AddEventActivity", "Date toString is: " + event.time.toString());
 
