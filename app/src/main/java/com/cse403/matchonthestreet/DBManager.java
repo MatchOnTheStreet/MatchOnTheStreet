@@ -26,15 +26,15 @@ public class DBManager {
     private PreparedStatement userLoginStatement;
 
     private static final String CREATE_ACCOUNT_SQL =
-            "INSERT INTO Accounts VALUES(?,?)";
+            "INSERT INTO Accounts (uid, name) VALUES(?,?)";
     private PreparedStatement createAccountStatement;
 
     private static final String ADD_EVENT_SQL =
-            "INSERT INTO Event VALUES(?,?,?,?,?,?,?,?)";
+            "INSERT INTO Events () VALUES(?,?,?,?,?,?,?,?)";
     private PreparedStatement addEventStatement;
 
-    private static final String GET_EVENT_SQL =
-            "SELECT * FROM Events WHERE ";
+    private static final String GET_EVENT_SQL_BY_RADIUS =
+            "SELECT * FROM Events e WHERE";
     private PreparedStatement getEventStatement;
     // transactions
     private static final String BEGIN_TRANSACTION_SQL =
@@ -51,7 +51,7 @@ public class DBManager {
 
     /* Connection code to MySQL.  */
     public void openConnection() throws ClassNotFoundException, SQLException {
-        Class.forName("com.mysql.jdbc.Driver");
+        Class.forName(JDBC_DRIVER);
         System.out.println("Connecting to database...");
         conn=DriverManager.getConnection(DB_URL, USER, PASS);
     }
@@ -70,8 +70,7 @@ public class DBManager {
         userLoginStatement = conn.prepareStatement(USER_LOGIN_SQL);
         createAccountStatement = conn.prepareStatement(CREATE_ACCOUNT_SQL);
         addEventStatement = conn.prepareStatement(ADD_EVENT_SQL);
-        getEventStatement = conn.prepareStatement(GET_EVENT_SQL);
-
+        getEventStatement = conn.prepareStatement(GET_EVENT_SQL_BY_RADIUS);
     }
 
     public void transaction_login(String uid, String name) throws Exception {
