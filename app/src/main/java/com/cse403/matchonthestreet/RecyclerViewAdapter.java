@@ -1,6 +1,7 @@
 package com.cse403.matchonthestreet;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -109,8 +110,9 @@ public class RecyclerViewAdapter
                 // TODO: dummy onClick
                 @Override
                 public void onClick(View v) {
-                    String locStr = currentItem.location.toString();
-                    Toast.makeText(v.getContext(), "Item selected, location: " + locStr, Toast.LENGTH_SHORT).show();
+                    Intent showOnMapIntent = new Intent(context, MapsActivity.class);
+                    showOnMapIntent.putExtra(context.toString() + ".VIEW_EVENT", currentItem);
+                    context.startActivity(showOnMapIntent);
                 }
             });
         }

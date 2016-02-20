@@ -4,8 +4,8 @@ import android.location.Location;
 import android.os.AsyncTask;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.Date;
 
 /**
  * Created by Iris on 2/7/16.
@@ -26,15 +26,15 @@ public class DBManager {
     private PreparedStatement userLoginStatement;
 
     private static final String CREATE_ACCOUNT_SQL =
-            "INSERT INTO Accounts VALUES(?,?)";
+            "INSERT INTO Accounts (uid, name) VALUES(?,?)";
     private PreparedStatement createAccountStatement;
 
     private static final String ADD_EVENT_SQL =
-            "INSERT INTO Event VALUES(?,?,?,?,?)";
+            "INSERT INTO Events () VALUES(?,?,?,?,?,?,?,?)";
     private PreparedStatement addEventStatement;
 
-    private static final String GET_EVENT_SQL =
-            "SELECT * FROM Events WHERE ";
+    private static final String GET_EVENT_SQL_BY_RADIUS =
+            "SELECT * FROM Events e WHERE";
     private PreparedStatement getEventStatement;
     // transactions
     private static final String BEGIN_TRANSACTION_SQL =
@@ -51,9 +51,9 @@ public class DBManager {
 
     /* Connection code to MySQL.  */
     public void openConnection() throws ClassNotFoundException, SQLException {
-        Class.forName("com.mysql.jdbc.Driver");
+        Class.forName(JDBC_DRIVER);
         System.out.println("Connecting to database...");
-        conn=DriverManager.getConnection(DB_URL,USER,PASS);
+        conn=DriverManager.getConnection(DB_URL, USER, PASS);
     }
 
     public void closeConnection() throws SQLException {
@@ -70,8 +70,7 @@ public class DBManager {
         userLoginStatement = conn.prepareStatement(USER_LOGIN_SQL);
         createAccountStatement = conn.prepareStatement(CREATE_ACCOUNT_SQL);
         addEventStatement = conn.prepareStatement(ADD_EVENT_SQL);
-        getEventStatement = conn.prepareStatement(GET_EVENT_SQL);
-
+        getEventStatement = conn.prepareStatement(GET_EVENT_SQL_BY_RADIUS);
     }
 
     public void transaction_login(String uid, String name) throws Exception {
@@ -112,9 +111,12 @@ public class DBManager {
             addEventStatement.clearParameters();
             addEventStatement.setInt(1, event.eid);
             addEventStatement.setString(2, event.title);
-            addEventStatement.setString(3, null);
-            addEventStatement.setString(4, null);
-            addEventStatement.setString(5, event.description);
+            addEventStatement.setDouble(3, event.location.getLongitude());
+            addEventStatement.setDouble(4, event.location.getLatitude());
+            addEventStatement.setString(5, event.time.toString());
+            addEventStatement.setInt(6, event.duration);
+            addEventStatement.setString(7, event.timeCreated.toString());
+            addEventStatement.setString(8, event.description);
             addEventStatement.execute();
             commitTransaction();
         } catch (SQLException e) {
@@ -134,10 +136,12 @@ public class DBManager {
         while (getEventResults.next()){
             int eid = getEventResults.getInt("eid");
             String title = getEventResults.getString("title");
-            Location loc = null;
-            Date time = null;
-            int duration = 60;
-            Date timeCreated = null;
+            Location loc = new Location("new location");
+            loc.setLongitude(getEventResults.getDouble("longitude"));
+            loc.setLatitude(getEventResults.getDouble("latitude"));
+            Date time = getEventResults.getTimestamp("time");
+            int duration = getEventResults.getInt("duration");
+            Date timeCreated = getEventResults.getTimestamp("timecreated");;
             String description = getEventResults.getString("description");
             Event event = new Event(eid, title, loc, time, duration, timeCreated, description);
             list.add(event);
