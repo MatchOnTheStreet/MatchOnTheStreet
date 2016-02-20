@@ -4,7 +4,6 @@ import android.location.Location;
 
 import junit.framework.TestCase;
 
-
 import org.junit.Test;
 
 import java.util.Date;

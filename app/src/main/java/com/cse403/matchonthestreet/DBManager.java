@@ -34,6 +34,9 @@ public final class DBManager {
             "SELECT * FROM Events e WHERE e.latitude < ? AND e.latitude > ? "
             + "AND e.logitude < ? AND e.longitude > ?;";
 
+    private static final String GET_EVENT_BY_ID_SQL =
+            "SELECT * FROM Events WHERE eid = ?;";
+
     private static final String GET_USER_EVENT_SQL =
             "SELECT e.eid, e.title, e.longitude, e.latitude, e.time, e.duration, e.timecreated, e.description "
             + "FROM Events e, Attending a"
@@ -99,6 +102,27 @@ public final class DBManager {
         addEventStatement.setString(8, event.description);
         addEventStatement.executeUpdate();
         closeConnection(conn);
+    }
+
+    public static Event getEvenById(int eid) throws SQLException, ClassNotFoundException {
+        Connection conn = openConnection();
+        PreparedStatement getEventByIdStatement = conn.prepareStatement(GET_EVENT_BY_ID_SQL);
+        getEventByIdStatement.clearParameters();
+        getEventByIdStatement.setInt(1, eid);
+        ResultSet rs = getEventByIdStatement.executeQuery();
+        closeConnection(conn);
+        if (rs.next()) {
+            String title = rs.getString("title");
+            Location loc = new Location("new location");
+            loc.setLongitude(rs.getDouble("longitude"));
+            loc.setLatitude(rs.getDouble("latitude"));
+            Date time = rs.getTimestamp("time");
+            int duration = rs.getInt("duration");
+            Date timeCreated = rs.getTimestamp("timecreated");;
+            String description = rs.getString("description");
+            return new Event(eid, title, loc, time, duration, timeCreated, description);
+        }
+        return null;
     }
 
     public static List<Event> getEventByRadius(Location location, int radius) throws SQLException, ClassNotFoundException {

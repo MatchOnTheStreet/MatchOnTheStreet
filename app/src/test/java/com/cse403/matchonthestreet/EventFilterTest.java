@@ -4,6 +4,16 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
+/*
+ * Test cases for the event filtering subsystem.
+ *
+ * The Event filtering subsytem will take care of user queries that
+ * restrict the number of events viewed. For example, it will be used to
+ * filter the events in the current view to only the events that match a
+ * tag, like "soccer".
+ *
+ * Note: this is the "test first" part of our beta release.
+ */
 public class EventFilterTest {
 
     @Test

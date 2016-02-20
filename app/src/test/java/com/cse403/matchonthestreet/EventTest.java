@@ -11,6 +11,7 @@ import java.util.Date;
 
 /**
  * Test cases for Event Class
+ * Note: the event class is really important to our system.
  */
 public class EventTest extends TestCase {
 
