@@ -16,6 +16,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.NumberPicker;
 import android.widget.TimePicker;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -44,6 +45,8 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
     private EditText toTimeET;
     private TimePickerDialog toTimePD;
 
+    private NumberPicker durationPicker;
+
     private SimpleDateFormat dateFormatter;
     private Calendar calendar;
 
@@ -68,7 +71,7 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
 
 
         calendar  = Calendar.getInstance();
-        dateFormatter = new SimpleDateFormat("YY-MM-DD", Locale.US);
+        dateFormatter = new SimpleDateFormat("yy-MM-dd", Locale.US);
 
         fromDateET = (EditText) findViewById(R.id.event_from_date);
         fromDateET.setInputType(InputType.TYPE_NULL);
@@ -88,6 +91,8 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
         toDateET = (EditText) findViewById(R.id.event_to_date);
         toDateET.setInputType(InputType.TYPE_NULL);
         toDateET.setOnClickListener(this);
+
+
         toDatePD = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
@@ -151,14 +156,16 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
         } else if (v == fromTimeET) {
             fromTimePD.show();
         } else if (v == button) {
-            simpleCreate(v);
+            //simpleCreate(v);
+            createEvent(v);
         }
     }
 
     private void simpleCreate(View view) {
+        Log.d("AddEventActivity", "simple Create called");
         final String title = titleET.getText().toString();
         final String description = descriptionET.getText().toString();
-
+/*
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
@@ -172,11 +179,11 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
                 }
                 return null;
             }
-        }.execute();
+        }.execute();*/
     }
 
     public void createEvent(View view) {
-
+        Log.d("AddEventActivity", "createEvent running");
         //TODO: Check that all the fields were filled out
 
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -185,7 +192,7 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
 
         String timerange = fromDateET.getText().toString() + " " + fromTimeET.getText().toString();
 
-        SimpleDateFormat format = new SimpleDateFormat("YY-MM-DD HH:mm:ss", Locale.US);
+        SimpleDateFormat format = new SimpleDateFormat("yy-MM-dd HH:mm:ss", Locale.US);
         Date date;
         try {
             date = format.parse(timerange);
