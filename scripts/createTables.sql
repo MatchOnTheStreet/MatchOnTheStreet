@@ -4,6 +4,8 @@ create table Events (
 	longitude decimal(5, 2),
 	latitude decimal(5, 2),
 	time datetime,
+	duration int,
+	timecreated datetime,
 	description varchar(1000),
 	primary key (eid)
 );

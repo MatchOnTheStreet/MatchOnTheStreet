@@ -141,8 +141,8 @@ public class DBManager {
             loc.setLongitude(getEventResults.getDouble("longitude"));
             loc.setLatitude(getEventResults.getDouble("latitude"));
             Date time = getEventResults.getTimestamp("time");
-            int duration = 60;
-            Date timeCreated = null;
+            int duration = getEventResults.getInt("duration");
+            Date timeCreated = getEventResults.getTimestamp("timecreated");;
             String description = getEventResults.getString("description");
             Event event = new Event(eid, title, loc, time, duration, timeCreated, description);
             list.add(event);
