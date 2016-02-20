@@ -60,7 +60,12 @@ public class UserProfileActivity extends NavActivity {
         Profile profile = Profile.getCurrentProfile();
         username = (TextView) findViewById(R.id.username);
 
-        username.setText(profile.getName());
+        if (profile != null) {
+            username.setText(profile.getName());
+        } else {
+            username.setText("null username");
+        }
+
 
         List<Event> eventsAttending = dummyAccount.getEvents();
         List<String> sampleVals = new ArrayList<String>();

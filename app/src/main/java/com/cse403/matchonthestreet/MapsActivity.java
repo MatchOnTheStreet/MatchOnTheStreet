@@ -281,6 +281,10 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         // Check permissions both Coarse and Fine
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "Have COARSE LOCATION permission");
+            Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            if (mLastLocation != null) {
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
+            }
         } else {
             Log.d(TAG, "Do not have COARSE LOCATION permission");
         }
@@ -288,6 +292,10 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
             Log.d(TAG, "Have FINE LOCATION permission");
+            Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            if (mLastLocation != null) {
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
+            }
         } else {
             Log.d(TAG, "do not have FINE LOCATION permission");
         }
@@ -398,14 +406,9 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-
         Set<Event> currentEvents = viewController.getEventSet();
         addEventsToMap(new ArrayList<>(currentEvents));
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
         UiSettings mapSettings = mMap.getUiSettings();
         mapSettings.setZoomControlsEnabled(true);
