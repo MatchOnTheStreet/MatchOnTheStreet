@@ -6,6 +6,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -184,9 +185,16 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
 
         // TODO: Add duration attribute
         Event event = new Event(title, location, date, 60, calendar.getTime(), description);
-        Intent resultIntent = new Intent(); 
-
-        Log.d("AddEventActivity", "Date toString is: " + event.time.toString());
+        Intent resultIntent = new Intent();
+/*
+        AsyncTask task = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] params) {
+                DBManager dbManager = new DBManager();
+                dbManager.transaction_addEvent(event);
+            }
+        };
+*/
 
         ArrayList<Event> list = new ArrayList<>();
         list.add(event);

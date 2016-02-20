@@ -491,7 +491,11 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                     startActivity(intent);
                 }
             });
+        } else {
+            FloatingActionButton fabListMap = (FloatingActionButton) findViewById(R.id.fab_map_to_list);
+            fabListMap.hide();
         }
+
         // The button that moves to the UserProfileActivity
         FloatingActionButton fabEvents = (FloatingActionButton) findViewById(R.id.fab_map_to_myevents);
         fabEvents.setOnClickListener(new View.OnClickListener() {
@@ -502,6 +506,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                 startActivity(intent);
             }
         });
+        fabEvents.hide();
 
     }
 
@@ -572,7 +577,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         mapDetailFragment.setArguments(args);
         ft.replace(R.id.fragment_container, mapDetailFragment, "detailFragment");
         ft.commit();
-
+/*
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         int height = dm.heightPixels;
@@ -588,7 +593,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             Log.d(TAG, e.toString());
         }
 
-
+*/
         return false;
     }
 
@@ -601,7 +606,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
         FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
         fl.setVisibility(View.GONE);
-
+/*
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         int height = dm.heightPixels;
@@ -616,7 +621,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         }catch (NullPointerException e) {
             Log.d(TAG, e.toString());
         }
-
+*/
     }
 
     private void removeAllMarkers() {
