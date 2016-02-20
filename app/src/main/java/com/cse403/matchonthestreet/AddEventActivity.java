@@ -198,6 +198,25 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
         ArrayList<Event> list = new ArrayList<>();
         list.add(event);
 
+        AsyncTask<Event, Event, Event> task = new AsyncTask<Event, Event, Event>() {
+            @Override
+            protected Event doInBackground(Event[] params) {
+                DBManager dbManager = new DBManager();
+                try {
+                    dbManager.transaction_addEvent(params[0]);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
+
+        Event[] events = new Event[1];
+        events[0] = event;
+
+        task.execute(events);
+
+
         resultIntent.putParcelableArrayListExtra("eventList", list);
 
         setResult(RESULT_OK, resultIntent);
@@ -205,4 +224,5 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
         finish();
 
     }
+
 }

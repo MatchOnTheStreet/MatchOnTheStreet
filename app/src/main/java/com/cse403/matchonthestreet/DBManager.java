@@ -2,6 +2,7 @@ package com.cse403.matchonthestreet;
 
 import android.location.Location;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.sql.*;
 import java.util.*;
@@ -104,6 +105,7 @@ public class DBManager {
     }
 
     public void transaction_addEvent(Event event) throws Exception {
+        Log.d("DBManager", "transaction add event");
         if (this.uid == null) {
             System.out.println("You need to log in.");
             return;

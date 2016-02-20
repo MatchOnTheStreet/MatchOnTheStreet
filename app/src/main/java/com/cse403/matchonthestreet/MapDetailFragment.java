@@ -1,13 +1,19 @@
 package com.cse403.matchonthestreet;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.LatLng;
+
 import org.w3c.dom.Text;
+
+import java.util.ArrayList;
 
 /**
  * Created by Lance on 2/7/16.
@@ -45,6 +51,15 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
             TextView descriptionText = (TextView) mView.findViewById(R.id.event_description);
             descriptionText.setText(description);
         }
+
+        FloatingActionButton fabButton = (FloatingActionButton) mView.findViewById(R.id.fab_attend_event);
+        fabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "Attend Event Button");
+
+            }
+        });
 
         return mView;
     }

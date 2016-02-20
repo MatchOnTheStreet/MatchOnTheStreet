@@ -137,6 +137,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         selectedEventID = intent.getIntExtra(ListViewActivity.class.toString() + ".VIEW_EVENT",
                 NO_SELECTED_EVENT);
 
+
+
         // Obtain the current instance of ViewController
         viewController = ((MOTSApp)getApplicationContext()).getViewController();
         // TODO: Here the dummy data is used in the ViewController, when the activity
