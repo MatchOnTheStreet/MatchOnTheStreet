@@ -1,4 +1,4 @@
-package com.cse403.matchonthestreet;
+package com.cse403.matchonthestreet.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;

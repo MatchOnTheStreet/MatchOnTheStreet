@@ -1,4 +1,4 @@
-package com.cse403.matchonthestreet;
+package com.cse403.matchonthestreet.view;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.cse403.matchonthestreet.R;
 import com.cse403.matchonthestreet.models.Account;
 import com.cse403.matchonthestreet.models.Event;
 import com.facebook.FacebookSdk;

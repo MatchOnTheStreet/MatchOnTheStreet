@@ -1,10 +1,10 @@
-package com.cse403.matchonthestreet;
+package com.cse403.matchonthestreet.view;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.app.Activity;
 
+import com.cse403.matchonthestreet.R;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.login.widget.LoginButton;
@@ -17,8 +17,6 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;
-
-import java.util.Arrays;
 
 /**
  * Simple facebook login page. Allows the user to log into the app through Facebook.

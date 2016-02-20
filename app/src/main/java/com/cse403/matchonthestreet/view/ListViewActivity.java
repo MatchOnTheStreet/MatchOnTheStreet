@@ -1,10 +1,9 @@
-package com.cse403.matchonthestreet;
+package com.cse403.matchonthestreet.view;
 
 import android.app.DatePickerDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -22,15 +21,16 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.SearchView;
 
+import com.cse403.matchonthestreet.R;
+import com.cse403.matchonthestreet.controller.MOTSApp;
+import com.cse403.matchonthestreet.controller.RecyclerViewAdapter;
+import com.cse403.matchonthestreet.controller.ViewController;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 
 //import android.support.v7.app.AppCompatActivity;
 

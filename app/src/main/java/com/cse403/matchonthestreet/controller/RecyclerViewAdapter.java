@@ -1,4 +1,4 @@
-package com.cse403.matchonthestreet;
+package com.cse403.matchonthestreet.controller;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +14,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
+import com.cse403.matchonthestreet.view.MapsActivity;
+import com.cse403.matchonthestreet.R;
 import com.cse403.matchonthestreet.models.Event;
 
 import java.util.ArrayList;

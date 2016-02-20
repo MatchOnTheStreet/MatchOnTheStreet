@@ -9,7 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/abc_action_bar_default_height_material"
     android:orientation="vertical"
-    tools:context="com.cse403.matchonthestreet.UserProfileActivity"
+    tools:context=".view.UserProfileActivity"
     android:weightSum="1">
 
     <TextView

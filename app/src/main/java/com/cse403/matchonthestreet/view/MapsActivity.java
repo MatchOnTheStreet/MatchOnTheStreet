@@ -36,7 +36,7 @@
  */
 
 
-package com.cse403.matchonthestreet;
+package com.cse403.matchonthestreet.view;
 
 import android.Manifest;
 import android.content.Context;
@@ -59,6 +59,9 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 
 
+import com.cse403.matchonthestreet.R;
+import com.cse403.matchonthestreet.controller.MOTSApp;
+import com.cse403.matchonthestreet.controller.ViewController;
 import com.cse403.matchonthestreet.models.Event;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;

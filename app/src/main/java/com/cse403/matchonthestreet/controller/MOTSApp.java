@@ -1,10 +1,7 @@
-package com.cse403.matchonthestreet;
+package com.cse403.matchonthestreet.controller;
 
 import android.app.Application;
 import android.content.Context;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  * Created by Hao on 2/18/2016.

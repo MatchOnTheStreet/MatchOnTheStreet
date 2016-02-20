@@ -1,7 +1,9 @@
-package com.cse403.matchonthestreet;
+package com.cse403.matchonthestreet.controller;
 
 import android.location.Location;
 
+import com.cse403.matchonthestreet.R;
+import com.cse403.matchonthestreet.controller.MOTSApp;
 import com.cse403.matchonthestreet.models.Event;
 
 import java.util.ArrayList;

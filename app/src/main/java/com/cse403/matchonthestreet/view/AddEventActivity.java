@@ -1,4 +1,4 @@
-package com.cse403.matchonthestreet;
+package com.cse403.matchonthestreet.view;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -17,7 +17,10 @@ import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.TimePicker;
 
+import com.cse403.matchonthestreet.R;
 import com.cse403.matchonthestreet.backend.DBManager;
+import com.cse403.matchonthestreet.controller.MOTSApp;
+import com.cse403.matchonthestreet.controller.ViewController;
 import com.cse403.matchonthestreet.models.Event;
 
 import java.text.ParseException;

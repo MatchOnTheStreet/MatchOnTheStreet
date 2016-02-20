@@ -12,7 +12,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name=".MOTSApp"
+        android:name=".controller.MOTSApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -27,7 +27,7 @@
             android:value="@string/facebook_app_id" />
 
         <activity
-            android:name=".MapsActivity"
+            android:name=".view.MapsActivity"
             android:label="@string/title_activity_maps">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,14 +35,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AddEventActivity"
+            android:name=".view.AddEventActivity"
             android:label="AddEvent" />
 
-        <activity android:name=".ListViewActivity"
-            android:parentActivityName=".MapsActivity"
+        <activity android:name=".view.ListViewActivity"
+            android:parentActivityName=".view.MapsActivity"
             android:launchMode="singleTop" >
             <meta-data android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MapsActivity" />
+                android:value=".view.MapsActivity" />
             <meta-data android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
             <intent-filter>
@@ -55,7 +55,7 @@
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-        <activity android:name=".LoginActivity">
+        <activity android:name=".view.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -63,10 +63,10 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".UserProfileActivity" />
+        <activity android:name=".view.UserProfileActivity" />
 
         <activity
-            android:name=".NavActivity"
+            android:name=".view.NavActivity"
             android:label="@string/title_activity_nav"
             android:theme="@style/AppTheme" />
     </application>
