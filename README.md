@@ -7,3 +7,21 @@ http://matchonthestreet.github.io/MatchOnTheStreet/
 ## Developer Webpage
 https://homes.cs.washington.edu/~liuh25/matchonthestreet/
 
+## Features Working
+* Creating Events!
+* Identifying User Location!
+* Displaying Map!
+* Location Search
+* Location Pins!
+* User Athentication!
+* Personal Information!
+
+## Features Not Working
+* Joining Events
+* Event Garbage Collection
+* Title Search
+* Filtering
+* Time Search
+* Tag Search
+
+
