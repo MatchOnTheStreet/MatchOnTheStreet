@@ -10,7 +10,7 @@ import java.util.Date;
 /**
  * Created by Iris on 2/7/16.
  */
-public class DBManager {
+public final class DBManager {
     // JDBC driver name and database URL
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
     static final String DB_URL = "jdbc:mysql://matchonthestreetdb.crqizzvrxges.us-east-1.rds.amazonaws.com:3306/motsdb";
@@ -19,124 +19,74 @@ public class DBManager {
     static final String USER = "larioj";
     static final String PASS = "motspassword";
 
-    private String uid;
-
+    // Queries
     private static final String USER_LOGIN_SQL =
             "SELECT * FROM Accounts WHERE uid = ?";
-    private PreparedStatement userLoginStatement;
 
     private static final String CREATE_ACCOUNT_SQL =
             "INSERT INTO Accounts (uid, name) VALUES(?,?)";
-    private PreparedStatement createAccountStatement;
 
     private static final String ADD_EVENT_SQL =
             "INSERT INTO Events (eid, title, longitude, latitude, time, duration, timecreated, description) VALUES(?,?,?,?,?,?,?,?)";
-    private PreparedStatement addEventStatement;
 
     private static final String GET_EVENT_SQL_BY_RADIUS =
             "SELECT * FROM Events e WHERE e.latitude < ? AND e.latitude > ? "
             + "AND e.logitude < ? AND e.longitude > ?;";
-    private PreparedStatement getEventByRadiusStatement;
+
+    private static final String GET_USER_EVENTS = "";
 
     /* transactions */
     private static final String BEGIN_TRANSACTION_SQL =
             "SET TRANSACTION ISOLATION LEVEL SERIALIZABLE; BEGIN TRANSACTION";
-    private PreparedStatement beginTransactionStatement;
 
     private static final String COMMIT_SQL = "COMMIT TRANSACTION";
-    private PreparedStatement commitTransactionStatement;
 
     private static final String ROLLBACK_SQL = "ROLLBACK TRANSACTION";
-    private PreparedStatement rollbackTransactionStatement;
 
-    private Connection conn;
-
-    /* Connection code to MySQL.  */
-    public void openConnection() throws ClassNotFoundException, SQLException {
-        Class.forName(JDBC_DRIVER);
-        System.out.println("Connecting to database...");
-        conn=DriverManager.getConnection(DB_URL, USER, PASS);
+    private DBManager() {
+        // Nothing
     }
 
-    public void closeConnection() throws SQLException {
-        conn.close();
+    public static void getUserEvents(Account account) {
+
     }
 
-    /* prepare all the SQL statements in this method.
-      "preparing" a statement is almost like compiling it. */
-
-    public void prepareStatements() throws Exception {
-        beginTransactionStatement = conn.prepareStatement(BEGIN_TRANSACTION_SQL);
-        commitTransactionStatement = conn.prepareStatement(COMMIT_SQL);
-        rollbackTransactionStatement = conn.prepareStatement(ROLLBACK_SQL);
-        userLoginStatement = conn.prepareStatement(USER_LOGIN_SQL);
-        createAccountStatement = conn.prepareStatement(CREATE_ACCOUNT_SQL);
-        addEventStatement = conn.prepareStatement(ADD_EVENT_SQL);
-        getEventByRadiusStatement = conn.prepareStatement(GET_EVENT_SQL_BY_RADIUS);
+    public static void addAccount(Account account) throws SQLException, ClassNotFoundException {
+        Connection conn = openConnection();
+        PreparedStatement createAccountStatement = conn.prepareStatement(CREATE_ACCOUNT_SQL);
+        createAccountStatement.clearParameters();
+        createAccountStatement.setString(1, account.getUid());
+        createAccountStatement.setString(2, account.getName());
+        createAccountStatement.executeUpdate();
+        closeConnection(conn);
     }
 
-    public void transaction_login(String uid, String name) throws Exception {
-        userLoginStatement.clearParameters();
-        userLoginStatement.setString(1,uid);
-        ResultSet uid_set = userLoginStatement.executeQuery();
-        if (uid_set.next()){
-            this.uid = uid_set.getString(1);
-            System.out.println("Successfully login.");
-        } else {
-            beginTransaction();
-            try {
-                createAccountStatement.clearParameters();
-                createAccountStatement.setString(1, uid);
-                createAccountStatement.setString(2, name);
-                createAccountStatement.execute();
-                this.uid = uid;
-                System.out.println("Create a new account.");
-                commitTransaction();
-            } catch (SQLException e) {
-                try {
-                    rollbackTransaction();
-                } catch (Exception rollbackE) {
-                    System.out.println("Error when roll back!");
-                }
-            }
-        }
-        uid_set.close();
+    public static void addEvent(Event event) throws SQLException, ClassNotFoundException {
+        Connection conn = openConnection();
+        PreparedStatement addEventStatement = conn.prepareStatement(ADD_EVENT_SQL);
+        addEventStatement.clearParameters();
+        addEventStatement.setInt(1, event.eid);
+        addEventStatement.setString(2, event.title);
+        addEventStatement.setDouble(3, event.location.getLongitude());
+        addEventStatement.setDouble(4, event.location.getLatitude());
+        addEventStatement.setString(5, event.time.toString());
+        addEventStatement.setInt(6, event.duration);
+        addEventStatement.setString(7, event.timeCreated.toString());
+        addEventStatement.setString(8, event.description);
+        addEventStatement.executeUpdate();
+        closeConnection(conn);
     }
 
-    public void transaction_addEvent(Event event) throws Exception {
-        if (this.uid == null) {
-            System.out.println("You need to log in.");
-            return;
-        }
-        beginTransaction();
-        try {
-            addEventStatement.clearParameters();
-            addEventStatement.setInt(1, event.eid);
-            addEventStatement.setString(2, event.title);
-            addEventStatement.setDouble(3, event.location.getLongitude());
-            addEventStatement.setDouble(4, event.location.getLatitude());
-            addEventStatement.setString(5, event.time.toString());
-            addEventStatement.setInt(6, event.duration);
-            addEventStatement.setString(7, event.timeCreated.toString());
-            addEventStatement.setString(8, event.description);
-            addEventStatement.executeUpdate();
-            commitTransaction();
-        } catch (SQLException e) {
-            try {
-                rollbackTransaction();
-            } catch (Exception rollbackE) {
-                System.out.println("Error when roll back!");
-            }
-        }
-    }
-
-    public List<Event> transaction_getEventByRadius(Location location, int radius) throws Exception {
+    public static List<Event> getEventByRadius(Location location, int radius) throws SQLException, ClassNotFoundException {
+        Connection conn = openConnection();
+        PreparedStatement getEventByRadiusStatement = conn.prepareStatement(GET_EVENT_SQL_BY_RADIUS);
         getEventByRadiusStatement.clearParameters();
         getEventByRadiusStatement.setDouble(1, location.getLatitude() + radius);
         getEventByRadiusStatement.setDouble(1, location.getLatitude() - radius);
         getEventByRadiusStatement.setDouble(1, location.getLongitude() + radius);
         getEventByRadiusStatement.setDouble(1, location.getLongitude() + radius);
         ResultSet getEventResults = getEventByRadiusStatement.executeQuery();
+        closeConnection(conn);
         List<Event> list = new ArrayList<Event>();
         while (getEventResults.next()){
             int eid = getEventResults.getInt("eid");
@@ -154,16 +104,31 @@ public class DBManager {
         return list;
     }
 
-    public void beginTransaction() throws Exception {
+    /* Connection code to MySQL.  */
+    public static Connection openConnection() throws ClassNotFoundException, SQLException {
+        Class.forName(JDBC_DRIVER);
+        System.out.println("Connecting to database...");
+        return DriverManager.getConnection(DB_URL, USER, PASS);
+    }
+
+    public static void closeConnection(Connection conn) throws SQLException {
+        conn.close();
+    }
+
+    private void beginTransaction(Connection conn) throws Exception {
         conn.setAutoCommit(false);
+        PreparedStatement beginTransactionStatement = conn.prepareStatement(BEGIN_TRANSACTION_SQL);
         beginTransactionStatement.executeUpdate();
     }
 
-    public void commitTransaction() throws Exception {
+    private void commitTransaction(Connection conn) throws Exception {
+        PreparedStatement commitTransactionStatement = conn.prepareStatement(COMMIT_SQL);
         commitTransactionStatement.executeUpdate();
         conn.setAutoCommit(true);
     }
-    public void rollbackTransaction() throws Exception {
+
+    private void rollbackTransaction(Connection conn) throws Exception {
+        PreparedStatement rollbackTransactionStatement = conn.prepareStatement(ROLLBACK_SQL);
         rollbackTransactionStatement.executeUpdate();
         conn.setAutoCommit(true);
     }
