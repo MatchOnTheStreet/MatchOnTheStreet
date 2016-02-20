@@ -22,7 +22,7 @@ public final class DBManager {
 
     // Queries
     private static final String USER_LOGIN_SQL =
-            "SELECT * FROM Accounts WHERE uid = ?";
+            "SELECT * FROM Accounts, WHERE uid = ?";
 
     private static final String CREATE_ACCOUNT_SQL =
             "INSERT INTO Accounts (uid, name) VALUES(?,?)";
@@ -34,7 +34,10 @@ public final class DBManager {
             "SELECT * FROM Events e WHERE e.latitude < ? AND e.latitude > ? "
             + "AND e.logitude < ? AND e.longitude > ?;";
 
-    private static final String GET_USER_EVENTS = "";
+    private static final String GET_USER_EVENT_SQL =
+            "SELECT e.eid, e.title, e.longitude, e.latitude, e.time, e.duration, e.timecreated, e.description "
+            + "FROM Events e, Attending a"
+            + "WHERE a.uid = ? AND a.eid = e.eid";;
 
     /* transactions */
     private static final String BEGIN_TRANSACTION_SQL =
@@ -48,15 +51,34 @@ public final class DBManager {
         // Nothing
     }
 
-    public static void getUserEvents(Account account) {
-
+    public static List<Event> getUserEvent(Account account) throws SQLException, ClassNotFoundException {
+        Connection conn = openConnection();
+        PreparedStatement getUserEventStatement = conn.prepareStatement(GET_USER_EVENT_SQL);
+        List<Event> list = new ArrayList<Event>();
+        getUserEventStatement.clearParameters();
+        getUserEventStatement.setInt(1, account.getUid());
+        ResultSet getUserEventResults = getUserEventStatement.executeQuery();
+        while (getUserEventResults.next()) {
+            int eid = getUserEventResults.getInt(1);
+            String title = getUserEventResults.getString(2);
+            Location loc = new Location("new location");
+            loc.setLongitude(getUserEventResults.getDouble(3));
+            loc.setLatitude(getUserEventResults.getDouble(4));
+            Date time = getUserEventResults.getTimestamp(5);
+            int duration = getUserEventResults.getInt(6);
+            Date timeCreated = getUserEventResults.getTimestamp(7);
+            String description = getUserEventResults.getString(8);
+            Event event = new Event(eid, title, loc, time, duration, timeCreated, description);
+            list.add(event);
+        }
+        return list;
     }
 
     public static void addAccount(Account account) throws SQLException, ClassNotFoundException {
         Connection conn = openConnection();
         PreparedStatement createAccountStatement = conn.prepareStatement(CREATE_ACCOUNT_SQL);
         createAccountStatement.clearParameters();
-        createAccountStatement.setString(1, account.getUid());
+        createAccountStatement.setInt(1, account.getUid());
         createAccountStatement.setString(2, account.getName());
         createAccountStatement.executeUpdate();
         closeConnection(conn);
