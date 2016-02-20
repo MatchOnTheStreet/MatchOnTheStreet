@@ -27,7 +27,7 @@ public class ListViewFilterAndSearch {
 
     public ListViewFilterAndSearch
             (String queryString, Date startTime, Date endTime, Location centralLocation, int searchRadius) {
-        this.database = new DBManager();
+       // this.database = new DBManager();
         this.queryStrings = SplitQueryString(queryString);
         this.centralLocation = centralLocation;
         this.searchRadius = searchRadius;
@@ -36,13 +36,14 @@ public class ListViewFilterAndSearch {
     }
 
     public List<Event> getFilterAndSearchResults() throws Exception {
-        List<Event> results = database.transaction_getEventByRadius(centralLocation, searchRadius);
+    /*    List<Event> results = database.transaction_getEventByRadius(centralLocation, searchRadius);
         for(Event e: results) {
             if(DoesNotMeetCriteria(e)) {
                 results.remove(e);
             }
         }
-        return results;
+        return results;*/
+        return null;
     }
 
     public boolean DoesNotMeetCriteria(Event e) {

@@ -2,6 +2,7 @@ package com.cse403.matchonthestreet;
 
 import android.location.Location;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.sql.*;
 import java.util.*;
@@ -62,6 +63,7 @@ public final class DBManager {
     }
 
     public static void addEvent(Event event) throws SQLException, ClassNotFoundException {
+        Log.d("DBManager", "addEvent");
         Connection conn = openConnection();
         PreparedStatement addEventStatement = conn.prepareStatement(ADD_EVENT_SQL);
         addEventStatement.clearParameters();

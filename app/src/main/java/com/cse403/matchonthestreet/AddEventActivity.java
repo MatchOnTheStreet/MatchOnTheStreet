@@ -201,9 +201,8 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
         AsyncTask<Event, Event, Event> task = new AsyncTask<Event, Event, Event>() {
             @Override
             protected Event doInBackground(Event[] params) {
-                DBManager dbManager = new DBManager();
                 try {
-                    dbManager.transaction_addEvent(params[0]);
+                    DBManager.addEvent(params[0]);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
