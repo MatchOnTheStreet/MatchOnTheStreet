@@ -25,10 +25,10 @@ public class AccountTest extends TestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        a1 = new Account("123");
-        a2 = new Account("456");
-        a3 = new Account("123");
-        a4 = new Account("789");
+        a1 = new Account(123);
+        a2 = new Account(456);
+        a3 = new Account(123);
+        a4 = new Account(789);
 
 
 

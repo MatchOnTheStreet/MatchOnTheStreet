@@ -29,8 +29,8 @@ public class EventTest extends TestCase {
         e1 = new Event(0, "Basketball", location, new Date(100), 100, new Date(80), "fun");
         e2 = new Event(0, "Basketball", location, new Date(100), 200, new Date(23), "fun");
 
-        a1 = new Account("123");
-        a2 = new Account("456");
+        a1 = new Account(123);
+        a2 = new Account(456);
 
         e2.addAttendee(a1);
 

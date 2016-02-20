@@ -14,11 +14,5 @@ import static org.junit.Assert.*;
 public class FirstUnitTest {
     @Test
     public void event_test() throws Exception {
-        Location location = new Location("");
-        location.setLatitude(0.0d);
-        location.setLongitude(0.0d);
-        Event e = new Event("Basketball", location, new Date(100), "fun");
-        Account a = new Account("hello");
-        assertFalse(e.isAttendedBy(a));
     }
 }
