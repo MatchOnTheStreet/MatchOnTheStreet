@@ -7,7 +7,7 @@ http://matchonthestreet.github.io/MatchOnTheStreet/
 ## Developer Webpage
 https://homes.cs.washington.edu/~liuh25/matchonthestreet/
 
-# Current release: [Beta]([https://github.com/MatchOnTheStreet/MatchOnTheStreet/releases/tag/v0.1) (v0.1)
+# Current release: [Beta](https://github.com/MatchOnTheStreet/MatchOnTheStreet/releases/tag/v0.1) (v0.1)
 ## Features Working
 * Creating Events!
 * Identifying User Location!
