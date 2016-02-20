@@ -1,10 +1,9 @@
-package com.cse403.matchonthestreet;
+package com.cse403.matchonthestreet.models;
 
 import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -23,22 +22,22 @@ public class Event implements Parcelable {
     public String title;
 
     // Where the event is held.
-    protected Location location;
+    public Location location;
 
     // The time of the event
-    protected Date time;
+    public Date time;
 
     // The duration of the event, in minutes
-    protected int duration;
+    public int duration;
 
     // The time stamp of the event creation
-    protected Date timeCreated;
+    public Date timeCreated;
 
     // A description of the event.
-    protected String description = "";
+    public String description = "";
 
     // A list of accounts who have said they will be attending the event.
-    protected List<Account> attending;
+    public List<Account> attending;
 
     public Event(int eid, String title, Location location, Date time,
                  int duration, Date timeCreated, String description) {

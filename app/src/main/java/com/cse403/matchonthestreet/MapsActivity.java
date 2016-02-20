@@ -39,7 +39,6 @@
 package com.cse403.matchonthestreet;
 
 import android.Manifest;
-import android.os.AsyncTask;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.content.Intent;
@@ -53,16 +52,14 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.Toolbar;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 
 
+import com.cse403.matchonthestreet.models.Event;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;

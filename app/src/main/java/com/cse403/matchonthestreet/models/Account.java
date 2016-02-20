@@ -1,4 +1,4 @@
-package com.cse403.matchonthestreet;
+package com.cse403.matchonthestreet.models;
 
 import java.util.ArrayList;
 import java.util.List;

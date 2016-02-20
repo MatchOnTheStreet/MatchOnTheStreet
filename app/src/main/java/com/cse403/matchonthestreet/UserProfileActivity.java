@@ -1,20 +1,18 @@
 package com.cse403.matchonthestreet;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.facebook.CallbackManager;
+import com.cse403.matchonthestreet.models.Account;
+import com.cse403.matchonthestreet.models.Event;
 import com.facebook.FacebookSdk;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
-import com.facebook.login.widget.LoginButton;
 
 import java.util.ArrayList;
 import java.util.List;

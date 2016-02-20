@@ -2,6 +2,9 @@ package com.cse403.matchonthestreet;
 
 import android.location.Location;
 
+import com.cse403.matchonthestreet.models.Account;
+import com.cse403.matchonthestreet.models.Event;
+
 import junit.framework.TestCase;
 
 import org.junit.Test;

@@ -2,6 +2,9 @@ package com.cse403.matchonthestreet;
 
 import android.location.Location;
 
+import com.cse403.matchonthestreet.backend.DBManager;
+import com.cse403.matchonthestreet.models.Event;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;

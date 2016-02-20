@@ -1,7 +1,8 @@
 package com.cse403.matchonthestreet;
 
-import android.content.res.Resources;
 import android.location.Location;
+
+import com.cse403.matchonthestreet.models.Event;
 
 import java.util.ArrayList;
 import java.util.Arrays;

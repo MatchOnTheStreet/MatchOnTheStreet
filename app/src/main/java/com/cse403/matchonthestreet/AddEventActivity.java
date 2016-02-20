@@ -1,6 +1,5 @@
 package com.cse403.matchonthestreet;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -18,7 +17,8 @@ import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.TimePicker;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.cse403.matchonthestreet.backend.DBManager;
+import com.cse403.matchonthestreet.models.Event;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Map;
 
 /**
  * Created by larioj on 2/7/16.

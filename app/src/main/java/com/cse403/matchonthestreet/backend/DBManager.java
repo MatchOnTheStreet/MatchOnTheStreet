@@ -1,8 +1,10 @@
-package com.cse403.matchonthestreet;
+package com.cse403.matchonthestreet.backend;
 
 import android.location.Location;
-import android.os.AsyncTask;
 import android.util.Log;
+
+import com.cse403.matchonthestreet.models.Account;
+import com.cse403.matchonthestreet.models.Event;
 
 import java.sql.*;
 import java.util.*;
