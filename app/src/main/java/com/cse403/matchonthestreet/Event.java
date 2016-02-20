@@ -49,7 +49,7 @@ public class Event implements Parcelable {
         this.duration = duration;
         this.timeCreated = timeCreated;
         this.description = description;
-        this.attending = null;
+        this.attending = new ArrayList<>();
 
     }
 
@@ -62,8 +62,20 @@ public class Event implements Parcelable {
         this.duration = duration;
         this.timeCreated = timeCreated;
         this.description = description;
-        this.attending = null;
+        this.attending = new ArrayList<>();
     }
+
+    public Event(String title, Location location, Date time, int duration, String description) {
+        this.eid = title.hashCode();
+        this.title = title;
+        this.location = location;
+        this.time = time;
+        this.duration = duration;
+        this.timeCreated = new Date();
+        this.description = description;
+        this.attending = new ArrayList<>();
+    }
+
     /*
     public Event(int eid, String title, Location location, Date time, String description) {
         this.eid = eid;
@@ -167,11 +179,18 @@ public class Event implements Parcelable {
         parcel.writeDouble(lat);
         parcel.writeDouble(lon);
 
-        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yy HH:mm", Locale.US);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yy HH:mm", Locale.US);
 
-        String datetime = format.format(time);
+        String datetime = dateFormat.format(time);
 
         parcel.writeString(datetime);
+
+        parcel.writeString(dateFormat.format(timeCreated));
+
+        parcel.writeInt(eid);
+
+        parcel.writeInt(duration);
+
 
     }
 
@@ -185,15 +204,22 @@ public class Event implements Parcelable {
         location.setLongitude(lon);
         this.location = location;
         String dateString = in.readString();
+        String timestampString = in.readString();
+
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-yy HH:mm", Locale.US);
         try {
             this.time = format.parse(dateString);
+            this.timeCreated = format.parse(timestampString);
         } catch (ParseException e) {
             this.time = new Date();
             e.printStackTrace();
         }
 
-        this.attending = null;
+        this.eid = in.readInt();
+        this.duration = in.readInt();
+
+
+        this.attending = new ArrayList<>();
 
     }
 

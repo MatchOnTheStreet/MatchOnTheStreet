@@ -95,9 +95,11 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     public static final int LIST_VIEW_REQUEST_CODE = 2;
 
     public static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 10;
+    public static final int NO_SELECTED_EVENT = -1;
 
     private boolean FROM_LIST;
     private static boolean FIRST_LAUNCH = true;
+    private int selectedEventID = NO_SELECTED_EVENT;
 
     /** Tag used for printing to debugger */
     private static final String TAG = "MainActivity";
@@ -132,6 +134,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
         Intent intent = getIntent();
         FROM_LIST = intent.getBooleanExtra(ListViewActivity.EXTRA_MESSAGE, false);
+        selectedEventID = intent.getIntExtra(ListViewActivity.class.toString() + ".VIEW_EVENT",
+                NO_SELECTED_EVENT);
 
         // Obtain the current instance of ViewController
         viewController = ((MOTSApp)getApplicationContext()).getViewController();
@@ -139,7 +143,6 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         // is first launched.
         if (FIRST_LAUNCH) {
             viewController.populateDummyData();
-
             FIRST_LAUNCH = false;
         }
 
@@ -161,13 +164,6 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         // Set the DetailFragment to be invisible
         FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
         fl.setVisibility(View.GONE);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            Log.d(TAG,"Toolbar Found");
-        } else {
-            Log.d(TAG,"Toolbar Not Found");
-        }
 
         mapMarkerEvent = new HashMap<>();
 
@@ -285,6 +281,10 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         // Check permissions both Coarse and Fine
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "Have COARSE LOCATION permission");
+            Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            if (mLastLocation != null) {
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
+            }
         } else {
             Log.d(TAG, "Do not have COARSE LOCATION permission");
         }
@@ -292,6 +292,10 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
             Log.d(TAG, "Have FINE LOCATION permission");
+            Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            if (mLastLocation != null) {
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
+            }
         } else {
             Log.d(TAG, "do not have FINE LOCATION permission");
         }
@@ -402,14 +406,9 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-
         Set<Event> currentEvents = viewController.getEventSet();
         addEventsToMap(new ArrayList<>(currentEvents));
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
         UiSettings mapSettings = mMap.getUiSettings();
         mapSettings.setZoomControlsEnabled(true);
@@ -498,7 +497,11 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                     startActivity(intent);
                 }
             });
+        } else {
+            FloatingActionButton fabListMap = (FloatingActionButton) findViewById(R.id.fab_map_to_list);
+            fabListMap.hide();
         }
+
         // The button that moves to the UserProfileActivity
         FloatingActionButton fabEvents = (FloatingActionButton) findViewById(R.id.fab_map_to_myevents);
         fabEvents.setOnClickListener(new View.OnClickListener() {
@@ -509,6 +512,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                 startActivity(intent);
             }
         });
+        fabEvents.hide();
 
     }
 
@@ -579,7 +583,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         mapDetailFragment.setArguments(args);
         ft.replace(R.id.fragment_container, mapDetailFragment, "detailFragment");
         ft.commit();
-
+/*
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         int height = dm.heightPixels;
@@ -595,7 +599,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             Log.d(TAG, e.toString());
         }
 
-
+*/
         return false;
     }
 
@@ -608,7 +612,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
         FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
         fl.setVisibility(View.GONE);
-
+/*
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         int height = dm.heightPixels;
@@ -623,27 +627,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         }catch (NullPointerException e) {
             Log.d(TAG, e.toString());
         }
-
+*/
     }
-
-    // TODO: If needed, modify the fields in sample events
-    /*private ArrayList<Event> createSampleEvents() {
-        ArrayList<Event> workingSet = new ArrayList<>();
-        Location loc = new Location("testProvider1");
-        loc.setLatitude(47.6543485);
-        loc.setLongitude(-122.3155853);
-
-        Location loc2 = new Location("testProvider2");
-        loc2.setLatitude(47.7543485);
-        loc2.setLongitude(-122.3155853);
-        Event e1 = new Event("TestEvent 1", loc, new Date(), "This is a description for TestEvent 1");
-        Event e2 = new Event("TestEvent 2", loc2, new Date(), "This is a description for TestEvent 2");
-
-        workingSet.add(e1);
-        workingSet.add(e2);
-
-        return workingSet;
-    }*/
 
     private void removeAllMarkers() {
         mMap.clear();

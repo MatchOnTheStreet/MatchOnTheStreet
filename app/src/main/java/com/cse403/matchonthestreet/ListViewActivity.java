@@ -45,15 +45,26 @@ public class ListViewActivity extends AppCompatActivity {
 
     public static final String EXTRA_MESSAGE = ".ListViewActivity.MESSAGE";
 
+    /** The current instance of ViewController, for loading data */
     private ViewController viewController;
 
+    /** The list of events and their adapter */
     RecyclerView recyclerView;
     protected RecyclerViewAdapter recyclerViewAdapter;
 
+    /** Search bar for keyword filtering */
     protected SearchView searchView;
+
+    /** Text area displaying selected starting date */
     protected EditText dateFromEntry;
+
+    /** Text area displaying selected ending date */
     protected EditText dateToEntry;
+
+    /** Stored instance of factory class of date picker dialogs for date entries */
     protected SetTextDatePickerDialog datePickerFactory;
+
+    /** The button to apply filters */
     protected Button applyButton;
 
     @Override
@@ -88,6 +99,11 @@ public class ListViewActivity extends AppCompatActivity {
         applyButton = (Button) findViewById(R.id.filter_apply_button);
         datePickerFactory = new SetTextDatePickerDialog(this);
 
+        // Set the date entries to be uneditable
+        dateFromEntry.setInputType(0);
+        dateToEntry.setInputType(0);
+
+        // OnClick listeners for popping up the date pickers
         dateFromEntry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -180,6 +196,10 @@ public class ListViewActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Custom inner class for generating date picker dialogs for different
+     * date entries.
+     */
     protected class SetTextDatePickerDialog {
         private Context context;
 

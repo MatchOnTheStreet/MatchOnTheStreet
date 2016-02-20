@@ -6,6 +6,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.NumberPicker;
 import android.widget.TimePicker;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -40,6 +42,8 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
     private DatePickerDialog toDatePD;
     private EditText toTimeET;
     private TimePickerDialog toTimePD;
+
+    private NumberPicker durationPicker;
 
     private SimpleDateFormat dateFormatter;
     private SimpleDateFormat timeFormatter;
@@ -151,7 +155,7 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
     }
 
     public void createEvent(View view) {
-
+        Log.d("AddEventActivity", "createEvent running");
         //TODO: Check that all the fields were filled out
 
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -181,7 +185,13 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
 
         // TODO: Add duration attribute
         Event event = new Event(title, location, date, 60, calendar.getTime(), description);
-        Intent resultIntent = new Intent(); //new Intent(AddEventActivity.this, MapsActivity.class);
+
+        // Adds this newly added event to ViewController
+        // So that it appears in the list view as well
+        ViewController viewController = ((MOTSApp)getApplicationContext()).getViewController();
+        viewController.addEventToSet(event);
+
+        Intent resultIntent = new Intent(); 
 
         Log.d("AddEventActivity", "Date toString is: " + event.time.toString());
 

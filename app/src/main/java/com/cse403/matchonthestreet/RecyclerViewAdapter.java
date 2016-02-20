@@ -30,19 +30,31 @@ import java.util.Random;
 /**
  * Created by Hao on 2/17/16.
  *
+ * The RecyclerViewAdapter represents the list of events to be displayed
+ * in the list view. It assigns necessary attributes to these events.
  */
 public class RecyclerViewAdapter
         extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>
         implements Filterable {
 
+    /** The list of all items (before filtering) */
     private List<Event> items;
+
+    /** The list of items after filtering. */
     private List<Event> filteredItems;
 
+    /** The filter used on the events. */
     private ListViewFilter filter = new ListViewFilter();
 
+    /** The current context of the adapter. Normally would be the
+     * ListViewActivity class. */
     public Context context;
 
-
+    /**
+     * The constructor of RecyclerViewAdapter
+     * @param context The current context of the adapter
+     * @param items List of events to be put into the adapter
+     */
     public RecyclerViewAdapter(Context context, List<Event> items) {
         this.items = items;
         this.filteredItems = items;
@@ -84,10 +96,18 @@ public class RecyclerViewAdapter
         return (filteredItems != null ? filteredItems.size() : 0);
     }
 
+    /**
+     * Returns all events
+     * @return all events (Before filtering).
+     */
     public List<Event> getAllItems() {
         return new ArrayList<>(this.items);
     }
 
+    /**
+     * Returns the filtered results
+     * @return the filtered results.
+     */
     public List<Event> getFilteredItems() {
         return new ArrayList<>(this.filteredItems);
     }
@@ -111,7 +131,7 @@ public class RecyclerViewAdapter
                 @Override
                 public void onClick(View v) {
                     Intent showOnMapIntent = new Intent(context, MapsActivity.class);
-                    showOnMapIntent.putExtra(context.toString() + ".VIEW_EVENT", currentItem);
+                    showOnMapIntent.putExtra(context.toString() + ".VIEW_EVENT", currentItem.eid);
                     context.startActivity(showOnMapIntent);
                 }
             });

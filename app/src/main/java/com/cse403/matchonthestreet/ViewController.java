@@ -23,6 +23,10 @@ public class ViewController {
         return eventSet;
     }
 
+    public void addEventToSet(Event event) {
+        eventSet.add(event);
+    }
+
     public boolean updateEventList(Set<Event> updatedSet) {
         boolean changed = !this.eventSet.equals(updatedSet);
         this.eventSet = updatedSet;

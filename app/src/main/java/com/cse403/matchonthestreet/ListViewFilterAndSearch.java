@@ -36,7 +36,7 @@ public class ListViewFilterAndSearch {
     }
 
     public List<Event> getFilterAndSearchResults() throws Exception {
-        List<Event> results = database.transaction_getEvent(centralLocation, searchRadius);
+        List<Event> results = database.transaction_getEventByRadius(centralLocation, searchRadius);
         for(Event e: results) {
             if(DoesNotMeetCriteria(e)) {
                 results.remove(e);
