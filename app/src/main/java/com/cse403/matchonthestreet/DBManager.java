@@ -11,78 +11,13 @@ import java.util.List;
  * Created by Iris on 2/7/16.
  */
 public class DBManager {
-    // Database Credentials
+    // JDBC driver name and database URL
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
     static final String DB_URL = "jdbc:mysql://matchonthestreetdb.crqizzvrxges.us-east-1.rds.amazonaws.com:3306/motsdb";
+
+    //  Database credentials
     static final String USER = "larioj";
     static final String PASS = "motspassword";
-
-    private Connection conn;
-
-    // SQL Queries
-    private static final String GET_ACCOUNT_BY_UID =
-            "select * from Accounts where uid = ?;";
-    private static final String GET_EVENT_BY_ID =
-            "select * from Events where eid = ?;";
-    private static final String ADD_EVENT =
-            "INSERT INTO Events (title, longitude, latitude, time, description) VALUES (?,?,?,?,?);";
-    private  static final String ADD_ACCOUNT =
-            "insert into Accounts (uid, name) values (?, ?);";
-
-
-    public void addEventWithParams(String title, Double longitude,
-                                   Double latitude, Timestamp datetime, String description)
-            throws SQLException, ClassNotFoundException {
-        openConnection();
-        PreparedStatement addEventStatement = conn.prepareStatement(ADD_EVENT);
-        addEventStatement.clearParameters();
-        addEventStatement.setString(1, title);
-        addEventStatement.setDouble(2, longitude);
-        addEventStatement.setDouble(3, latitude);
-        addEventStatement.setTimestamp(4, datetime);
-        addEventStatement.setString(5, description);
-        addEventStatement.executeUpdate();
-        closeConnection();
-    }
-
-    public void addAccountWithParams(String uid, String name)
-            throws SQLException, ClassNotFoundException {
-        openConnection();
-        PreparedStatement addEventStatement = conn.prepareStatement(ADD_ACCOUNT);
-        addEventStatement.clearParameters();
-        addEventStatement.setString(1, uid);
-        addEventStatement.setString(2, name);
-        addEventStatement.executeUpdate();
-        closeConnection();
-    }
-
-    public Event getEventWithParams(int eid)
-            throws SQLException, ClassNotFoundException {
-        openConnection();
-        PreparedStatement addEventStatement = conn.prepareStatement(GET_EVENT_BY_ID);
-        addEventStatement.clearParameters();
-        addEventStatement.setInt(1, eid);
-        ResultSet eventSet = addEventStatement.executeQuery();
-        closeConnection();
-
-        String title;
-        Double longitude;
-        Double latitude;
-        Timestamp datetime;
-        String description;
-
-        if (eventSet.next()) {
-            title = eventSet.getString("title");
-            longitude= eventSet.getDouble("logitude");
-            latitude = eventSet.getDouble("latitude");
-            datetime = eventSet.getTimestamp("time");
-
-        }
-        return null;
-    }
-
-
-
 
     private String uid;
 
@@ -95,7 +30,7 @@ public class DBManager {
     private PreparedStatement createAccountStatement;
 
     private static final String ADD_EVENT_SQL =
-            "INSERT INTO Events VALUES(?,?,?,?,?)";
+            "INSERT INTO Event VALUES(?,?,?,?,?,?,?,?)";
     private PreparedStatement addEventStatement;
 
     private static final String GET_EVENT_SQL =
@@ -112,11 +47,11 @@ public class DBManager {
     private static final String ROLLBACK_SQL = "ROLLBACK TRANSACTION";
     private PreparedStatement rollbackTransactionStatement;
 
-
+    private Connection conn;
 
     /* Connection code to MySQL.  */
     public void openConnection() throws ClassNotFoundException, SQLException {
-        Class.forName(JDBC_DRIVER);
+        Class.forName("com.mysql.jdbc.Driver");
         System.out.println("Connecting to database...");
         conn=DriverManager.getConnection(DB_URL,USER,PASS);
     }
@@ -138,7 +73,6 @@ public class DBManager {
         getEventStatement = conn.prepareStatement(GET_EVENT_SQL);
 
     }
-
 
     public void transaction_login(String uid, String name) throws Exception {
         userLoginStatement.clearParameters();
@@ -178,9 +112,12 @@ public class DBManager {
             addEventStatement.clearParameters();
             addEventStatement.setInt(1, event.eid);
             addEventStatement.setString(2, event.title);
-            addEventStatement.setString(3, null);
-            addEventStatement.setString(4, null);
-            addEventStatement.setString(5, event.description);
+            addEventStatement.setDouble(3, event.location.getLongitude());
+            addEventStatement.setDouble(4, event.location.getLatitude());
+            addEventStatement.setString(5, event.time.toString());
+            addEventStatement.setInt(6, event.duration);
+            addEventStatement.setString(7, event.timeCreated.toString());
+            addEventStatement.setString(8, event.description);
             addEventStatement.execute();
             commitTransaction();
         } catch (SQLException e) {
@@ -200,8 +137,10 @@ public class DBManager {
         while (getEventResults.next()){
             int eid = getEventResults.getInt("eid");
             String title = getEventResults.getString("title");
-            Location loc = null;
-            Date time = null;
+            Location loc = new Location("new location");
+            loc.setLongitude(getEventResults.getDouble("longitude"));
+            loc.setLatitude(getEventResults.getDouble("latitude"));
+            Date time = new Date(getEventResults.getString("time"));
             int duration = 60;
             Date timeCreated = null;
             String description = getEventResults.getString("description");
