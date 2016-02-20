@@ -11,7 +11,7 @@ import java.util.List;
 public class Account {
 
     // User ID given by facebook.
-    private String uid;
+    private int uid;
 
     // The name of the user whose account this is.
     private String name;
@@ -19,7 +19,7 @@ public class Account {
     // A list of events the user is planning on attending.
     private List<Event> events;
 
-    public Account(String uid) {
+    public Account(int uid) {
         this.uid = uid;
         events = new ArrayList<Event>();
     }
@@ -60,7 +60,7 @@ public class Account {
      *
      * @return the unique id of this account
      */
-    public String getUid() { return uid; }
+    public int getUid() { return uid; }
 
     /**
      * Get the name of this account
@@ -79,6 +79,6 @@ public class Account {
         }
 
         Account a = (Account) o;
-        return a.uid.equals(this.uid);
+        return uid == uid;
     }
 }
