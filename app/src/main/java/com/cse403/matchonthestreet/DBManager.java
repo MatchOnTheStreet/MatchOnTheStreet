@@ -119,7 +119,7 @@ public class DBManager {
             addEventStatement.setInt(6, event.duration);
             addEventStatement.setString(7, event.timeCreated.toString());
             addEventStatement.setString(8, event.description);
-            addEventStatement.execute();
+            addEventStatement.executeUpdate();
             commitTransaction();
         } catch (SQLException e) {
             try {
