@@ -34,7 +34,8 @@ public class DBManager {
     private PreparedStatement addEventStatement;
 
     private static final String GET_EVENT_SQL_BY_RADIUS =
-            "SELECT * FROM Events e WHERE";
+            "SELECT * FROM Events e WHERE e.latitude < ? AND e.latitude > ? "
+            + "AND e.logitude < ? AND e.longitude > ?;";
     private PreparedStatement getEventStatement;
     // transactions
     private static final String BEGIN_TRANSACTION_SQL =
