@@ -11,13 +11,13 @@ create table Events (
 );
 
 create table Accounts (
-	uid varchar(20),
+	uid int,
 	name varchar(50),
 	primary key (uid)
 );
 
 create table Attending (
-	uid varchar(20) references Accounts(uid),
+	uid int references Accounts(uid),
 	eid int references Events(eid)
 );
 
