@@ -3,9 +3,9 @@ create table Events (
 	title varchar(100),
 	longitude decimal(10, 7),
 	latitude decimal(10, 7),
-	time datetime,
+	start_time bigint,
 	duration int,
-	timecreated datetime,
+	time_created bigint,
 	description varchar(1000),
 	primary key (eid)
 );
