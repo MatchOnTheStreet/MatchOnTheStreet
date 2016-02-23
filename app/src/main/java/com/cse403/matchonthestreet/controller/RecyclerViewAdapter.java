@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
@@ -33,6 +34,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -61,7 +63,7 @@ public class RecyclerViewAdapter
     /**
      * The filter used on the events.
      */
-    private ListViewFilter filter = new ListViewFilter();
+    private ListViewFilter filter;
 
     /**
      * The current context of the adapter. Normally would be the
@@ -79,6 +81,7 @@ public class RecyclerViewAdapter
         this.items = items;
         this.filteredItems = items;
         this.context = context;
+        this.filter = new ListViewFilter(context);
     }
 
     @Override
@@ -167,6 +170,14 @@ public class RecyclerViewAdapter
 
     public class ListViewFilter extends Filter {
 
+        private Context context;
+        private ViewController viewController;
+
+        public ListViewFilter(Context context) {
+            this.context = context;
+            this.viewController = ((MOTSApp)context.getApplicationContext()).getViewController();
+        }
+
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             // convert CharSequence constraint into the needed search parameters
@@ -197,7 +208,7 @@ public class RecyclerViewAdapter
             double lat = Double.NaN, lon = Double.NaN;
             if (!radiusStr.isEmpty() && !latLongStr.isEmpty()) {
                 radius = Integer.parseInt(radiusStr);
-                String[] latLong = latLongStr.split(Pattern.quote(">&<"));
+                String[] latLong = latLongStr.split(Pattern.quote(">$<"));
                 lat = Double.parseDouble(latLong[0]);
                 lon = Double.parseDouble(latLong[1]);
             }
@@ -287,6 +298,7 @@ public class RecyclerViewAdapter
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             filteredItems = (List<Event>) results.values;
+            viewController.updateEventList(new HashSet<>(getFilteredItems()));
             notifyDataSetChanged();
         }
     }
