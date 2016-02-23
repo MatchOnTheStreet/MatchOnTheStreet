@@ -36,19 +36,33 @@
         android:textColor="@color/colorSecondaryText"
         android:textSize="12sp" />
 
-    <TextView
-        android:id="@+id/item_date"
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/desc"
-        android:layout_alignLeft="@+id/desc"
-        android:layout_alignStart="@+id/desc"
-        android:paddingLeft="10dp"
-        android:paddingStart="10dp"
-        android:paddingRight="10dp"
-        android:paddingEnd="10dp"
-        android:textColor="@color/colorSecondaryText"
-        android:textSize="12sp"
-        />
+        android:layout_toRightOf="@+id/icon"
+        android:layout_toEndOf="@+id/icon">
+
+        <ImageView
+            android:id="@+id/img_time"
+            android:layout_width="12sp"
+            android:layout_height="12sp"
+            android:src="@drawable/ic_time_grey"
+            android:contentDescription="time icon"/>
+
+        <TextView
+            android:id="@+id/item_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/img_time"
+            android:layout_toEndOf="@+id/img_time"
+            android:paddingLeft="0dp"
+            android:paddingStart="0dp"
+            android:paddingRight="0dp"
+            android:paddingEnd="0dp"
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="12sp" />
+    </RelativeLayout>
+
 
 </RelativeLayout>
