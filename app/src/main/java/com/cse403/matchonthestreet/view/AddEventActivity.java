@@ -40,11 +40,6 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
     private EditText fromTimeET;
     private TimePickerDialog fromTimePD;
     
-    private EditText toDateET;
-    private DatePickerDialog toDatePD;
-    private EditText toTimeET;
-    private TimePickerDialog toTimePD;
-
     private EditText durationET;
     private NumberPicker durationPicker;
 
@@ -87,41 +82,6 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH));
 
-        toDateET = (EditText) findViewById(R.id.event_to_date);
-        toDateET.setInputType(InputType.TYPE_NULL);
-        toDateET.setOnClickListener(this);
-        toDatePD = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                Calendar date = Calendar.getInstance();
-                date.set(year, monthOfYear, dayOfMonth);
-                toDateET.setText(dateFormatter.format(date.getTime()));
-            }
-        },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH));
-
-
-        toTimeET = (EditText) findViewById(R.id.event_to_time);
-        toTimeET.setInputType(InputType.TYPE_NULL);
-        toTimeET.setOnClickListener(this);
-        toTimePD = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                //Calendar time = Calendar.getInstance();
-                //time.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                //time.set(Calendar.MINUTE, minute);
-                //toTimeET.setText(timeFormatter.format(time.getTime()));
-                String pad = "";
-                if (minute < 10) pad = "0";
-                String time = hourOfDay + ":" + pad + minute;
-                toTimeET.setText(time);
-            }
-        },
-                calendar.get(Calendar.HOUR_OF_DAY),
-                calendar.get(Calendar.MINUTE),
-                false);
 
         fromTimeET = (EditText) findViewById(R.id.event_from_time);
         fromTimeET.setInputType(InputType.TYPE_NULL);
@@ -157,21 +117,12 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
                 durationET.setText(timeValues[newVal]);
             }
         });
-
-
-        toTimeET.setVisibility(View.INVISIBLE);
-        toDateET.setVisibility(View.INVISIBLE);
-
     }
 
     @Override
     public void onClick(View v) {
         if (v == fromDateET) {
             fromDatePD.show();
-        } else if (v == toDateET) {
-            toDatePD.show();
-        } else if (v == toTimeET) {
-            toTimePD.show();
         } else if (v == fromTimeET) {
             fromTimePD.show();
         }
