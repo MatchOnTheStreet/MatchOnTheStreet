@@ -1,8 +1,8 @@
 create table Events (
 	eid int not null auto_increment,
 	title varchar(100),
-	longitude decimal(5, 2),
-	latitude decimal(5, 2),
+	longitude decimal(10, 7),
+	latitude decimal(10, 7),
 	time datetime,
 	duration int,
 	timecreated datetime,
