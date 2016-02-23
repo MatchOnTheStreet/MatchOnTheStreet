@@ -16,10 +16,7 @@
         android:minHeight="48dip"
         />
 
-
-
     <!-- Date and Time -->
-    <!-- From -->
     <LinearLayout
         android:id="@+id/event_from_row"
         android:orientation="horizontal"
@@ -41,76 +38,9 @@
             android:layout_width="0px"
             android:layout_weight="4"
             android:layout_height="wrap_content" />
-
-        <!-- other
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/event_time_from_label"
-            />
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <Button
-                android:id="@+id/event_time_from_date"
-                android:layout_width="0px"
-                android:layout_weight="5"
-                android:layout_height="wrap_content"
-                android:singleLine="true" />
-            <Button
-                android:id="@+id/event_time_from_time"
-                android:layout_width="0px"
-                android:layout_weight="4"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-        -->
     </LinearLayout>
 
-    <!-- To -->
-    <LinearLayout
-        android:id="@+id/event_to_row"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="64dip" >
-
-        <EditText
-            android:id="@+id/event_to_date"
-            android:hint="@string/event_to_date_hint"
-            android:layout_width="0px"
-            android:layout_weight="5"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/event_to_time"
-            android:hint="@string/event_to_time_hint"
-            android:layout_width="0px"
-            android:layout_weight="4"
-            android:layout_height="wrap_content" />
-
-        <!-- other
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/event_time_to_label"
-            />
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <Button
-                android:id="@+id/event_time_to_date"
-                android:layout_width="0px"
-                android:layout_weight="5"
-                android:layout_height="wrap_content"
-                android:singleLine="true" />
-            <Button
-                android:id="@+id/event_time_to_time"
-                android:layout_width="0px"
-                android:layout_weight="4"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-        -->
-    </LinearLayout>
+    <!-- Duration -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
@@ -118,7 +48,7 @@
             android:id="@+id/durationET"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="enter duration in hours" />
+            android:hint="Enter Duration in Hours" />
         <NumberPicker
             android:id="@+id/durationPicker"
             android:layout_width="wrap_content"
