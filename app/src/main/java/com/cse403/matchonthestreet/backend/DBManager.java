@@ -134,7 +134,7 @@ public final class DBManager {
         getEventByRadiusStatement.setDouble(1, location.getLatitude() + radius);
         getEventByRadiusStatement.setDouble(2, location.getLatitude() - radius);
         getEventByRadiusStatement.setDouble(3, location.getLongitude() + radius);
-        getEventByRadiusStatement.setDouble(4, location.getLongitude() + radius);
+        getEventByRadiusStatement.setDouble(4, location.getLongitude() - radius);
         ResultSet getEventResults = getEventByRadiusStatement.executeQuery();
         closeConnection(conn);
         List<Event> list = new ArrayList<Event>();
