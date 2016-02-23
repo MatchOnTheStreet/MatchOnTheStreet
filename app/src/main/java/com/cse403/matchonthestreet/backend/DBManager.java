@@ -34,7 +34,7 @@ public final class DBManager {
 
     private static final String GET_EVENT_BY_RADIUS_SQL =
             "SELECT * FROM Events e WHERE e.latitude < ? AND e.latitude > ? "
-            + "AND e.logitude < ? AND e.longitude > ?;";
+            + "AND e.longitude < ? AND e.longitude > ?;";
 
     private static final String GET_EVENT_BY_ID_SQL =
             "SELECT * FROM Events WHERE eid = ?;";
