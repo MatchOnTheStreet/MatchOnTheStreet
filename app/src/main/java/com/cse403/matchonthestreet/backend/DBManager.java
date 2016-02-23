@@ -32,7 +32,7 @@ public final class DBManager {
     private static final String ADD_EVENT_SQL =
             "INSERT INTO Events (eid, title, longitude, latitude, time, duration, timecreated, description) VALUES(?,?,?,?,?,?,?,?)";
 
-    private static final String GET_EVENT_SQL_BY_RADIUS =
+    private static final String GET_EVENT_BY_RADIUS_SQL =
             "SELECT * FROM Events e WHERE e.latitude < ? AND e.latitude > ? "
             + "AND e.logitude < ? AND e.longitude > ?;";
 
@@ -127,14 +127,14 @@ public final class DBManager {
         return null;
     }
 
-    public static List<Event> getEventByRadius(Location location, int radius) throws SQLException, ClassNotFoundException {
+    public static List<Event> getEventByRadius(Location location, double radius) throws SQLException, ClassNotFoundException {
         Connection conn = openConnection();
-        PreparedStatement getEventByRadiusStatement = conn.prepareStatement(GET_EVENT_SQL_BY_RADIUS);
+        PreparedStatement getEventByRadiusStatement = conn.prepareStatement(GET_EVENT_BY_RADIUS_SQL);
         getEventByRadiusStatement.clearParameters();
         getEventByRadiusStatement.setDouble(1, location.getLatitude() + radius);
-        getEventByRadiusStatement.setDouble(1, location.getLatitude() - radius);
-        getEventByRadiusStatement.setDouble(1, location.getLongitude() + radius);
-        getEventByRadiusStatement.setDouble(1, location.getLongitude() + radius);
+        getEventByRadiusStatement.setDouble(2, location.getLatitude() - radius);
+        getEventByRadiusStatement.setDouble(3, location.getLongitude() + radius);
+        getEventByRadiusStatement.setDouble(4, location.getLongitude() + radius);
         ResultSet getEventResults = getEventByRadiusStatement.executeQuery();
         closeConnection(conn);
         List<Event> list = new ArrayList<Event>();
