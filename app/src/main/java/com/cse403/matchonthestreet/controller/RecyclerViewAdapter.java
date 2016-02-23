@@ -128,6 +128,7 @@ public class RecyclerViewAdapter
                 public void onClick(View v) {
                     Intent showOnMapIntent = new Intent(context, MapsActivity.class);
                     showOnMapIntent.putExtra(context.toString() + ".VIEW_EVENT", currentItem.eid);
+                    showOnMapIntent.putExtra("fromListItem", true);
                     context.startActivity(showOnMapIntent);
                 }
             });

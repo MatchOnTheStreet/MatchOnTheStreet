@@ -111,6 +111,20 @@
         </LinearLayout>
         -->
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <EditText
+            android:id="@+id/durationET"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="enter duration in hours" />
+        <NumberPicker
+            android:id="@+id/durationPicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        </NumberPicker>
+    </LinearLayout>
 
     <!-- Description -->
     <EditText

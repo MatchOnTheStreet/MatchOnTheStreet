@@ -44,6 +44,7 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
         String eventDate = getArguments().getString("date");
         if (eventDate != null) {
             TextView dateText = (TextView) mView.findViewById(R.id.event_date);
+
             dateText.setText(eventDate);
         }
 

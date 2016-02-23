@@ -45,6 +45,7 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
     private EditText toTimeET;
     private TimePickerDialog toTimePD;
 
+    private EditText durationET;
     private NumberPicker durationPicker;
 
     private SimpleDateFormat dateFormatter;
@@ -121,7 +122,7 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
                 calendar.get(Calendar.HOUR_OF_DAY),
                 calendar.get(Calendar.MINUTE),
                 false);
-                
+
         fromTimeET = (EditText) findViewById(R.id.event_from_time);
         fromTimeET.setInputType(InputType.TYPE_NULL);
         fromTimeET.setOnClickListener(this);
@@ -141,6 +142,26 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
                 calendar.get(Calendar.HOUR_OF_DAY),
                 calendar.get(Calendar.MINUTE),
                 false);
+
+        durationET = (EditText) findViewById(R.id.durationET);
+
+        durationPicker = (NumberPicker) findViewById(R.id.durationPicker);
+        final String[] timeValues = {"1", "1.5", "2", "2.5", "3", "3.5", "4", "4.5", "5", "5.5", "6", "6.5", "7", "7.5", "8", "8.5", "9"};
+        durationPicker.setDisplayedValues(timeValues);
+        durationPicker.setMinValue(0);
+        durationPicker.setMaxValue(10);
+        durationPicker.setOnClickListener(this);
+        durationPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                durationET.setText(timeValues[newVal]);
+            }
+        });
+
+
+        toTimeET.setVisibility(View.INVISIBLE);
+        toDateET.setVisibility(View.INVISIBLE);
+
     }
 
     @Override
@@ -185,8 +206,10 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
         EditText eventDescET = (EditText)findViewById(R.id.event_description);
         String description = eventDescET.getText().toString();
 
+
+        float duration = Float.parseFloat(durationET.getText().toString()) * 60;
         // TODO: Add duration attribute
-        Event event = new Event(title, location, date, 60, calendar.getTime(), description);
+        Event event = new Event(title, location, date, (int)duration, calendar.getTime(), description);
 
         // Adds this newly added event to ViewController
         // So that it appears in the list view as well

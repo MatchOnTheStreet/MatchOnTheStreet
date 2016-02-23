@@ -40,6 +40,7 @@ package com.cse403.matchonthestreet.view;
 
 import android.Manifest;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -60,6 +61,7 @@ import android.widget.FrameLayout;
 
 
 import com.cse403.matchonthestreet.R;
+import com.cse403.matchonthestreet.backend.DBManager;
 import com.cse403.matchonthestreet.controller.MOTSApp;
 import com.cse403.matchonthestreet.controller.ViewController;
 import com.cse403.matchonthestreet.models.Event;
@@ -78,6 +80,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -100,6 +103,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     private boolean FROM_LIST;
     private static boolean FIRST_LAUNCH = true;
     private int selectedEventID = NO_SELECTED_EVENT;
+
+    private boolean centerOnLocation = true;
 
     /** Tag used for printing to debugger */
     private static final String TAG = "MainActivity";
@@ -131,12 +136,17 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Log.d(TAG, "onCreate");
         Intent intent = getIntent();
+
         FROM_LIST = intent.getBooleanExtra(ListViewActivity.EXTRA_MESSAGE, false);
         selectedEventID = intent.getIntExtra(ListViewActivity.class.toString() + ".VIEW_EVENT",
                 NO_SELECTED_EVENT);
 
+        if (FROM_LIST || intent.getBooleanExtra("fromListItem", false)) {
+            Log.d(TAG, "From List");
+            centerOnLocation = false;
+        }
 
 
         // Obtain the current instance of ViewController
@@ -284,7 +294,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "Have COARSE LOCATION permission");
             Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            if (mLastLocation != null) {
+            if (mLastLocation != null && centerOnLocation) {
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
             }
         } else {
@@ -295,7 +305,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             mMap.setMyLocationEnabled(true);
             Log.d(TAG, "Have FINE LOCATION permission");
             Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            if (mLastLocation != null) {
+            if (mLastLocation != null && centerOnLocation) {
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
             }
         } else {
@@ -339,7 +349,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
      */
     @Override
     public void onLocationChanged(Location location) {
-        Log.d(TAG, "Location Changed");
+
+        Log.d(TAG, "Location Changed ");
 
         // Set the users current location
         mCurrentLocation = location;
@@ -452,11 +463,11 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                 Log.d(TAG, "Location button pressed");
 
                 if (mCurrentLocation != null) {
+
                     Log.d(TAG, "" + mCurrentLocation.getLatitude() + mCurrentLocation.getLongitude());
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
                     // TODO: add zooming here
 
-                    addEventsToMap(new ArrayList<Event>());
                 } else {
                     Log.d(TAG, "No last known location");
                 }
@@ -489,13 +500,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                 public void onClick(View view) {
                     Log.d(TAG, "map to list pressed");
                     Intent intent = new Intent(MapsActivity.this, ListViewActivity.class);
-                    /*
-                    Event testEvent = new Event(0, "Title", new Location("TestLocation"), new Date(), "Description");
-                    List<Event> eventList = new ArrayList<Event>();
-                    eventList.add(testEvent);
 
-                    //intent.putExtra("Event", eventList);
-                    */
                     startActivity(intent);
                 }
             });
@@ -514,9 +519,54 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                 startActivity(intent);
             }
         });
+
+
+        FloatingActionButton fabRefresh = (FloatingActionButton) findViewById(R.id.fab_refresh);
+        fabRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "Refresh button pressed");
+                reloadPinsOnScreen();
+            }
+        });
+
+
         fabEvents.hide();
 
     }
+
+    private boolean reloadPinsOnScreen() {
+        if (mCurrentLocation != null) {
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+            float zoom = mMap.getCameraPosition().zoom;
+            float radius = (float) 2.0 / (zoom / (float) 21.0);
+            int scaled = (int) (radius * radius * radius);
+
+            AsyncTask<Integer, Integer, Integer> task = new AsyncTask<Integer, Integer, Integer>() {
+                @Override
+                protected Integer doInBackground(Integer[] params) {
+                    try {
+                        List<Event> events = DBManager.getEventByRadius(mCurrentLocation, params[0]);
+                        ArrayList<Event> eventArrayList = new ArrayList<>(events);
+                        removeAllMarkers();
+                        addEventsToMap(eventArrayList);
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+            };
+
+            task.execute(scaled);
+            Log.d(TAG, "" + (radius * radius * radius) + "       " + mCurrentLocation.getLatitude() + mCurrentLocation.getLongitude());
+        } else {
+            return false;
+        }
+        return true;
+    }
+
 
     /**
      *  Called when the search button is pressed. Uses Geocoder to search text -> coordinates
@@ -577,7 +627,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         args.putString("detailText", marker.getTitle());
         if (mapMarkerEvent.containsKey(marker)) {
             Event event = mapMarkerEvent.get(marker);
-            args.putString("date", event.time.toString());
+            args.putString("date", event.time.toString() + " for " + event.duration + " minutes");
             args.putString("description", event.description);
         }
 
@@ -646,7 +696,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
     private void addEventToMap(Event event) {
         Location tLoc = event.location;
-        Log.d(TAG, "The location is: " + tLoc.getLongitude() + " " + tLoc.getLatitude());
+        //Log.d(TAG, "The location is: " + tLoc.getLongitude() + " " + tLoc.getLatitude());
         Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(tLoc.getLatitude(), tLoc.getLongitude())).title(event.title));
         mapMarkerEvent.put(marker, event);
 
@@ -680,13 +730,17 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                // removeAllMarkers();
 
                 addEventsToMap(listEvent);
-
+                Location loc = listEvent.get(0).location;
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(loc.getLatitude(), loc.getLongitude())));
+                centerOnLocation = false;
             } else {
                 Log.d(TAG, "eventList is null or no elements");
+                centerOnLocation = true;
             }
 
         } else {
             Log.d(TAG, "not result OK");
+            centerOnLocation = false;
         }
     }
 
