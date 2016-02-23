@@ -58,6 +58,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 
 import com.cse403.matchonthestreet.R;
@@ -466,10 +467,16 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                 if (mCurrentLocation != null) {
                     Log.d(TAG, "" + mCurrentLocation.getLatitude() + " " + mCurrentLocation.getLongitude());
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+                    // TODO: set the user location in ViewController once the location is acquired
+                    viewController.setUserLocation(mCurrentLocation);
                     // TODO: add zooming here
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(9));
 
                 } else {
                     Log.d(TAG, "No last known location");
+                    Toast noLocationToast = Toast.makeText(getApplicationContext(), "No location available now", Toast.LENGTH_SHORT);
+                    noLocationToast.show();
+
                 }
             }
         });

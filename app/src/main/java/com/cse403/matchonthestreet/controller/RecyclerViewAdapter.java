@@ -5,9 +5,12 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.media.Image;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -17,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
@@ -30,6 +34,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -58,7 +63,7 @@ public class RecyclerViewAdapter
     /**
      * The filter used on the events.
      */
-    private ListViewFilter filter = new ListViewFilter();
+    private ListViewFilter filter;
 
     /**
      * The current context of the adapter. Normally would be the
@@ -76,6 +81,7 @@ public class RecyclerViewAdapter
         this.items = items;
         this.filteredItems = items;
         this.context = context;
+        this.filter = new ListViewFilter(context);
     }
 
     @Override
@@ -99,7 +105,7 @@ public class RecyclerViewAdapter
         // Set the title and description of the listed item
         viewHolder.txtDesc.setText(Event.getDescription());
         viewHolder.txtTitle.setText(Event.getTitle());
-        viewHolder.txtDate.setText(new SimpleDateFormat("EEE, MMK d").format(Event.time));
+        viewHolder.txtDate.setText(new SimpleDateFormat("EEE, MM/dd, yy", Locale.US).format(Event.time));
 
         // Make an icon with the initial letter, colored randomly.
         Random rand = new Random();
@@ -139,6 +145,7 @@ public class RecyclerViewAdapter
         ImageView imageView;
         TextView txtTitle;
         TextView txtDesc;
+        ImageView imageDate;
         TextView txtDate;
         Event currentItem;
 
@@ -163,6 +170,14 @@ public class RecyclerViewAdapter
 
     public class ListViewFilter extends Filter {
 
+        private Context context;
+        private ViewController viewController;
+
+        public ListViewFilter(Context context) {
+            this.context = context;
+            this.viewController = ((MOTSApp)context.getApplicationContext()).getViewController();
+        }
+
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             // convert CharSequence constraint into the needed search parameters
@@ -171,6 +186,9 @@ public class RecyclerViewAdapter
             String keyword = queryTokens[0];
             String fromDateStr = queryTokens[1];
             String toDateStr = queryTokens[2];
+            String radiusStr = queryTokens[3];
+            String latLongStr = queryTokens[4];
+
             for (String q : queryTokens) {
                 System.out.println("!!!!Token: " + q);
             }
@@ -186,6 +204,15 @@ public class RecyclerViewAdapter
                 }
             }
 
+            int radius = -1;
+            double lat = Double.NaN, lon = Double.NaN;
+            if (!radiusStr.isEmpty() && !latLongStr.isEmpty()) {
+                radius = Integer.parseInt(radiusStr);
+                String[] latLong = latLongStr.split(Pattern.quote(">$<"));
+                lat = Double.parseDouble(latLong[0]);
+                lon = Double.parseDouble(latLong[1]);
+            }
+
             FilterResults filterResults = new FilterResults();
 
             final List<Event> originalList = items;
@@ -196,13 +223,20 @@ public class RecyclerViewAdapter
                 String desc = item.getDescription().toLowerCase();
                 Date eventDate = item.time;
 
-                if (title.contains(keyword) || desc.contains(keyword)) {
-                    if ((fromDate != null && toDate != null) &&
-                            !(eventDate.before(fromDate) || eventDate.after(toDate))) {
-                        resultList.add(item);
-                    } else {
-                        resultList.add(item);
-                    }
+                boolean matchesKeyword = title.contains(keyword) || desc.contains(keyword);
+                boolean withinDate = (fromDate == null || toDate == null) ||
+                        (eventDate.before(fromDate) && eventDate.after(toDate));
+                boolean withinRadius = true;
+                if (!(radius < 0 || Double.isNaN(lat) || Double.isNaN(lon))) {
+                    Location userLocation = new Location("");
+                    userLocation.setLatitude(lat);
+                    userLocation.setLongitude(lon);
+                    float distance = item.location.distanceTo(userLocation);
+                    withinRadius = distance <= (radius * 1000); // Convert to meters
+                }
+
+                if (matchesKeyword && withinDate && withinRadius) {
+                    resultList.add(item);
                 }
             }
 
@@ -264,6 +298,7 @@ public class RecyclerViewAdapter
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             filteredItems = (List<Event>) results.values;
+            viewController.updateEventList(new HashSet<>(getFilteredItems()));
             notifyDataSetChanged();
         }
     }

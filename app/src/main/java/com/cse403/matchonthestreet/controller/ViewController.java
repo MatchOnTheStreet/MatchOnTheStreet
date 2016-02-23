@@ -22,6 +22,8 @@ public class ViewController {
 
     protected Set<Event> eventSet = new HashSet<>();
 
+    protected Location userLocation = null;
+
     public Set<Event> getEventSet() {
         return eventSet;
     }
@@ -34,6 +36,14 @@ public class ViewController {
         boolean changed = !this.eventSet.equals(updatedSet);
         this.eventSet = updatedSet;
         return changed;
+    }
+
+    public void setUserLocation(Location location) {
+        this.userLocation = location;
+    }
+
+    public Location getUserLocation() {
+        return this.userLocation;
     }
 
     /*
@@ -53,25 +63,24 @@ public class ViewController {
                 "Casual pool play",
                 "Team Potato needs a goalkeeper",
                 "Basket ball IMA 5v5",
-                "Tennis match @ Denny",
-                "Casual pool play",
-                "Team Potato needs a goalkeeper",
-                "Basket ball IMA 5v5",
-                "Tennis match @ Denny",
-                "Casual pool play",
-                "Team Potato needs a goalkeeper",
-                "Basket ball IMA 5v5"};
+                "Come and play ",
+                "Competitive match of ",
+                "2 hours of ",
+                "Needs a little ",
+                "Feeling like playing ",
+                "Great weather! Play "
+        };
 
         String[] sports = new String[]{"basketball", "tennis", "soccer", "football",
                 "badminton", "table tennis", "pool", "running", "swimming", "racket ball", "baseball",
                 ""};
         sampleVal.addAll(Arrays.asList(values));
-        for (int i = 0; i < 233; i++) {
+        for (int i = 0; i < 200; i++) {
             String randStr = "";
             for (int j = 0; j < rand.nextInt(9); j++) {
                 randStr += (char)('A' + rand.nextInt(48));
             }
-            sampleVal.add(randStr + values[rand.nextInt(values.length)] +
+            sampleVal.add(randStr + " " + values[rand.nextInt(values.length)] +
                     sports[rand.nextInt(sports.length)]);
         }
 
@@ -80,9 +89,8 @@ public class ViewController {
         // Hardcoded population of list items
         for (String s : sampleVal) {
             Location l = new Location("dummy");
-            l.setLatitude(rand.nextDouble() * 90);
-            l.setLongitude(rand.nextDouble() * 90);
-            l.setAltitude(rand.nextDouble() * 90);
+            l.setLatitude(46 + rand.nextInt(2) + rand.nextDouble());      // center at 47
+            l.setLongitude(-123 + rand.nextInt(2) + rand.nextDouble());    // center at 122
 
             int start = rand.nextInt(largeStr.length() - s.length());
             String d = largeStr.substring(start, start + s.length());
