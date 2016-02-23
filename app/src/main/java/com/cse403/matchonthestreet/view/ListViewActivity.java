@@ -99,6 +99,8 @@ public class ListViewActivity extends AppCompatActivity {
         applyButton = (Button) findViewById(R.id.filter_apply_button);
         datePickerFactory = new SetTextDatePickerDialog(this);
 
+        applyButton.setOnClickListener(new ApplyButtonOnClickListener());
+
         // Set the date entries to be uneditable
         dateFromEntry.setInputType(0);
         dateToEntry.setInputType(0);
@@ -148,7 +150,7 @@ public class ListViewActivity extends AppCompatActivity {
                 searchManager.getSearchableInfo(getComponentName())
         );
 
-        searchView.setSubmitButtonEnabled(true);
+       /* searchView.setSubmitButtonEnabled(true);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -165,7 +167,7 @@ public class ListViewActivity extends AppCompatActivity {
                 }
                 return true;
             }
-        });
+        });*/
 
         return true;
     }
@@ -192,19 +194,28 @@ public class ListViewActivity extends AppCompatActivity {
     protected class ApplyButtonOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
+            // TODO: Hardcoded "From" and "to"
+            String keywords = searchView.getQuery().toString();
+            String startDate = dateFromEntry.getText().toString();
+            if (startDate.toLowerCase().equals("from")) startDate = "";
+            String endDate = dateFromEntry.getText().toString();
+            if (endDate.toLowerCase().equals("to")) endDate = "";
+            //startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ", Locale.US).format(startDate);
+            //endDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ", Locale.US).format(endDate);
 
+            recyclerViewAdapter.getFilter().filter(keywords + "::" + startDate + "::" + endDate);
+
+            viewController.updateEventList(new HashSet<>(recyclerViewAdapter.getFilteredItems()));
         }
     }
 
     /**
-     * Custom inner class for generating date picker dialogs for different
+     * Custom inner factory class for generating date picker dialogs for different
      * date entries.
      */
     protected class SetTextDatePickerDialog {
         private Context context;
 
-        private DatePickerDialog.OnDateSetListener listener;
-        private EditText dateEntry;
         private Calendar calendar;
 
         public SetTextDatePickerDialog(Context context) {
@@ -212,6 +223,11 @@ public class ListViewActivity extends AppCompatActivity {
             this.calendar = Calendar.getInstance();
         }
 
+        /**
+         * Returns a specific DatePickerDialog for this text entry field
+         * @param et The text date entry field whose value to be chosen
+         * @return the DatePickDialog used to provide value for the field
+         */
         public DatePickerDialog getPicker(final EditText et) {
             return new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
                 @Override

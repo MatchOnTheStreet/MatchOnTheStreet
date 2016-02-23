@@ -2,9 +2,15 @@ package com.cse403.matchonthestreet.controller;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.TypedArray;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +24,16 @@ import com.cse403.matchonthestreet.view.MapsActivity;
 import com.cse403.matchonthestreet.R;
 import com.cse403.matchonthestreet.models.Event;
 
+import org.w3c.dom.Text;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 /**
  * Created by Hao on 2/17/16.
@@ -33,23 +45,32 @@ public class RecyclerViewAdapter
         extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>
         implements Filterable {
 
-    /** The list of all items (before filtering) */
+    /**
+     * The list of all items (before filtering)
+     */
     private List<Event> items;
 
-    /** The list of items after filtering. */
+    /**
+     * The list of items after filtering.
+     */
     private List<Event> filteredItems;
 
-    /** The filter used on the events. */
+    /**
+     * The filter used on the events.
+     */
     private ListViewFilter filter = new ListViewFilter();
 
-    /** The current context of the adapter. Normally would be the
-     * ListViewActivity class. */
+    /**
+     * The current context of the adapter. Normally would be the
+     * ListViewActivity class.
+     */
     public Context context;
 
     /**
      * The constructor of RecyclerViewAdapter
+     *
      * @param context The current context of the adapter
-     * @param items List of events to be put into the adapter
+     * @param items   List of events to be put into the adapter
      */
     public RecyclerViewAdapter(Context context, List<Event> items) {
         this.items = items;
@@ -78,6 +99,7 @@ public class RecyclerViewAdapter
         // Set the title and description of the listed item
         viewHolder.txtDesc.setText(Event.getDescription());
         viewHolder.txtTitle.setText(Event.getTitle());
+        viewHolder.txtDate.setText(new SimpleDateFormat("EEE, MMK d").format(Event.time));
 
         // Make an icon with the initial letter, colored randomly.
         Random rand = new Random();
@@ -94,6 +116,7 @@ public class RecyclerViewAdapter
 
     /**
      * Returns all events
+     *
      * @return all events (Before filtering).
      */
     public List<Event> getAllItems() {
@@ -102,6 +125,7 @@ public class RecyclerViewAdapter
 
     /**
      * Returns the filtered results
+     *
      * @return the filtered results.
      */
     public List<Event> getFilteredItems() {
@@ -115,6 +139,7 @@ public class RecyclerViewAdapter
         ImageView imageView;
         TextView txtTitle;
         TextView txtDesc;
+        TextView txtDate;
         Event currentItem;
 
         public ViewHolder(View v) {
@@ -122,6 +147,7 @@ public class RecyclerViewAdapter
             this.imageView = (ImageView) v.findViewById(R.id.icon);
             this.txtTitle = (TextView) v.findViewById(R.id.title);
             this.txtDesc = (TextView) v.findViewById(R.id.desc);
+            this.txtDate = (TextView) v.findViewById(R.id.item_date);
             v.setOnClickListener(new View.OnClickListener() {
                 // TODO: dummy onClick
                 @Override
@@ -141,7 +167,49 @@ public class RecyclerViewAdapter
         protected FilterResults performFiltering(CharSequence constraint) {
             // convert CharSequence constraint into the needed search parameters
             // return this.performFiltering(.....)
-            return null;
+            String[] queryTokens = constraint.toString().toLowerCase().split(Pattern.quote("::"), -1);
+            String keyword = queryTokens[0];
+            String fromDateStr = queryTokens[1];
+            String toDateStr = queryTokens[2];
+            for (String q : queryTokens) {
+                System.out.println("!!!!Token: " + q);
+            }
+            SimpleDateFormat format = new SimpleDateFormat("dd-MM-yy", Locale.US);
+            Date fromDate = null;
+            Date toDate = null;
+            if (!fromDateStr.isEmpty() && !toDateStr.isEmpty()) {
+                try {
+                    fromDate = format.parse(fromDateStr);
+                    toDate = format.parse(toDateStr);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            FilterResults filterResults = new FilterResults();
+
+            final List<Event> originalList = items;
+            List<Event> resultList = new ArrayList<>(originalList.size());
+
+            for (Event item : originalList) {
+                String title = item.getTitle().toLowerCase();
+                String desc = item.getDescription().toLowerCase();
+                Date eventDate = item.time;
+
+                if (title.contains(keyword) || desc.contains(keyword)) {
+                    if ((fromDate != null && toDate != null) &&
+                            !(eventDate.before(fromDate) || eventDate.after(toDate))) {
+                        resultList.add(item);
+                    } else {
+                        resultList.add(item);
+                    }
+                }
+            }
+
+            filterResults.values = resultList;
+            filterResults.count = resultList.size();
+
+            return filterResults;
         }
 
 
@@ -200,4 +268,118 @@ public class RecyclerViewAdapter
         }
     }
 
+    public class DividerItemDecoration extends RecyclerView.ItemDecoration {
+
+        private Drawable mDivider;
+        private boolean mShowFirstDivider = false;
+        private boolean mShowLastDivider = false;
+
+
+        public DividerItemDecoration(Context context, AttributeSet attrs) {
+            final TypedArray a = context
+                    .obtainStyledAttributes(attrs, new int[]{android.R.attr.listDivider});
+            mDivider = a.getDrawable(0);
+            a.recycle();
+        }
+
+        public DividerItemDecoration(Context context, AttributeSet attrs, boolean showFirstDivider,
+                                     boolean showLastDivider) {
+            this(context, attrs);
+            mShowFirstDivider = showFirstDivider;
+            mShowLastDivider = showLastDivider;
+        }
+
+        public DividerItemDecoration(Drawable divider) {
+            mDivider = divider;
+        }
+
+        public DividerItemDecoration(Drawable divider, boolean showFirstDivider,
+                                     boolean showLastDivider) {
+            this(divider);
+            mShowFirstDivider = showFirstDivider;
+            mShowLastDivider = showLastDivider;
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent,
+                                   RecyclerView.State state) {
+            super.getItemOffsets(outRect, view, parent, state);
+            if (mDivider == null) {
+                return;
+            }
+            if (parent.getChildPosition(view) < 1) {
+                return;
+            }
+
+            if (getOrientation(parent) == LinearLayoutManager.VERTICAL) {
+                outRect.top = mDivider.getIntrinsicHeight();
+            } else {
+                outRect.left = mDivider.getIntrinsicWidth();
+            }
+        }
+
+        @Override
+        public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
+            if (mDivider == null) {
+                super.onDrawOver(c, parent, state);
+                return;
+            }
+
+            // Initialization needed to avoid compiler warning
+            int left = 0, right = 0, top = 0, bottom = 0, size;
+            int orientation = getOrientation(parent);
+            int childCount = parent.getChildCount();
+
+            if (orientation == LinearLayoutManager.VERTICAL) {
+                size = mDivider.getIntrinsicHeight();
+                left = parent.getPaddingLeft();
+                right = parent.getWidth() - parent.getPaddingRight();
+            } else { //horizontal
+                size = mDivider.getIntrinsicWidth();
+                top = parent.getPaddingTop();
+                bottom = parent.getHeight() - parent.getPaddingBottom();
+            }
+
+            for (int i = mShowFirstDivider ? 0 : 1; i < childCount; i++) {
+                View child = parent.getChildAt(i);
+                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
+
+                if (orientation == LinearLayoutManager.VERTICAL) {
+                    top = child.getTop() - params.topMargin;
+                    bottom = top + size;
+                } else { //horizontal
+                    left = child.getLeft() - params.leftMargin;
+                    right = left + size;
+                }
+                mDivider.setBounds(left, top, right, bottom);
+                mDivider.draw(c);
+            }
+
+            // show last divider
+            if (mShowLastDivider && childCount > 0) {
+                View child = parent.getChildAt(childCount - 1);
+                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
+                if (orientation == LinearLayoutManager.VERTICAL) {
+                    top = child.getBottom() + params.bottomMargin;
+                    bottom = top + size;
+                } else { // horizontal
+                    left = child.getRight() + params.rightMargin;
+                    right = left + size;
+                }
+                mDivider.setBounds(left, top, right, bottom);
+                mDivider.draw(c);
+            }
+        }
+
+        private int getOrientation(RecyclerView parent) {
+            if (parent.getLayoutManager() instanceof LinearLayoutManager) {
+                LinearLayoutManager layoutManager = (LinearLayoutManager) parent.getLayoutManager();
+                return layoutManager.getOrientation();
+            } else {
+                throw new IllegalStateException(
+                        "DividerItemDecoration can only be used with a LinearLayoutManager.");
+            }
+        }
+
+    }
 }
