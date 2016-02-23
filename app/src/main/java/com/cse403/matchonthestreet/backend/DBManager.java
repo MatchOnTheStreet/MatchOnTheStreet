@@ -98,7 +98,8 @@ public final class DBManager {
         addEventStatement.setString(2, event.title);
         addEventStatement.setDouble(3, event.location.getLongitude());
         addEventStatement.setDouble(4, event.location.getLatitude());
-        addEventStatement.setString(5, event.time.toString());
+        addEventStatement.setDate(5, new java.sql.Date(event.time.getTime()));
+        //addEventStatement.setString(5, event.time.toString());
         addEventStatement.setInt(6, event.duration);
         addEventStatement.setString(7, event.timeCreated.toString());
         addEventStatement.setString(8, event.description);
