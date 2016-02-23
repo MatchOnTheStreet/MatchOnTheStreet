@@ -78,6 +78,7 @@ import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.VisibleRegion;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -463,8 +464,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                 Log.d(TAG, "Location button pressed");
 
                 if (mCurrentLocation != null) {
-
-                    Log.d(TAG, "" + mCurrentLocation.getLatitude() + mCurrentLocation.getLongitude());
+                    Log.d(TAG, "" + mCurrentLocation.getLatitude() + " " + mCurrentLocation.getLongitude());
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
                     // TODO: add zooming here
 
@@ -542,14 +542,17 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             float radius = (float) 2.0 / (zoom / (float) 21.0);
             int scaled = (int) (radius * radius * radius);
 
-            AsyncTask<Integer, Integer, Integer> task = new AsyncTask<Integer, Integer, Integer>() {
+
+
+            AsyncTask<Double, Integer, List<Event>> task = new AsyncTask<Double, Integer, List<Event>>() {
                 @Override
-                protected Integer doInBackground(Integer[] params) {
+                protected List<Event> doInBackground(Double[] params) {
                     try {
+                        Log.d(TAG, "getEventsByRadius of " + params[0]);
                         List<Event> events = DBManager.getEventByRadius(mCurrentLocation, params[0]);
                         ArrayList<Event> eventArrayList = new ArrayList<>(events);
-                        removeAllMarkers();
-                        addEventsToMap(eventArrayList);
+                        Log.d(TAG, "found " + eventArrayList.size() + " events");
+                        return events;
                     } catch (ClassNotFoundException e) {
                         e.printStackTrace();
                     } catch (SQLException e) {
@@ -557,9 +560,22 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                     }
                     return null;
                 }
-            };
 
-            task.execute(scaled);
+                protected void onPostExecute(List<Event> events) {
+                    Log.d(TAG, "On Post Execute");
+                    if (events != null) {
+                        removeAllMarkers();
+                        ArrayList<Event> eventArrayList = new ArrayList<>(events);
+                        addEventsToMap(eventArrayList);
+                    }
+                }
+
+            };
+            VisibleRegion vr = mMap.getProjection().getVisibleRegion();
+            double top = vr.latLngBounds.northeast.latitude;
+            double bottom = vr.latLngBounds.southwest.latitude;
+
+            task.execute(Math.abs(top - bottom));
             Log.d(TAG, "" + (radius * radius * radius) + "       " + mCurrentLocation.getLatitude() + mCurrentLocation.getLongitude());
         } else {
             return false;
@@ -585,6 +601,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
             } catch (IOException e) {
                 Log.d(TAG, e.getMessage());
+                e.printStackTrace();
             }
 
             if (addressList != null && addressList.size() != 0) {
@@ -627,8 +644,13 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         args.putString("detailText", marker.getTitle());
         if (mapMarkerEvent.containsKey(marker)) {
             Event event = mapMarkerEvent.get(marker);
-            args.putString("date", event.time.toString() + " for " + event.duration + " minutes");
-            args.putString("description", event.description);
+            if (event.time != null) {
+                args.putString("date", event.time.toString() + " for " + event.duration + " minutes");
+            } else {
+                Log.d(TAG, "Event has null date " + event.title);
+            }
+            if (event.description != null)
+                args.putString("description", event.description);
         }
 
         MapDetailFragment mapDetailFragment = new MapDetailFragment();
