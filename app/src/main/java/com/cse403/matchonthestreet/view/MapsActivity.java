@@ -538,11 +538,6 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     private boolean reloadPinsOnScreen() {
         if (mCurrentLocation != null) {
             mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
-            float zoom = mMap.getCameraPosition().zoom;
-            float radius = (float) 2.0 / (zoom / (float) 21.0);
-            int scaled = (int) (radius * radius * radius);
-
-
 
             AsyncTask<Double, Integer, List<Event>> task = new AsyncTask<Double, Integer, List<Event>>() {
                 @Override
@@ -576,7 +571,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             double bottom = vr.latLngBounds.southwest.latitude;
 
             task.execute(Math.abs(top - bottom));
-            Log.d(TAG, "" + (radius * radius * radius) + "       " + mCurrentLocation.getLatitude() + mCurrentLocation.getLongitude());
+
         } else {
             return false;
         }

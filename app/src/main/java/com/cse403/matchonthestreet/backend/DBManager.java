@@ -98,6 +98,7 @@ public final class DBManager {
         addEventStatement.setString(2, event.title);
         addEventStatement.setDouble(3, event.location.getLongitude());
         addEventStatement.setDouble(4, event.location.getLatitude());
+        Log.d("DBManager", "event epoch time: " + event.time.getTime());
         addEventStatement.setDate(5, new java.sql.Date(event.time.getTime()));
         //addEventStatement.setString(5, event.time.toString());
         addEventStatement.setInt(6, event.duration);

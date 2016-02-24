@@ -169,7 +169,7 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
 
         Intent resultIntent = new Intent(); 
 
-        Log.d("AddEventActivity", "Date toString is: " + event.time.toString());
+        Log.d("AddEventActivity", "Date toString is: " + event.time.getTime());
 
         ArrayList<Event> list = new ArrayList<>();
         list.add(event);
