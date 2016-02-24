@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -39,12 +40,16 @@ public class SportsIconFinder {
                             split("_");
 
                     ArrayList<String> tokenList = new ArrayList<String>(Arrays.asList(drawableTokens));
-                    String[] badWords = new String[]{"and", "a", "on", "with", "up", "down", "out", "of"};
+                    String[] badWords = new String[]{"and", "a", "on", "with", "up", "down", "out",
+                            "of", "ball", "person", "player", "group", "team", "playing", "like",
+                            "game", "couple"};
                     for (String w : badWords) {
-                        tokenList.remove(w);
+                        while (tokenList.contains(w)) {
+                            tokenList.remove(w);
+                        }
                     }
                     System.out.print("Filename: " + filename + "=[");
-                    for (String t : drawableTokens) {
+                    for (String t : tokenList) {
                         System.out.print(t + ",");
                     }
                     System.out.println("];");
@@ -70,16 +75,24 @@ public class SportsIconFinder {
 
     public Drawable matchString(Context context, String query) {
         String bestMatch = "";
-        int bestCount = 0;
+        double bestCount = 0;
+
+        query = query.replaceAll("[^\\w\\s]", "");
+        System.out.println("Q: " + query);
         String[] queryTokens = query.split(" ");
         for (Set<String> tokens : drawableMap.keySet()) {
-            int matchCount = 0;
+            double matchCount = 0;
             for (String token : queryTokens) {
                 if (tokens.contains(token)) {
-                    matchCount++;
+                    if (matchCount == 0) {
+                        matchCount++;
+                    } else {
+                        matchCount *= 2;
+                    }
                 }
             }
-            if (matchCount > bestCount) {
+            if (matchCount > bestCount ||
+                    (matchCount == bestCount && new Random().nextDouble() < 0.5)) {
                 bestCount = matchCount;
                 bestMatch = drawableMap.get(tokens);
             }

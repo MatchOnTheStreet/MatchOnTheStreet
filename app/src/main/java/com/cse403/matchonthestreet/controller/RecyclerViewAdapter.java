@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -108,14 +109,26 @@ public class RecyclerViewAdapter
         viewHolder.txtDate.setText(new SimpleDateFormat("EEE, MM/dd, yy", Locale.US).format(event.time));
 
         Drawable drawable = SportsIconFinder.getInstance().matchString(context, event.getTitle().toLowerCase());
+        if (drawable != null) {
+            drawable.setColorFilter(
+                    Color.rgb(event.title.hashCode() % 255,
+                            event.description.hashCode() % 255,
+                            event.time.hashCode() % 255),
+                    PorterDuff.Mode.MULTIPLY
+            );
+        }
+
         if (drawable == null) {
             // Make an icon with the initial letter, colored randomly.
             Random rand = new Random();
             String firstLetter = "" + event.getTitle().toUpperCase().charAt(0);
             int randomColor = Color.rgb(20 + rand.nextInt(200), 20 + rand.nextInt(220), 20 + rand.nextInt(220));
-            drawable = TextDrawable.builder().buildRound("", randomColor);
+            drawable = TextDrawable.builder().buildRound(firstLetter, randomColor);
         }
+
         viewHolder.imageView.setImageDrawable(drawable);
+        viewHolder.imageView.invalidateDrawable(drawable);
+
     }
 
     @Override
