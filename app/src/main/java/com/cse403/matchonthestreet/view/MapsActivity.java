@@ -555,8 +555,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                 @Override
                 protected List<Event> doInBackground(Double[] params) {
                     try {
-                        Log.d(TAG, "getEventsByRadius of " + params[0]);
-                        List<Event> events = DBManager.getEventByRadius(mCurrentLocation, params[0]);
+                        Log.d(TAG, "getEventsInRadius of " + params[0]);
+                        List<Event> events = DBManager.getEventsInRadius(mCurrentLocation, params[0]);
                         ArrayList<Event> eventArrayList = new ArrayList<>(events);
                         Log.d(TAG, "found " + eventArrayList.size() + " events");
                         return events;

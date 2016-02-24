@@ -58,8 +58,7 @@ public class LoginActivity extends NavActivity {
                     mProfileTracker.startTracking();
                 } else {
                     Profile profile = Profile.getCurrentProfile();
-                    String s = profile.getName();
-                    Log.d(TAG, s);
+                    Log.d(TAG, profile.getName());
                 }
                 info.setText("User ID:  " + loginResult.getAccessToken().getUserId());
                 SharedPreferences mPrefs = getSharedPreferences("userPrefs", 0);
@@ -67,25 +66,13 @@ public class LoginActivity extends NavActivity {
                 mEditor.putString("userID", loginResult.getAccessToken().getUserId());
                 mEditor.commit();
 
-
-
                 Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
                 startActivity(intent);
             }
 
             @Override
             public void onCancel() {
-
                 info.setText("Login attempt cancelled.");
-                //TODO: Remove for final release
-                SharedPreferences mPrefs = getSharedPreferences("userPrefs", 0);
-                SharedPreferences.Editor mEditor = mPrefs.edit();
-                mEditor.putString("userID", "temp account");
-                mEditor.commit();
-
-                Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
-                startActivity(intent);
-
             }
 
             @Override
