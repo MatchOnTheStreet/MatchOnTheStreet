@@ -127,7 +127,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     /** If continuous location updates are needed */
     private boolean mRequestingLocationUpdates = true;
 
-    private Map<Marker, Event> mapMarkerEvent;
+    private Map<Marker, Event> mapMarkerEvent = new HashMap<>();
 
     private ViewController viewController;
     /**
@@ -139,6 +139,24 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Initialize the google api features
+        buildGoogleApiClient();
+        // Set the view to the xml layout file
+        setContentView(R.layout.activity_maps);
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+
+        mapFragment.getMapAsync(this);
+
+        // Starts location requests to the google api
+        checkLocationPermission();
+        createLocationRequest();
+        // Creates the buttons that look like floating action buttons
+        createButtons();
+
+
         Log.d(TAG, "onCreate");
         Intent intent = getIntent();
 
@@ -149,7 +167,34 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         if (FROM_LIST || intent.getBooleanExtra("fromListItem", false)) {
             Log.d(TAG, "From List");
             centerOnLocation = false;
+
+            AsyncTask<Integer, Event, Event> task = new AsyncTask<Integer, Event, Event>() {
+                @Override
+                protected Event doInBackground(Integer[] params) {
+                    Event event = null;
+                    try {
+                        event = DBManager.getEventById(params[0]);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    return event;
+                }
+
+                @Override
+                protected void onPostExecute(Event event) {
+                    if (event != null) {
+                        Log.d(TAG, "onPostExecute move to " + event.title);
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(event.location.getLatitude(), event.location.getLongitude())));
+                    } else {
+                        centerOnLocation = true;
+                    }
+                }
+            };
+            int eid = intent.getIntExtra("selectedEid", 0);
+            task.execute(eid);
         }
+
 
         // Obtain the current instance of ViewController
         viewController = ((MOTSApp) getApplicationContext()).getViewController();
@@ -160,26 +205,11 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             FIRST_LAUNCH = false;
         }
 
-        // Set the view to the xml layout file
-        setContentView(R.layout.activity_maps);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
 
-        mapFragment.getMapAsync(this);
-        // Initialize the google api features
-        buildGoogleApiClient();
-        // Starts location requests to the google api
-        checkLocationPermission();
-        createLocationRequest();
-        // Creates the buttons that look like floating action buttons
-        createButtons();
 
         // Set the DetailFragment to be invisible
         FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
         fl.setVisibility(View.GONE);
-
-        mapMarkerEvent = new HashMap<>();
 
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(findViewById(R.id.map_search_bar).getWindowToken(), 0);
@@ -373,7 +403,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
      */
     protected void stopLocationUpdates() {
         Log.d(TAG, "Stop location updates");
-        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        if (mGoogleApiClient.isConnected())
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
     }
 
     /**

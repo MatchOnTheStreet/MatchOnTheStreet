@@ -14,6 +14,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -165,6 +166,8 @@ public class RecyclerViewAdapter
                     Intent showOnMapIntent = new Intent(context, MapsActivity.class);
                     showOnMapIntent.putExtra(context.toString() + ".VIEW_EVENT", currentItem.eid);
                     showOnMapIntent.putExtra("fromListItem", true);
+                    showOnMapIntent.putExtra("selectedEid", currentItem.eid);
+                    Log.d("Recycler", "passing eid: " + currentItem.eid);
                     context.startActivity(showOnMapIntent);
                 }
             });
