@@ -99,19 +99,22 @@ public class RecyclerViewAdapter
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int pos) {
-        Event Event = filteredItems.get(pos);
-        viewHolder.currentItem = Event;
+        Event event = filteredItems.get(pos);
+        viewHolder.currentItem = event;
 
         // Set the title and description of the listed item
-        viewHolder.txtDesc.setText(Event.getDescription());
-        viewHolder.txtTitle.setText(Event.getTitle());
-        viewHolder.txtDate.setText(new SimpleDateFormat("EEE, MM/dd, yy", Locale.US).format(Event.time));
+        viewHolder.txtDesc.setText(event.getDescription());
+        viewHolder.txtTitle.setText(event.getTitle());
+        viewHolder.txtDate.setText(new SimpleDateFormat("EEE, MM/dd, yy", Locale.US).format(event.time));
 
-        // Make an icon with the initial letter, colored randomly.
-        Random rand = new Random();
-        String firstLetter = "" + Event.getTitle().toUpperCase().charAt(0);
-        int randomColor = Color.rgb(rand.nextInt(255), rand.nextInt(255), rand.nextInt(255));
-        TextDrawable drawable = TextDrawable.builder().buildRound(firstLetter, randomColor);
+        Drawable drawable = SportsIconFinder.getInstance().matchString(context, event.getTitle().toLowerCase());
+        if (drawable == null) {
+            // Make an icon with the initial letter, colored randomly.
+            Random rand = new Random();
+            String firstLetter = "" + event.getTitle().toUpperCase().charAt(0);
+            int randomColor = Color.rgb(20 + rand.nextInt(200), 20 + rand.nextInt(220), 20 + rand.nextInt(220));
+            drawable = TextDrawable.builder().buildRound("", randomColor);
+        }
         viewHolder.imageView.setImageDrawable(drawable);
     }
 

@@ -94,7 +94,8 @@ import java.util.Set;
 
 public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
-        LocationListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener {
+        LocationListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener,
+        GoogleMap.OnMapLongClickListener {
 
     public static final int ADD_EVENT_REQUEST_CODE = 1;
     public static final int LIST_VIEW_REQUEST_CODE = 2;
@@ -150,9 +151,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             centerOnLocation = false;
         }
 
-
         // Obtain the current instance of ViewController
-        viewController = ((MOTSApp)getApplicationContext()).getViewController();
+        viewController = ((MOTSApp) getApplicationContext()).getViewController();
         // TODO: Here the dummy data is used in the ViewController, when the activity
         // is first launched.
         if (FIRST_LAUNCH) {
