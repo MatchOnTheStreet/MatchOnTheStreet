@@ -193,7 +193,7 @@ public class RecyclerViewAdapter
             String latLongStr = queryTokens[4];
 
             for (String q : queryTokens) {
-                System.out.println("!!!!Token: " + q);
+                System.out.println("Query tokens: " + q);
             }
             SimpleDateFormat format = new SimpleDateFormat("dd-MM-yy", Locale.US);
             Date fromDate = null;
