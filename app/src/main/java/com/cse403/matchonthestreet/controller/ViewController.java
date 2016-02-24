@@ -59,29 +59,39 @@ public class ViewController {
         Calendar cal = Calendar.getInstance();
         String largeStr = MOTSApp.getContext().getResources().getString(R.string.large_text);
 
-        String[] values = new String[]{"Tennis match @ Denny",
-                "Casual pool play",
-                "Team Potato needs a goalkeeper",
-                "Basket ball IMA 5v5",
-                "Come and play ",
-                "Competitive match of ",
-                "2 hours of ",
-                "Needs a little ",
-                "Feeling like playing ",
-                "Great weather! Play "
+        String[] values = new String[]{"## @ IMA",
+                "Casual play of ##",
+                "Team Potato needs a skillful ## player",
+                "IMA 5v5 ##",
+                "Come and play ##",
+                "Competitive ## match",
+                "2 hours of ##",
+                "Needs a little ##",
+                "Feeling like playing ##?",
+                "Great weather! Play ##",
+                "##. 3 yrs or experience required",
+                "Group ##",
+                "## -- don't bail!",
+                "## after lunch",
+                "looking for ## players",
+                "Would someone teach me ##?",
+                "fooball! Yes foobaal! foobar baz biz boz buzzz"
         };
 
         String[] sports = new String[]{"basketball", "tennis", "soccer", "football",
-                "badminton", "table tennis", "pool", "running", "swimming", "racket ball", "baseball",
-                ""};
-        sampleVal.addAll(Arrays.asList(values));
+                "badminton", "ping pong", "snooker", "billiard", "running", "swimming",
+                "squash", "baseball", "rowing", "sailing", "climbing", "skating",
+                "chess", "boating", "arch shooting", "skiing", "surfing"};
+
         for (int i = 0; i < 200; i++) {
             String randStr = "";
             for (int j = 0; j < rand.nextInt(9); j++) {
                 randStr += (char)('A' + rand.nextInt(48));
             }
-            sampleVal.add(randStr + " " + values[rand.nextInt(values.length)] +
-                    sports[rand.nextInt(sports.length)]);
+            String randTitle = values[rand.nextInt(values.length)] + " " + randStr;
+            randTitle = randTitle.replace("##", sports[rand.nextInt(sports.length)]);
+            sampleVal.add(randTitle);
+
         }
 
         List<Event> Events = new ArrayList<>();
