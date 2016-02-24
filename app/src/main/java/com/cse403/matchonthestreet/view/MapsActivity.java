@@ -58,6 +58,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 
 import com.cse403.matchonthestreet.R;
@@ -93,7 +94,8 @@ import java.util.Set;
 
 public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
-        LocationListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener {
+        LocationListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener,
+        GoogleMap.OnMapLongClickListener {
 
     public static final int ADD_EVENT_REQUEST_CODE = 1;
     public static final int LIST_VIEW_REQUEST_CODE = 2;
@@ -149,9 +151,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             centerOnLocation = false;
         }
 
-
         // Obtain the current instance of ViewController
-        viewController = ((MOTSApp)getApplicationContext()).getViewController();
+        viewController = ((MOTSApp) getApplicationContext()).getViewController();
         // TODO: Here the dummy data is used in the ViewController, when the activity
         // is first launched.
         if (FIRST_LAUNCH) {
@@ -466,10 +467,16 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                 if (mCurrentLocation != null) {
                     Log.d(TAG, "" + mCurrentLocation.getLatitude() + " " + mCurrentLocation.getLongitude());
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+                    // TODO: set the user location in ViewController once the location is acquired
+                    viewController.setUserLocation(mCurrentLocation);
                     // TODO: add zooming here
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(9));
 
                 } else {
                     Log.d(TAG, "No last known location");
+                    Toast noLocationToast = Toast.makeText(getApplicationContext(), "No location available now", Toast.LENGTH_SHORT);
+                    noLocationToast.show();
+
                 }
             }
         });
@@ -543,8 +550,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                 @Override
                 protected List<Event> doInBackground(Double[] params) {
                     try {
-                        Log.d(TAG, "getEventsByRadius of " + params[0]);
-                        List<Event> events = DBManager.getEventByRadius(mCurrentLocation, params[0]);
+                        Log.d(TAG, "getEventsInRadius of " + params[0]);
+                        List<Event> events = DBManager.getEventsInRadius(mCurrentLocation, params[0]);
                         ArrayList<Event> eventArrayList = new ArrayList<>(events);
                         Log.d(TAG, "found " + eventArrayList.size() + " events");
                         return events;

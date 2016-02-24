@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -61,6 +62,8 @@ public class ListViewActivity extends AppCompatActivity {
     /** Text area displaying selected ending date */
     protected EditText dateToEntry;
 
+    protected EditText searchRadius;
+
     /** Stored instance of factory class of date picker dialogs for date entries */
     protected SetTextDatePickerDialog datePickerFactory;
 
@@ -96,6 +99,7 @@ public class ListViewActivity extends AppCompatActivity {
         searchView = (SearchView) findViewById(R.id.filter_search_bar);
         dateFromEntry = (EditText) findViewById(R.id.filter_date_from);
         dateToEntry = (EditText) findViewById(R.id.filter_date_to);
+        searchRadius = (EditText) findViewById(R.id.filter_radius);
         applyButton = (Button) findViewById(R.id.filter_apply_button);
         datePickerFactory = new SetTextDatePickerDialog(this);
 
@@ -109,6 +113,7 @@ public class ListViewActivity extends AppCompatActivity {
         dateFromEntry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                dateFromEntry.setText("");
                 datePickerFactory.getPicker(dateFromEntry).show();
             }
         });
@@ -116,6 +121,7 @@ public class ListViewActivity extends AppCompatActivity {
         dateToEntry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                dateToEntry.setText("");
                 datePickerFactory.getPicker(dateToEntry).show();
             }
         });
@@ -150,24 +156,19 @@ public class ListViewActivity extends AppCompatActivity {
                 searchManager.getSearchableInfo(getComponentName())
         );
 
-       /* searchView.setSubmitButtonEnabled(true);
+        searchView.setSubmitButtonEnabled(true);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                recyclerViewAdapter.getFilter().filter(query);
-                viewController.updateEventList(new HashSet<>(recyclerViewAdapter.getFilteredItems()));
+                filterByInput();
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if (newText.isEmpty()) {
-                    recyclerViewAdapter.getFilter().filter(newText);
-                    viewController.updateEventList(new HashSet<>(recyclerViewAdapter.getAllItems()));
-                }
-                return true;
+                return false;
             }
-        });*/
+        });
 
         return true;
     }
@@ -194,19 +195,36 @@ public class ListViewActivity extends AppCompatActivity {
     protected class ApplyButtonOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            // TODO: Hardcoded "From" and "to"
-            String keywords = searchView.getQuery().toString();
-            String startDate = dateFromEntry.getText().toString();
-            if (startDate.toLowerCase().equals("from")) startDate = "";
-            String endDate = dateFromEntry.getText().toString();
-            if (endDate.toLowerCase().equals("to")) endDate = "";
-            //startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ", Locale.US).format(startDate);
-            //endDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ", Locale.US).format(endDate);
-
-            recyclerViewAdapter.getFilter().filter(keywords + "::" + startDate + "::" + endDate);
-
-            viewController.updateEventList(new HashSet<>(recyclerViewAdapter.getFilteredItems()));
+            filterByInput();
         }
+    }
+
+    private void filterByInput() {
+        // TODO: Hardcoded "From" and "to"
+        String keywords = searchView.getQuery().toString();
+
+        String startDate = dateFromEntry.getText().toString();
+        if (startDate.toLowerCase().equals("from")) startDate = "";
+
+        String endDate = dateToEntry.getText().toString();
+        if (endDate.toLowerCase().equals("to")) endDate = "";
+
+        String radius = searchRadius.getText().toString();
+
+        Location userLocation = viewController.getUserLocation();
+        String latLong;
+        if (userLocation != null) {
+            double lat = userLocation.getLatitude();
+            double lon = userLocation.getLongitude();
+            latLong = lat + ">$<" + lon;
+        } else {
+            latLong = "";
+        }
+
+        recyclerViewAdapter.getFilter().filter(keywords + "::" + startDate + "::" + endDate + "::" +
+                radius + "::" + latLong);
+
+
     }
 
     /**
@@ -239,6 +257,5 @@ public class ListViewActivity extends AppCompatActivity {
             }, calendar.get(Calendar.YEAR),
                     calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
         }
-
     }
 }

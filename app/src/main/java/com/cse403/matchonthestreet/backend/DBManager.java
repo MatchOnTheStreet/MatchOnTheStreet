@@ -27,22 +27,30 @@ public final class DBManager {
             "SELECT * FROM Accounts, WHERE uid = ?";
 
     private static final String CREATE_ACCOUNT_SQL =
-            "INSERT INTO Accounts (uid, name) VALUES(?,?)";
+            "INSERT INTO Accounts (uid, name) VALUES(?,?);";
+
+    private  static final String ADD_ACCOUNT_TO_EVENT_SQL =
+            "INSERT INTO Attending (uid, eid) VALUES (?, ?);";
 
     private static final String ADD_EVENT_SQL =
-            "INSERT INTO Events (eid, title, longitude, latitude, time, duration, timecreated, description) VALUES(?,?,?,?,?,?,?,?)";
+            "INSERT INTO Events "
+                + "(eid, title, longitude, latitude, start_time, duration, time_created, description) "
+                + "VALUES (?,?,?,?,?,?,?,?);";
 
-    private static final String GET_EVENT_BY_RADIUS_SQL =
+    private static final String GET_EVENTS_IN_RADIUS_SQL =
             "SELECT * FROM Events e WHERE e.latitude < ? AND e.latitude > ? "
             + "AND e.longitude < ? AND e.longitude > ?;";
 
     private static final String GET_EVENT_BY_ID_SQL =
             "SELECT * FROM Events WHERE eid = ?;";
 
-    private static final String GET_USER_EVENT_SQL =
-            "SELECT e.eid, e.title, e.longitude, e.latitude, e.time, e.duration, e.timecreated, e.description "
+    private static final String GET_EVENTS_ATTENDED_BY_ACCOUNT_SQL
+            = "SELECT e.eid AS eid, e.title AS title, e.longitude AS longitude, "
+                    + "e.latitude AS latitude, e.start_time AS start_time, "
+                    + "e.duration AS duration, e.time_created AS time_created, "
+                    + "e.description AS description "
             + "FROM Events e, Attending a"
-            + "WHERE a.uid = ? AND a.eid = e.eid";;
+            + "WHERE a.uid = ? AND a.eid = e.eid";
 
     /* transactions */
     private static final String BEGIN_TRANSACTION_SQL =
@@ -56,27 +64,81 @@ public final class DBManager {
         // Nothing
     }
 
-    public static List<Event> getUserEvent(Account account) throws SQLException, ClassNotFoundException {
+   // Methods
+
+    public static void addEvent(Event event) throws SQLException, ClassNotFoundException {
+        Log.d("DBManager", "addEvent");
         Connection conn = openConnection();
-        PreparedStatement getUserEventStatement = conn.prepareStatement(GET_USER_EVENT_SQL);
-        List<Event> list = new ArrayList<Event>();
-        getUserEventStatement.clearParameters();
-        getUserEventStatement.setInt(1, account.getUid());
-        ResultSet getUserEventResults = getUserEventStatement.executeQuery();
-        while (getUserEventResults.next()) {
-            int eid = getUserEventResults.getInt(1);
-            String title = getUserEventResults.getString(2);
+        PreparedStatement addEventStatement = conn.prepareStatement(ADD_EVENT_SQL);
+        addEventStatement.clearParameters();
+        addEventStatement.setInt(1, event.eid);
+        addEventStatement.setString(2, event.title);
+        addEventStatement.setDouble(3, event.location.getLongitude());
+        addEventStatement.setDouble(4, event.location.getLatitude());
+        addEventStatement.setLong(5, event.time.getTime());
+        addEventStatement.setInt(6, event.duration);
+        addEventStatement.setLong(7, event.timeCreated.getTime());
+        addEventStatement.setString(8, event.description);
+        addEventStatement.executeUpdate();
+        closeConnection(conn);
+    }
+
+    public static Event getEventById(int eid) throws SQLException, ClassNotFoundException {
+        Connection conn = openConnection();
+        PreparedStatement getEventByIdStatement = conn.prepareStatement(GET_EVENT_BY_ID_SQL);
+        getEventByIdStatement.clearParameters();
+        getEventByIdStatement.setInt(1, eid);
+        ResultSet rs = getEventByIdStatement.executeQuery();
+        closeConnection(conn);
+        if (rs.next()) {
+            String title = rs.getString("title");
             Location loc = new Location("new location");
-            loc.setLongitude(getUserEventResults.getDouble(3));
-            loc.setLatitude(getUserEventResults.getDouble(4));
-            Date time = getUserEventResults.getTimestamp(5);
-            int duration = getUserEventResults.getInt(6);
-            Date timeCreated = getUserEventResults.getTimestamp(7);
-            String description = getUserEventResults.getString(8);
+            loc.setLongitude(rs.getDouble("longitude"));
+            loc.setLatitude(rs.getDouble("latitude"));
+            Date time = new java.util.Date(rs.getLong("start_time"));
+            int duration = rs.getInt("duration");
+            Date timeCreated = new java.util.Date(rs.getLong("time_created"));
+            String description = rs.getString("description");
+            return new Event(eid, title, loc, time, duration, timeCreated, description);
+        }
+        return null;
+    }
+
+    public static List<Event> getEventsInRadius(Location location, double radius) throws SQLException, ClassNotFoundException {
+        Connection conn = openConnection();
+        PreparedStatement getEventByRadiusStatement = conn.prepareStatement(GET_EVENTS_IN_RADIUS_SQL);
+        getEventByRadiusStatement.clearParameters();
+        getEventByRadiusStatement.setDouble(1, location.getLatitude() + radius);
+        getEventByRadiusStatement.setDouble(2, location.getLatitude() - radius);
+        getEventByRadiusStatement.setDouble(3, location.getLongitude() + radius);
+        getEventByRadiusStatement.setDouble(4, location.getLongitude() - radius);
+        ResultSet rs = getEventByRadiusStatement.executeQuery();
+        closeConnection(conn);
+        List<Event> list = new ArrayList<>();
+        while (rs.next()){
+            int eid = rs.getInt("eid");
+            String title = rs.getString("title");
+            Location loc = new Location("new location");
+            loc.setLongitude(rs.getDouble("longitude"));
+            loc.setLatitude(rs.getDouble("latitude"));
+            Date time = new java.util.Date(rs.getLong("start_time"));
+            int duration = rs.getInt("duration");
+            Date timeCreated = new java.util.Date(rs.getLong("time_created"));
+            String description = rs.getString("description");
             Event event = new Event(eid, title, loc, time, duration, timeCreated, description);
             list.add(event);
         }
         return list;
+    }
+
+    public static void addAccountToEvent(Account account, Event event) throws SQLException, ClassNotFoundException {
+        Connection conn = openConnection();
+        PreparedStatement st = conn.prepareStatement(ADD_ACCOUNT_TO_EVENT_SQL);
+        st.clearParameters();
+        st.setInt(1, account.getUid());
+        st.setInt(2, event.eid);
+        st.executeUpdate();
+        closeConnection(conn);
     }
 
     public static void addAccount(Account account) throws SQLException, ClassNotFoundException {
@@ -89,67 +151,23 @@ public final class DBManager {
         closeConnection(conn);
     }
 
-    public static void addEvent(Event event) throws SQLException, ClassNotFoundException {
-        Log.d("DBManager", "addEvent");
+    public static List<Event> getEventsAttendedByAccount(Account account) throws SQLException, ClassNotFoundException {
         Connection conn = openConnection();
-        PreparedStatement addEventStatement = conn.prepareStatement(ADD_EVENT_SQL);
-        addEventStatement.clearParameters();
-        addEventStatement.setInt(1, event.eid);
-        addEventStatement.setString(2, event.title);
-        addEventStatement.setDouble(3, event.location.getLongitude());
-        addEventStatement.setDouble(4, event.location.getLatitude());
-        Log.d("DBManager", "event epoch time: " + event.time.getTime());
-        addEventStatement.setDate(5, new java.sql.Date(event.time.getTime()));
-        //addEventStatement.setString(5, event.time.toString());
-        addEventStatement.setInt(6, event.duration);
-        addEventStatement.setString(7, event.timeCreated.toString());
-        addEventStatement.setString(8, event.description);
-        addEventStatement.executeUpdate();
-        closeConnection(conn);
-    }
-
-    public static Event getEvenById(int eid) throws SQLException, ClassNotFoundException {
-        Connection conn = openConnection();
-        PreparedStatement getEventByIdStatement = conn.prepareStatement(GET_EVENT_BY_ID_SQL);
-        getEventByIdStatement.clearParameters();
-        getEventByIdStatement.setInt(1, eid);
-        ResultSet rs = getEventByIdStatement.executeQuery();
-        closeConnection(conn);
-        if (rs.next()) {
+        PreparedStatement getUserEventStatement = conn.prepareStatement(GET_EVENTS_ATTENDED_BY_ACCOUNT_SQL);
+        List<Event> list = new ArrayList<Event>();
+        getUserEventStatement.clearParameters();
+        getUserEventStatement.setInt(1, account.getUid());
+        ResultSet rs = getUserEventStatement.executeQuery();
+        while (rs.next()) {
+            int eid = rs.getInt("eid");
             String title = rs.getString("title");
             Location loc = new Location("new location");
             loc.setLongitude(rs.getDouble("longitude"));
             loc.setLatitude(rs.getDouble("latitude"));
-            Date time = rs.getTimestamp("time");
+            Date time = new java.util.Date(rs.getLong("start_time"));
             int duration = rs.getInt("duration");
-            Date timeCreated = rs.getTimestamp("timecreated");;
+            Date timeCreated = new java.util.Date(rs.getLong("time_created"));
             String description = rs.getString("description");
-            return new Event(eid, title, loc, time, duration, timeCreated, description);
-        }
-        return null;
-    }
-
-    public static List<Event> getEventByRadius(Location location, double radius) throws SQLException, ClassNotFoundException {
-        Connection conn = openConnection();
-        PreparedStatement getEventByRadiusStatement = conn.prepareStatement(GET_EVENT_BY_RADIUS_SQL);
-        getEventByRadiusStatement.clearParameters();
-        getEventByRadiusStatement.setDouble(1, location.getLatitude() + radius);
-        getEventByRadiusStatement.setDouble(2, location.getLatitude() - radius);
-        getEventByRadiusStatement.setDouble(3, location.getLongitude() + radius);
-        getEventByRadiusStatement.setDouble(4, location.getLongitude() - radius);
-        ResultSet getEventResults = getEventByRadiusStatement.executeQuery();
-        closeConnection(conn);
-        List<Event> list = new ArrayList<Event>();
-        while (getEventResults.next()){
-            int eid = getEventResults.getInt("eid");
-            String title = getEventResults.getString("title");
-            Location loc = new Location("new location");
-            loc.setLongitude(getEventResults.getDouble("longitude"));
-            loc.setLatitude(getEventResults.getDouble("latitude"));
-            Date time = getEventResults.getTimestamp("time");
-            int duration = getEventResults.getInt("duration");
-            Date timeCreated = getEventResults.getTimestamp("timecreated");;
-            String description = getEventResults.getString("description");
             Event event = new Event(eid, title, loc, time, duration, timeCreated, description);
             list.add(event);
         }
