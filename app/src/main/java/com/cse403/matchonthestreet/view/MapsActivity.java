@@ -87,6 +87,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -600,6 +601,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                         removeAllMarkers();
                         ArrayList<Event> eventArrayList = new ArrayList<>(events);
                         addEventsToMap(eventArrayList);
+                        viewController.updateEventList(new HashSet<>(events));
                     }
                 }
 

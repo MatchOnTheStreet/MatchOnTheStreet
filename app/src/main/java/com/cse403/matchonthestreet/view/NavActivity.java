@@ -124,6 +124,11 @@ public class NavActivity extends AppCompatActivity implements NavigationView.OnN
 
         } else if (id == R.id.nav_manage) {
 
+        } else if (id == R.id.my_map) {
+            if (this.getClass() != MapsActivity.class) {
+                Intent intent = new Intent(this, MapsActivity.class);
+                startActivity(intent);
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
