@@ -21,6 +21,9 @@ import java.util.regex.Pattern;
 
 /**
  * Created by Hao Liu on 2/23/16.
+ *
+ * This is the utility class that parses the title of the event and assign
+ * icons to them.
  */
 public class SportsIconFinder {
 
@@ -75,30 +78,36 @@ public class SportsIconFinder {
 
     public Drawable matchString(Context context, String query) {
         String bestMatch = "";
-        double bestCount = 0;
+        int bestCount = 0;
 
-        query = query.replaceAll("[^\\w\\s]", "");
+        query = query.replaceAll("[^\\w\\s]", "").toLowerCase();
         System.out.println("Q: " + query);
         String[] queryTokens = query.split(" ");
-        for (Set<String> tokens : drawableMap.keySet()) {
-            double matchCount = 0;
-            for (String token : queryTokens) {
-                if (tokens.contains(token)) {
-                    if (matchCount == 0) {
-                        matchCount++;
-                    } else {
-                        matchCount *= 2;
+
+        // Special case for "tennis" not "table tennis"
+        if (query.contains("tennis") && !query.contains("table tennis")) {
+            bestMatch = "sports_tennis_ball.png";
+        } else {
+            for (Set<String> tokens : drawableMap.keySet()) {
+                int matchCount = 0;
+                for (String token : queryTokens) {
+                    if (tokens.contains(token)) {
+                        if (matchCount == 0) {
+                            matchCount++;
+                        }
                     }
                 }
+                if (matchCount > bestCount ||
+                        (matchCount == bestCount && new Random().nextDouble() < 0.5)) {
+                    bestCount = matchCount;
+                    bestMatch = drawableMap.get(tokens);
+                }
             }
-            if (matchCount > bestCount ||
-                    (matchCount == bestCount && new Random().nextDouble() < 0.5)) {
-                bestCount = matchCount;
-                bestMatch = drawableMap.get(tokens);
+
+            if (bestMatch.isEmpty() || bestCount == 0) {
+                return null;
             }
         }
-
-        if (bestMatch.isEmpty()) { return null; }
 
         Drawable result = null;
         try {
