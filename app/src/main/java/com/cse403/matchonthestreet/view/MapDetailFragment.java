@@ -1,5 +1,7 @@
 package com.cse403.matchonthestreet.view;
 
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
@@ -54,11 +56,12 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
             descriptionText.setText(description);
         }
 
-        FloatingActionButton fabButton = (FloatingActionButton) mView.findViewById(R.id.fab_attend_event);
+        final FloatingActionButton fabButton = (FloatingActionButton) mView.findViewById(R.id.fab_attend_event);
         fabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "Attend Event Button");
+                fabButton.setBackgroundTintList(ColorStateList.valueOf(Color.BLUE));
 
             }
         });

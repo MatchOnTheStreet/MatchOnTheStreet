@@ -107,6 +107,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
 
     private boolean FROM_LIST;
+    private boolean FROM_LIST_ITEM;
     private static boolean FIRST_LAUNCH = true;
     private int selectedEventID = NO_SELECTED_EVENT;
 
@@ -133,6 +134,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     private Map<Marker, Event> mapMarkerEvent = new HashMap<>();
 
     private ViewController viewController;
+
+    private Event passedEvent;
     /**
      *
      * @param savedInstanceState
@@ -156,8 +159,6 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         // Starts location requests to the google api
         checkLocationPermission();
         createLocationRequest();
-        // Creates the buttons that look like floating action buttons
-        createButtons();
 
 
         Log.d(TAG, "onCreate");
@@ -166,10 +167,19 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         FROM_LIST = intent.getBooleanExtra(ListViewActivity.EXTRA_MESSAGE, false);
         selectedEventID = intent.getIntExtra(ListViewActivity.class.toString() + ".VIEW_EVENT",
                 NO_SELECTED_EVENT);
+        FROM_LIST_ITEM = intent.getBooleanExtra("fromListItem", false);
 
-        if (FROM_LIST || intent.getBooleanExtra("fromListItem", false)) {
+
+        // Creates the buttons that look like floating action buttons
+        createButtons();
+
+        if (FROM_LIST || FROM_LIST_ITEM) {
             Log.d(TAG, "From List");
             centerOnLocation = false;
+            Event event = intent.getParcelableExtra("selectedEvent");
+            Log.d(TAG, "Maps was passed the event: " + event.title);
+           // mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(event.location.getLatitude(), event.location.getLongitude())));
+           // mMap.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_IN_MAGNITUDE));
 
             AsyncTask<Integer, Event, Event> task = new AsyncTask<Integer, Event, Event>() {
                 @Override
@@ -190,6 +200,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                         Log.d(TAG, "onPostExecute move to " + event.title);
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(event.location.getLatitude(), event.location.getLongitude())));
                         mMap.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_IN_MAGNITUDE));
+                        displayMarkerInfo(event);
                     } else {
                         centerOnLocation = true;
                     }
@@ -272,12 +283,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         }
     }
 
-    /**
-     * The listener that receives the result of a permission request
-     * @param requestCode
-     * @param permissions
-     * @param grantResults
-     */
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
@@ -353,14 +359,6 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         // Start requesting location updates
         if (mRequestingLocationUpdates) {
             startLocationUpdates();
-        }
-
-        // Display the Facebook login activity if the user has not logged in before
-        SharedPreferences mPrefs = getSharedPreferences("userPrefs", 0);
-        String mString = mPrefs.getString("userID", "not found");
-        if (mString.equals("not found")) {
-            Intent intent = new Intent(MapsActivity.this, LoginActivity.class);
-            startActivity(intent);
         }
 
     }
@@ -504,9 +502,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                 if (mCurrentLocation != null) {
                     Log.d(TAG, "" + mCurrentLocation.getLatitude() + " " + mCurrentLocation.getLongitude());
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
-                    // TODO: set the user location in ViewController once the location is acquired
                     viewController.setUserLocation(mCurrentLocation);
-                    // TODO: add zooming here
                     mMap.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_IN_MAGNITUDE));
 
                 } else {
@@ -537,7 +533,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         }); */
 
         // The button that moves to the ListViewActivity
-        if (!FROM_LIST) {
+        if (!FROM_LIST && !FROM_LIST_ITEM) {
             FloatingActionButton fabListMap = (FloatingActionButton) findViewById(R.id.fab_map_to_list);
             fabListMap.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -608,6 +604,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                     } catch (ClassNotFoundException e) {
                         e.printStackTrace();
                     } catch (SQLException e) {
+                        Log.d(TAG, "SQL Exception");
                         e.printStackTrace();
                     }
                     return null;
@@ -685,50 +682,33 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     public boolean onMarkerClick(Marker marker) {
         Log.d(TAG, "marker clicked: " + marker.getTitle());
 
-        // Show the MapDetailFragment when a marker is pressed
+        if (mapMarkerEvent.containsKey(marker)) {
+           displayMarkerInfo(mapMarkerEvent.get(marker));
+        }
+        return false;
+    }
+
+    private void displayMarkerInfo(Event event) {
         FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
         fl.setVisibility(View.VISIBLE);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        //ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);  // Animation works, but need to find way to remove fragment onMapClick
-
-        // Send the details of the event to the fragment
         Bundle args = new Bundle();
-        args.putString("detailText", marker.getTitle());
-        if (mapMarkerEvent.containsKey(marker)) {
-            Event event = mapMarkerEvent.get(marker);
-            if (event.time != null) {
-                args.putString("date", event.time.toString() + " for " + event.duration + " minutes");
-            } else {
-                Log.d(TAG, "Event has null date " + event.title);
-            }
-            if (event.description != null)
-                args.putString("description", event.description);
+        args.putString("detailText", event.getTitle());
+        if (event.time != null) {
+            args.putString("date", event.time.toString() + " for " + event.duration + " minutes");
+        } else {
+            Log.d(TAG, "Event has null date " + event.title);
         }
+        if (event.description != null)
+            args.putString("description", event.description);
+
 
         MapDetailFragment mapDetailFragment = new MapDetailFragment();
         mapDetailFragment.setArguments(args);
         ft.replace(R.id.fragment_container, mapDetailFragment, "detailFragment");
         ft.commit();
-/*
-        DisplayMetrics dm = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(dm);
-        int height = dm.heightPixels;
 
-        SupportMapFragment mMapFragment = (SupportMapFragment) (getSupportFragmentManager()
-                .findFragmentById(R.id.map));
-        ViewGroup.LayoutParams params;
-        try {
-            params = mMapFragment.getView().getLayoutParams();
-            params.height = height - 150;
-            mMapFragment.getView().setLayoutParams(params);
-        }catch (NullPointerException e) {
-            Log.d(TAG, e.toString());
-        }
-
-*/
-        return false;
     }
-
     /**
      * Callback when the map is tapped. Hides the DetailFragment
      * @param latLng the lat and longitude of where the map was pressed
@@ -800,14 +780,15 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                 Log.d(TAG, "event list has: " + listEvent.get(0).title);
                 Log.d(TAG, "event coords: " + listEvent.get(0).location.getLatitude() + ", " + listEvent.get(0).location.getLongitude());
                 Log.d(TAG, "event date: " + listEvent.get(0).time.toString());
-
-               // removeAllMarkers();
-
+                passedEvent = listEvent.get(0);
                 addEventsToMap(listEvent);
                 Location loc = listEvent.get(0).location;
+
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(loc.getLatitude(), loc.getLongitude())));
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_IN_MAGNITUDE));
                 centerOnLocation = false;
+                //displayMarkerInfo(listEvent.get(0));
+                Log.d(TAG, "end of onActivityResult");
             } else {
                 Log.d(TAG, "eventList is null or no elements");
                 centerOnLocation = true;
@@ -819,5 +800,14 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         }
     }
 
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        Log.d(TAG, "onPostResume");
+        if (passedEvent != null) {
+            displayMarkerInfo(passedEvent);
+            passedEvent = null;
+        }
+    }
 }
 
