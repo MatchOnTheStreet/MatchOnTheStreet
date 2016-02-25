@@ -103,6 +103,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
     public static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 10;
     public static final int NO_SELECTED_EVENT = -1;
+    public static final int ZOOM_IN_MAGNITUDE = 15;
+
 
     private boolean FROM_LIST;
     private static boolean FIRST_LAUNCH = true;
@@ -187,6 +189,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                     if (event != null) {
                         Log.d(TAG, "onPostExecute move to " + event.title);
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(event.location.getLatitude(), event.location.getLongitude())));
+                        mMap.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_IN_MAGNITUDE));
                     } else {
                         centerOnLocation = true;
                     }
@@ -329,6 +332,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             if (mLastLocation != null && centerOnLocation) {
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_IN_MAGNITUDE));
             }
         } else {
             Log.d(TAG, "Do not have COARSE LOCATION permission");
@@ -340,6 +344,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             if (mLastLocation != null && centerOnLocation) {
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_IN_MAGNITUDE));
             }
         } else {
             Log.d(TAG, "do not have FINE LOCATION permission");
@@ -502,7 +507,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                     // TODO: set the user location in ViewController once the location is acquired
                     viewController.setUserLocation(mCurrentLocation);
                     // TODO: add zooming here
-                    mMap.animateCamera(CameraUpdateFactory.zoomTo(9));
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_IN_MAGNITUDE));
 
                 } else {
                     Log.d(TAG, "No last known location");
@@ -576,17 +581,30 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
     private boolean reloadPinsOnScreen() {
         if (mCurrentLocation != null) {
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+            VisibleRegion vr = mMap.getProjection().getVisibleRegion();
+            double top = vr.latLngBounds.northeast.latitude;
+            double bottom = vr.latLngBounds.southwest.latitude;
 
+            //mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+
+            LatLng centerScreen = mMap.getCameraPosition().target;
+            double cLat = centerScreen.latitude;
+            double cLon = centerScreen.longitude;
             AsyncTask<Double, Integer, List<Event>> task = new AsyncTask<Double, Integer, List<Event>>() {
                 @Override
                 protected List<Event> doInBackground(Double[] params) {
                     try {
-                        Log.d(TAG, "getEventsInRadius of " + params[0]);
-                        List<Event> events = DBManager.getEventsInRadius(mCurrentLocation, params[0]);
-                        ArrayList<Event> eventArrayList = new ArrayList<>(events);
-                        Log.d(TAG, "found " + eventArrayList.size() + " events");
-                        return events;
+                        if (params.length == 3) {
+                            Log.d(TAG, "getEventsInRadius of " + params[0]);
+                            Location loc = new Location("AsyncReloadPins");
+                            loc.setLatitude(params[1]);
+                            loc.setLongitude(params[2]);
+                            List<Event> events = DBManager.getEventsInRadius(loc, params[0]);
+                            ArrayList<Event> eventArrayList = new ArrayList<>(events);
+                            Log.d(TAG, "found " + eventArrayList.size() + " events");
+                            return events;
+                        }
+                        return null;
                     } catch (ClassNotFoundException e) {
                         e.printStackTrace();
                     } catch (SQLException e) {
@@ -606,11 +624,9 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                 }
 
             };
-            VisibleRegion vr = mMap.getProjection().getVisibleRegion();
-            double top = vr.latLngBounds.northeast.latitude;
-            double bottom = vr.latLngBounds.southwest.latitude;
 
-            task.execute(Math.abs(top - bottom));
+
+            task.execute(Math.abs(top - bottom), cLat, cLon);
 
         } else {
             return false;
@@ -656,6 +672,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                  */
                 createPin(address.getLatitude(), address.getLongitude());
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_IN_MAGNITUDE - 2));
             }
         }
     }
@@ -789,6 +806,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                 addEventsToMap(listEvent);
                 Location loc = listEvent.get(0).location;
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(loc.getLatitude(), loc.getLongitude())));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_IN_MAGNITUDE));
                 centerOnLocation = false;
             } else {
                 Log.d(TAG, "eventList is null or no elements");
