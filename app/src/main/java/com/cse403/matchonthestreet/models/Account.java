@@ -19,8 +19,9 @@ public class Account {
     // A list of events the user is planning on attending.
     private List<Event> events;
 
-    public Account(int uid) {
+    public Account(int uid, String name) {
         this.uid = uid;
+        this.name = name;
         events = new ArrayList<Event>();
     }
 
