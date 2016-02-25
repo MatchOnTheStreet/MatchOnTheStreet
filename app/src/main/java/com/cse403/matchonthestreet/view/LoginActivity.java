@@ -41,6 +41,14 @@ public class LoginActivity extends NavActivity {
         loginButton.setReadPermissions("public_profile");
         callbackManager = CallbackManager.Factory.create();
 
+        // Skips to the MapsActivity if a user has already logged in before
+        // probably a better way to check this using the facebook API though. --Lance
+        SharedPreferences mPrefs = getSharedPreferences("userPrefs", 0);
+        String mString = mPrefs.getString("userID", "not found");
+        if (!mString.equals("not found")) {
+            Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
+            startActivity(intent);
+        }
 
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             private ProfileTracker mProfileTracker;
@@ -61,6 +69,10 @@ public class LoginActivity extends NavActivity {
                     Log.d(TAG, profile.getName());
                 }
                 info.setText("User ID:  " + loginResult.getAccessToken().getUserId());
+
+                // Saves the userID to the sharedpreferences which saves to the device memory
+                // so we can verify that a user has logged in with FB. probably a better way
+                // to do this using the facebook API. --Lance
                 SharedPreferences mPrefs = getSharedPreferences("userPrefs", 0);
                 SharedPreferences.Editor mEditor = mPrefs.edit();
                 mEditor.putString("userID", loginResult.getAccessToken().getUserId());

@@ -134,6 +134,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     private Map<Marker, Event> mapMarkerEvent = new HashMap<>();
 
     private ViewController viewController;
+
+    private Event passedEvent;
     /**
      *
      * @param savedInstanceState
@@ -359,13 +361,6 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             startLocationUpdates();
         }
 
-        // Display the Facebook login activity if the user has not logged in before
-        SharedPreferences mPrefs = getSharedPreferences("userPrefs", 0);
-        String mString = mPrefs.getString("userID", "not found");
-        if (mString.equals("not found")) {
-            Intent intent = new Intent(MapsActivity.this, LoginActivity.class);
-            startActivity(intent);
-        }
     }
 
     /**
@@ -690,31 +685,6 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         if (mapMarkerEvent.containsKey(marker)) {
            displayMarkerInfo(mapMarkerEvent.get(marker));
         }
-/*        // Show the MapDetailFragment when a marker is pressed
-        FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
-        fl.setVisibility(View.VISIBLE);
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        //ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);  // Animation works, but need to find way to remove fragment onMapClick
-
-        // Send the details of the event to the fragment
-        Bundle args = new Bundle();
-        args.putString("detailText", marker.getTitle());
-        if (mapMarkerEvent.containsKey(marker)) {
-            Event event = mapMarkerEvent.get(marker);
-            if (event.time != null) {
-                args.putString("date", event.time.toString() + " for " + event.duration + " minutes");
-            } else {
-                Log.d(TAG, "Event has null date " + event.title);
-            }
-            if (event.description != null)
-                args.putString("description", event.description);
-        }
-
-        MapDetailFragment mapDetailFragment = new MapDetailFragment();
-        mapDetailFragment.setArguments(args);
-        ft.replace(R.id.fragment_container, mapDetailFragment, "detailFragment");
-        ft.commit();*/
-
         return false;
     }
 
@@ -810,14 +780,15 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                 Log.d(TAG, "event list has: " + listEvent.get(0).title);
                 Log.d(TAG, "event coords: " + listEvent.get(0).location.getLatitude() + ", " + listEvent.get(0).location.getLongitude());
                 Log.d(TAG, "event date: " + listEvent.get(0).time.toString());
-
-               // removeAllMarkers();
-
+                passedEvent = listEvent.get(0);
                 addEventsToMap(listEvent);
                 Location loc = listEvent.get(0).location;
+
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(loc.getLatitude(), loc.getLongitude())));
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_IN_MAGNITUDE));
                 centerOnLocation = false;
+                //displayMarkerInfo(listEvent.get(0));
+                Log.d(TAG, "end of onActivityResult");
             } else {
                 Log.d(TAG, "eventList is null or no elements");
                 centerOnLocation = true;
@@ -829,5 +800,14 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         }
     }
 
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        Log.d(TAG, "onPostResume");
+        if (passedEvent != null) {
+            displayMarkerInfo(passedEvent);
+            passedEvent = null;
+        }
+    }
 }
 
