@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.cse403.matchonthestreet.R;
+import com.cse403.matchonthestreet.controller.MOTSApp;
+import com.cse403.matchonthestreet.models.Account;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.login.widget.LoginButton;
@@ -43,9 +45,11 @@ public class LoginActivity extends NavActivity {
 
         // Skips to the MapsActivity if a user has already logged in before
         // probably a better way to check this using the facebook API though. --Lance
+        Intent navIntent = getIntent();
+
         SharedPreferences mPrefs = getSharedPreferences("userPrefs", 0);
         String mString = mPrefs.getString("userID", "not found");
-        if (!mString.equals("not found")) {
+        if (!mString.equals("not found") && !navIntent.getBooleanExtra("fromSidebar", false)) {
             Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
             startActivity(intent);
         }
@@ -70,6 +74,8 @@ public class LoginActivity extends NavActivity {
                 }
                 info.setText("User ID:  " + loginResult.getAccessToken().getUserId());
 
+                Account me = new Account(Integer.parseInt(loginResult.getAccessToken().getUserId()), "this is a name");
+                ((MOTSApp)getApplication()).setMyAccount(me);
                 // Saves the userID to the sharedpreferences which saves to the device memory
                 // so we can verify that a user has logged in with FB. probably a better way
                 // to do this using the facebook API. --Lance

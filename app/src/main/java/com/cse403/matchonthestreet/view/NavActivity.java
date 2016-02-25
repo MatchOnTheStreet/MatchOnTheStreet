@@ -115,6 +115,7 @@ public class NavActivity extends AppCompatActivity implements NavigationView.OnN
         } else if (id == R.id.login) {
             if (this.getClass() != LoginActivity.class) {
                 Intent intent = new Intent(this, LoginActivity.class);
+                intent.putExtra("fromSidebar", true);
                 startActivity(intent);
             }
 

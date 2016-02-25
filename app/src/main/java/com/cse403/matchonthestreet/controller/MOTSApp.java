@@ -3,6 +3,8 @@ package com.cse403.matchonthestreet.controller;
 import android.app.Application;
 import android.content.Context;
 
+import com.cse403.matchonthestreet.models.Account;
+
 /**
  * Created by Hao on 2/18/2016.
  */
@@ -10,6 +12,10 @@ public class MOTSApp extends Application {
 
     private static ViewController viewController = new ViewController();
     private static Context mContext;
+
+
+
+    private Account myAccount;
 
     @Override
     public void onCreate() {
@@ -27,5 +33,11 @@ public class MOTSApp extends Application {
         return viewController;
     }
 
+    public Account getMyAccount() {
+        return myAccount;
+    }
 
+    public void setMyAccount(Account myAccount) {
+        this.myAccount = myAccount;
+    }
 }
