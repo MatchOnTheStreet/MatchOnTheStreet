@@ -57,6 +57,11 @@ public final class DBManager {
             + "FROM Accounts a, Attending at "
             + "WHERE at.eid = ? AND at.uid = a.uid;";
 
+    private static final String GET_COUNT_OF_ACCOUNTS_ATTENDING_EVENT_SQL
+        = "SELECT COUNT(*) "
+        + "FROM Accounts a, Attending at "
+        + "WHERE at.eid = ? AND at.uid = a.uid;";
+
     /* transactions */
     private static final String BEGIN_TRANSACTION_SQL =
             "SET TRANSACTION ISOLATION LEVEL SERIALIZABLE; BEGIN TRANSACTION";
@@ -156,9 +161,22 @@ public final class DBManager {
         closeConnection(conn);
     }
 
+    public static int getCountOfAccountsAttendingEvent(Event event) throws SQLException, ClassNotFoundException {
+        Connection conn = openConnection();
+        PreparedStatement st = conn.prepareStatement(GET_COUNT_OF_ACCOUNTS_ATTENDING_EVENT_SQL);
+        int count = 0;
+        st.clearParameters();
+        st.setInt(1, event.eid);
+        ResultSet rs = st.executeQuery();
+        if (rs.next()) {
+            count = rs.getInt(1);
+        }
+        return count;
+    }
+
     public static List<Account> getAccountsAttendingEvent(Event event) throws SQLException, ClassNotFoundException {
         Connection conn = openConnection();
-        PreparedStatement st = conn.prepareStatement(GET_EVENTS_ATTENDED_BY_ACCOUNT_SQL);
+        PreparedStatement st = conn.prepareStatement(GET_ACCOUNTS_ATTENDING_EVENT_SQL);
         List<Account> list = new ArrayList<>();
         st.clearParameters();
         st.setInt(1, event.eid);
