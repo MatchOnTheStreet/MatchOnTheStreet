@@ -65,17 +65,26 @@ public class LoginActivity extends NavActivity {
                         protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
                             Log.d(TAG, currentProfile.getName());
                             mProfileTracker.stopTracking();
+
+                            Profile profile = Profile.getCurrentProfile();
+                            if (profile != null) {
+                                Account me = new Account((int) Long.parseLong(profile.getId()), profile.getName());
+                                ((MOTSApp) getApplication()).setMyAccount(me);
+                                Account accnt = ((MOTSApp) getApplication()).getMyAccount();
+                                Log.d(TAG, "my account is: " + accnt.getName());
+                            }
                         }
                     };
                     mProfileTracker.startTracking();
                 } else {
                     Profile profile = Profile.getCurrentProfile();
                     Log.d(TAG, profile.getName());
+
                 }
                 info.setText("User ID:  " + loginResult.getAccessToken().getUserId());
 
-                Account me = new Account(Integer.parseInt(loginResult.getAccessToken().getUserId()), "this is a name");
-                ((MOTSApp)getApplication()).setMyAccount(me);
+
+
                 // Saves the userID to the sharedpreferences which saves to the device memory
                 // so we can verify that a user has logged in with FB. probably a better way
                 // to do this using the facebook API. --Lance
