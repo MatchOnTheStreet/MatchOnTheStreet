@@ -51,7 +51,7 @@ public class UserProfileActivity extends NavActivity {
         });
 
         // TODO: change from dummy data to db data
-        Account dummyAccount = new Account(123);
+        Account dummyAccount = new Account(123, "bar");
         Event e1 = new Event(123, "Basketball", null, null, 60, null, "Cool 1v1 basketball");
         Event e2 = new Event(123, "Soccer", null, null, 60, null, "3v3 Soccer");
         dummyAccount.addEvent(e1);
