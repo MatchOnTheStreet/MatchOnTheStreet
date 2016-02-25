@@ -2,17 +2,22 @@ package com.cse403.matchonthestreet;
 
 import android.location.Location;
 
+import com.cse403.matchonthestreet.models.Account;
 import com.cse403.matchonthestreet.models.Event;
-
-import java.util.Date;
-import java.util.Random;
 
 import junit.framework.TestCase;
 
 import org.junit.Test;
 
+import java.util.Date;
+import java.util.Random;
+
 /**
  * Created by larioj on 2/25/16.
+ *
+ * Every test name has to start with test!!
+ * It is some bull.
+ *
  */
 public class DBManagerTest extends TestCase {
     private Event makeRandomEvent() {
@@ -30,6 +35,7 @@ public class DBManagerTest extends TestCase {
     }
 
     @Test
-    public void compileTest() {
+    public void testCompile() {
+        assert(true);
     }
 }
