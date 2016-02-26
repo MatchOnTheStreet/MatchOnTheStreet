@@ -45,16 +45,6 @@ public class DBManagerTest extends TestCase {
         return new Account(uid, name);
     }
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
     @Test
     public void testAddGetRemoveEvent() throws SQLException, ClassNotFoundException {
         Event e = makeRandomEvent();
