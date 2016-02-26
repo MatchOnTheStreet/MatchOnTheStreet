@@ -190,66 +190,50 @@ public class DBManagerTest extends TestCase {
     }
 
     @Test
-    public void testGetEventsInRadius() throws SQLException, ClassNotFoundException {
-        Event e1 = makeRandomEvent();
-        Event e2 = makeRandomEvent();
-        Event e3 = makeRandomEvent();
+    public void testGetEventsInRadiusSimple() throws SQLException, ClassNotFoundException {
+        Location loc = new Location("");
+        DBManager.getEventsInRadius(loc, 20);
+    }
 
-        e1.location.setLatitude(0);
-        e2.location.setLatitude(0);
-        e3.location.setLatitude(20);
-
-        e1.location.setLongitude(0);
-        e2.location.setLongitude(20);
-        e3.location.setLongitude(10);
-
-
-        Location center = new Location("");
-        center.setLatitude(10);
-        center.setLongitude(10);
-
-        Location origin = new Location("");
-        origin.setLatitude(0);
-        origin.setLongitude(0);
-
-        // Add the events to the database.
-        Event[] eventsArr = {e1, e2, e3};
-        for (Event e : eventsArr) {
-            DBManager.addEvent(e);
-            Event er = DBManager.getEventById(e.eid);
-            assertTrue(e.equals(er));
-            events.add(e);
+    @Test
+    public void testGetEventsInRadiusOne() throws SQLException, ClassNotFoundException {
+        Event e1 = events.get(0);
+        Location loc = new Location("");
+        loc.setLatitude(e1.location.getLatitude());
+        loc.setLongitude(e1.location.getLongitude());
+        List<Event> el = DBManager.getEventsInRadius(loc, 20);
+        int count = 0;
+        for (Event e : el) {
+            if (e.equals(e1)) {
+                count++;
+            }
         }
+        assertEquals(1, count);
+    }
 
-        List<Event> all = DBManager.getEventsInRadius(center, 20);
-        for (Event e : eventsArr) {
+    @Test
+    public void testGetEventsInRadiusTWo() throws SQLException, ClassNotFoundException {
+        Event e1 = events.get(0);
+        Event e2 = events.get(1);
+
+        double latdiff = Math.abs(e1.location.getLatitude() - e2.location.getLatitude());
+        double londiff = Math.abs(e1.location.getLongitude() - e2.location.getLongitude());
+        double radius = Math.max(latdiff, londiff) + 2;
+
+        Location loc = new Location("");
+        loc.setLatitude(e1.location.getLatitude());
+        loc.setLongitude(e1.location.getLongitude());
+        List<Event> el = DBManager.getEventsInRadius(loc, radius);
+
+        Event[] events12 = {e1, e2};
+        for (Event e : events12) {
             int count = 0;
-            for (Event er : all) {
-                if (e.equals(er)) {
+            for (Event er : el) {
+                if (er.equals(e)) {
                     count++;
                 }
             }
             assertEquals(1, count);
         }
-
-        List<Event> none = DBManager.getEventsInRadius(center, 2);
-        for (Event e : eventsArr) {
-            int count = 0;
-            for (Event er : none) {
-                if (e.equals(er)) {
-                    count++;
-                }
-            }
-            assertEquals(0, count);
-        }
-
-        List<Event> one = DBManager.getEventsInRadius(origin, 11);
-        int count = 0;
-        for (Event er : none) {
-            if (e1.equals(er)) {
-                count++;
-            }
-        }
-        assertEquals(0, count);
     }
 }
