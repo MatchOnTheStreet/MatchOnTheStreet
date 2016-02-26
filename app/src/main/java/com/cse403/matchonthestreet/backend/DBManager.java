@@ -125,7 +125,7 @@ public final class DBManager {
     }
 
     /*
-     * Returns the Event object event, whose eid is parameter eid. It does not populate the
+     * Returns an Event object, whose eid is parameter eid. It does not populate the
      * attending field of event with the attending relationships in database.
      * Returns null in the case the event does not exist in the database.
      *
@@ -138,6 +138,26 @@ public final class DBManager {
         closeConnection(conn);
         return event;
     }
+
+    /*
+     * Returns an Event object, whose eid is parameter eid. It also populates the
+     * attending field of event with the attending relationships in database.
+     * Returns null in the case the event does not exist in the database.
+     *
+     * @param eid the eid of the event to be retrieved.
+     *
+     */
+    public static Event getEventByIdWithAttendance(int eid) throws SQLException, ClassNotFoundException {
+        Connection conn = openConnection();
+        Event event = getEventById(conn, eid);
+        if (event == null) {
+            return null;
+        }
+        event.attending = getAccountsAttendingEvent(conn, event);
+        closeConnection(conn);
+        return event;
+    }
+
 
     private static Event getEventById(Connection conn, int eid) throws SQLException, ClassNotFoundException {
         PreparedStatement getEventByIdStatement = conn.prepareStatement(GET_EVENT_BY_ID_SQL);
@@ -285,6 +305,21 @@ public final class DBManager {
     public static List<Event> getEventsInRadius(Location location, double radius) throws SQLException, ClassNotFoundException {
         Connection conn = openConnection();
         List<Event> list = getEventsInRadius(conn, location, radius);
+        closeConnection(conn);
+        return list;
+    }
+
+     /*
+     * Gets a list of events within the square whose center lies at location, and whose height is radius.
+     * Does not return events with the attending field populated.
+     *
+     */
+    public static List<Event> getEventsInRadiusWithAttendance(Location location, double radius) throws SQLException, ClassNotFoundException {
+        Connection conn = openConnection();
+        List<Event> list = getEventsInRadius(conn, location, radius);
+        for(Event e: list) {
+            e.attending = getAccountsAttendingEvent(conn, e);
+        }
         closeConnection(conn);
         return list;
     }
