@@ -21,6 +21,7 @@ public class MOTSApp extends Application {
     public void onCreate() {
         super.onCreate();
         mContext = this;
+        viewController.setContext(this);
         SportsIconFinder.initialize(this);
         System.out.println("MOTSApp created");
     }

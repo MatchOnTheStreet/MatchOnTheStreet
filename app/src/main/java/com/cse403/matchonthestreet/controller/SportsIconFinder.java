@@ -76,7 +76,7 @@ public class SportsIconFinder {
         return sportsIconFinder;
     }
 
-    public Drawable matchString(Context context, String query) {
+    public String matchString(Context context, String query) {
         String bestMatch = "";
         int bestCount = 0;
 
@@ -109,33 +109,23 @@ public class SportsIconFinder {
             }
         }
 
-        Drawable result = null;
-        try {
-            result = getAssetImage(context, bestMatch);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return result;
+        return bestMatch;
     }
 
-    public static Drawable getAssetImage(Context context, String filename) throws IOException {
+    public static Drawable getAssetImage(Context context, String filename) {
         AssetManager assets = context.getResources().getAssets();
-        InputStream buffer = new BufferedInputStream((assets.open(filename)));
-        Bitmap bitmap = BitmapFactory.decodeStream(buffer);
-        int length = bitmap.getWidth()*bitmap.getHeight();
-        int[] array = new int[length];
-        bitmap.getPixels(array,0,bitmap.getWidth(),0,0,bitmap.getWidth(),bitmap.getHeight());
-
-        // invert colors
-        /*for (int i = 0; i < length; i++){
-            // If the bitmap is in ARGB_8888 format
-            if (array[i] == 0xff000000){
-                array[i] = 0xffffffff;
+        InputStream buffer = null;
+        if (drawableMap.values().contains(filename)) {
+            try {
+                buffer = new BufferedInputStream((assets.open(filename)));
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            Bitmap bitmap = BitmapFactory.decodeStream(buffer);
+            return new BitmapDrawable(context.getResources(), bitmap);
+        } else {
+            return null;
         }
-        bitmap.setPixels(array , 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());*/
-
-        return new BitmapDrawable(context.getResources(), bitmap);
     }
 
 

@@ -40,6 +40,9 @@ package com.cse403.matchonthestreet.view;
 
 import android.Manifest;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.content.Intent;
@@ -64,6 +67,7 @@ import android.widget.Toast;
 import com.cse403.matchonthestreet.R;
 import com.cse403.matchonthestreet.backend.DBManager;
 import com.cse403.matchonthestreet.controller.MOTSApp;
+import com.cse403.matchonthestreet.controller.SportsIconFinder;
 import com.cse403.matchonthestreet.controller.ViewController;
 import com.cse403.matchonthestreet.models.Account;
 import com.cse403.matchonthestreet.models.Event;
@@ -77,6 +81,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -604,8 +610,9 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                     if (events != null) {
                         removeAllMarkers();
                         ArrayList<Event> eventArrayList = new ArrayList<>(events);
-                        addEventsToMap(eventArrayList);
                         viewController.updateEventList(new HashSet<>(events));
+                        addEventsToMap(eventArrayList);
+
                     }
                 }
 
@@ -742,9 +749,23 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     private void addEventToMap(Event event) {
         Location tLoc = event.location;
         //Log.d(TAG, "The location is: " + tLoc.getLongitude() + " " + tLoc.getLatitude());
-        Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(tLoc.getLatitude(), tLoc.getLongitude())).title(event.title));
-        mapMarkerEvent.put(marker, event);
 
+        Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(tLoc.getLatitude(), tLoc.getLongitude())).title(event.title));
+
+        String iconPath = viewController.getEventIconPath(event);
+        if (iconPath != null) {
+            BitmapDrawable iconDrawable = (BitmapDrawable) SportsIconFinder.getAssetImage(this, iconPath);
+            if (iconDrawable != null) {
+                Bitmap iconBitmap = iconDrawable.getBitmap();
+                iconBitmap = Bitmap.createScaledBitmap(iconBitmap, 64, 64, false);
+                BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(iconBitmap);
+                marker.setIcon(icon);
+            } else {
+                Log.d(TAG, "Icon file not found!");
+            }
+        }
+
+        mapMarkerEvent.put(marker, event);
     }
 
     @Override

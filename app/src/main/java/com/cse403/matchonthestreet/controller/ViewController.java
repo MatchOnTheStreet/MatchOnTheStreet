@@ -1,6 +1,9 @@
 package com.cse403.matchonthestreet.controller;
 
+import android.content.Context;
 import android.location.Location;
+import android.nfc.Tag;
+import android.util.Log;
 
 import com.cse403.matchonthestreet.R;
 import com.cse403.matchonthestreet.controller.MOTSApp;
@@ -9,9 +12,12 @@ import com.cse403.matchonthestreet.models.Event;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -20,22 +26,53 @@ import java.util.Set;
  */
 public class ViewController {
 
-    protected Set<Event> eventSet = new HashSet<>();
+    public static final String TAG = "ViewController";
+
+    private static Set<Event> eventSet = new HashSet<>();
+
+    private static Map<Event, String> eventIconMap = new HashMap<>();
+
+    private static Context context;
 
     protected Location userLocation = null;
+
+    public void setContext(Context c) { context = c; }
 
     public Set<Event> getEventSet() {
         return eventSet;
     }
 
     public void addEventToSet(Event event) {
-        eventSet.add(event);
+        if (!eventSet.contains(event)) {
+            // Assign icon
+            if (SportsIconFinder.getInstance() != null && context != null) {
+                String iconPath = SportsIconFinder.getInstance().matchString(context, event.getTitle());
+                Log.d(TAG, "Assigned icon: " + iconPath);
+                eventIconMap.put(event, iconPath);
+            } else {
+                Log.d(TAG, "IconFinder not initialized!!!");
+            }
+            eventSet.add(event);
+        }
     }
 
-    public boolean updateEventList(Set<Event> updatedSet) {
-        boolean changed = !this.eventSet.equals(updatedSet);
-        this.eventSet = updatedSet;
-        return changed;
+    public boolean updateEventList(Collection<Event> updatedSet) {
+        boolean change = !eventSet.equals(updatedSet);
+        if (change) {
+            eventSet.clear();
+            for (Event e : updatedSet) {
+                addEventToSet(e);
+            }
+        }
+        return change;
+    }
+
+    public String getEventIconPath(Event e) {
+        if (eventIconMap.containsKey(e)) {
+            return eventIconMap.get(e);
+        } else {
+            return null;
+        }
     }
 
     public void setUserLocation(Location location) {
@@ -94,7 +131,7 @@ public class ViewController {
 
         }
 
-        List<Event> Events = new ArrayList<>();
+        List<Event> dummyEvents = new ArrayList<>();
 
         // Hardcoded population of list items
         for (String s : sampleVal) {
@@ -114,9 +151,9 @@ public class ViewController {
 
             Event e = new Event(s.hashCode(), s, l, dateStart, rand.nextInt(600) + 20, dateCreate, d);
 
-            Events.add(e);
+            dummyEvents.add(e);
         }
 
-        eventSet.addAll(Events);
+        updateEventList(dummyEvents);
     }
 }

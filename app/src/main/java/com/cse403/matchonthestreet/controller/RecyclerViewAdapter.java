@@ -109,7 +109,8 @@ public class RecyclerViewAdapter
         viewHolder.txtTitle.setText(event.getTitle());
         viewHolder.txtDate.setText(new SimpleDateFormat("EEE, MM/dd, yy", Locale.US).format(event.time));
 
-        Drawable drawable = SportsIconFinder.getInstance().matchString(context, event.getTitle().toLowerCase());
+        String bestMatchIconPath = SportsIconFinder.getInstance().matchString(context, event.getTitle().toLowerCase());
+        Drawable drawable = SportsIconFinder.getAssetImage(context, bestMatchIconPath);
         if (drawable != null) {
             drawable.setColorFilter(
                     Color.rgb(event.title.hashCode() % 255,
