@@ -1,5 +1,6 @@
 package com.cse403.matchonthestreet.view;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import com.facebook.login.widget.LoginButton;
 
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -34,6 +36,11 @@ public class LoginActivity extends NavActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ActionBar actionBar = getActionBar();
+        if (actionBar != null) {
+            getActionBar().hide();
+        }
 
         FacebookSdk.sdkInitialize(getApplicationContext());
 

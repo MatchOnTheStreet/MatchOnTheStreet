@@ -65,6 +65,7 @@ import com.cse403.matchonthestreet.R;
 import com.cse403.matchonthestreet.backend.DBManager;
 import com.cse403.matchonthestreet.controller.MOTSApp;
 import com.cse403.matchonthestreet.controller.ViewController;
+import com.cse403.matchonthestreet.models.Account;
 import com.cse403.matchonthestreet.models.Event;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -176,38 +177,6 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         if (FROM_LIST || FROM_LIST_ITEM) {
             Log.d(TAG, "From List");
             centerOnLocation = false;
-            Event event = intent.getParcelableExtra("selectedEvent");
-            Log.d(TAG, "Maps was passed the event: " + event.title);
-           // mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(event.location.getLatitude(), event.location.getLongitude())));
-           // mMap.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_IN_MAGNITUDE));
-
-            AsyncTask<Integer, Event, Event> task = new AsyncTask<Integer, Event, Event>() {
-                @Override
-                protected Event doInBackground(Integer[] params) {
-                    Event event = null;
-                    try {
-                        event = DBManager.getEventById(params[0]);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    return event;
-                }
-
-                @Override
-                protected void onPostExecute(Event event) {
-                    if (event != null) {
-                        Log.d(TAG, "onPostExecute move to " + event.title);
-                        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(event.location.getLatitude(), event.location.getLongitude())));
-                        mMap.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_IN_MAGNITUDE));
-                        displayMarkerInfo(event);
-                    } else {
-                        centerOnLocation = true;
-                    }
-                }
-            };
-            int eid = intent.getIntExtra("selectedEid", 0);
-            task.execute(eid);
         }
 
 
@@ -337,8 +306,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             Log.d(TAG, "Have COARSE LOCATION permission");
             Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             if (mLastLocation != null && centerOnLocation) {
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_IN_MAGNITUDE));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()),ZOOM_IN_MAGNITUDE));
+                //mMap.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_IN_MAGNITUDE));
             }
         } else {
             Log.d(TAG, "Do not have COARSE LOCATION permission");
@@ -349,8 +318,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             Log.d(TAG, "Have FINE LOCATION permission");
             Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             if (mLastLocation != null && centerOnLocation) {
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_IN_MAGNITUDE));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), ZOOM_IN_MAGNITUDE));
+                //mMap.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_IN_MAGNITUDE));
             }
         } else {
             Log.d(TAG, "do not have FINE LOCATION permission");
@@ -361,6 +330,27 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             startLocationUpdates();
         }
 
+
+        Intent intent = getIntent();
+
+        FROM_LIST = intent.getBooleanExtra(ListViewActivity.EXTRA_MESSAGE, false);
+        selectedEventID = intent.getIntExtra(ListViewActivity.class.toString() + ".VIEW_EVENT",
+                NO_SELECTED_EVENT);
+        FROM_LIST_ITEM = intent.getBooleanExtra("fromListItem", false);
+
+
+        // Creates the buttons that look like floating action buttons
+        createButtons();
+
+        if (FROM_LIST || FROM_LIST_ITEM) {
+            Log.d(TAG, "From List");
+            centerOnLocation = false;
+            Event event = intent.getParcelableExtra("selectedEvent");
+            Log.d(TAG, "Maps was passed the event: " + event.title);
+            Log.d(TAG, "passed event location " + event.location.getLatitude() + " " + event.location.getLongitude());
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(event.location.getLatitude(), event.location.getLongitude()), ZOOM_IN_MAGNITUDE));
+            displayMarkerInfo(event);
+        }
     }
 
     /**
@@ -501,9 +491,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
                 if (mCurrentLocation != null) {
                     Log.d(TAG, "" + mCurrentLocation.getLatitude() + " " + mCurrentLocation.getLongitude());
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), ZOOM_IN_MAGNITUDE));
                     viewController.setUserLocation(mCurrentLocation);
-                    mMap.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_IN_MAGNITUDE));
 
                 } else {
                     Log.d(TAG, "No last known location");
@@ -668,8 +657,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                   and/or add it to a popup list.
                  */
                 createPin(address.getLatitude(), address.getLongitude());
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_IN_MAGNITUDE - 2));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM_IN_MAGNITUDE-2));
+                //mMap.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_IN_MAGNITUDE - 2));
             }
         }
     }
@@ -689,6 +678,12 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     }
 
     private void displayMarkerInfo(Event event) {
+        Account accnt = ((MOTSApp) getApplication()).getMyAccount();
+        if (accnt != null) {
+            Log.d(TAG, "Account: " + accnt.getName() + " found");
+        } else {
+            Log.d(TAG, "no account found");
+        }
         FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
         fl.setVisibility(View.VISIBLE);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -784,8 +779,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                 addEventsToMap(listEvent);
                 Location loc = listEvent.get(0).location;
 
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(loc.getLatitude(), loc.getLongitude())));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_IN_MAGNITUDE));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(loc.getLatitude(), loc.getLongitude()), ZOOM_IN_MAGNITUDE));
+                //mMap.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_IN_MAGNITUDE));
                 centerOnLocation = false;
                 //displayMarkerInfo(listEvent.get(0));
                 Log.d(TAG, "end of onActivityResult");
