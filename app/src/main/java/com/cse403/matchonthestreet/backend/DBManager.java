@@ -163,6 +163,7 @@ public final class DBManager {
         getEventByIdStatement.setInt(1, event.eid);
         getEventByIdStatement.executeUpdate();
     }
+
     public static void removeAccountAttendance(Account account) throws SQLException, ClassNotFoundException {
         Connection conn = openConnection();
         PreparedStatement getEventByIdStatement = conn.prepareStatement(REMOVE_ATTENDANCE_SQL);
