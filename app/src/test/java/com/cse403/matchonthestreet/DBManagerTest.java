@@ -22,6 +22,8 @@ import java.util.Random;
  *
  */
 public class DBManagerTest extends TestCase {
+
+
     private Event makeRandomEvent() {
         Random rand = new Random(System.currentTimeMillis());
         String title = "randomEvent" + rand.nextInt();
@@ -41,6 +43,16 @@ public class DBManagerTest extends TestCase {
         int uid = rand.nextInt();
         String name = "randname" + rand.nextInt();
         return new Account(uid, name);
+    }
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
     }
 
     @Test
