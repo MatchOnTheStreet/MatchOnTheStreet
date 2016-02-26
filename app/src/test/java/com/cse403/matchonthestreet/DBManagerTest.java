@@ -120,14 +120,6 @@ public class DBManagerTest extends TestCase {
     }
 
     @Test
-    public boid testCreateEventAndAddAccountToEvent() throws SQLException, ClassNotFoundException {
-        Event e = events.get(0);
-        Account a = accounts.get(0);
-        DBManager.createEventAndAddAccountToEvent(e, a);
-        attending.add(new Attending(a, e));
-    }
-
-    @Test
     public void testGetCountOfAccountsAttendingEvent() throws SQLException, ClassNotFoundException {
         Event e = events.get(0);
         int c0 = DBManager.getCountOfAccountsAttendingEvent(e);

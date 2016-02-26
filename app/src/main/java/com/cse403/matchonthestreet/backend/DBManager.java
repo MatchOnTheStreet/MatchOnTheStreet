@@ -110,6 +110,25 @@ public final class DBManager {
         closeConnection(conn);
     }
 
+
+    /*
+     * Adds event to the database, it also add the attending relationships
+     * in events.attending to the database.
+     *
+     * @requires event must not already be in the database.
+     *
+     * @param event event to be added to the database.
+     *
+     */
+    public void addEventAndAttendance(Event event) throws SQLException, ClassNotFoundException {
+        Connection conn = openConnection();
+        addEvent(conn, event);
+        for (Account account: event.attending) {
+            addAccountToEvent(conn, account, event);
+        }
+        closeConnection(conn);
+    }
+
     private static void addEvent(Connection conn, Event event) throws SQLException, ClassNotFoundException {
         PreparedStatement addEventStatement = conn.prepareStatement(ADD_EVENT_SQL);
         addEventStatement.clearParameters();
@@ -464,6 +483,8 @@ public final class DBManager {
         }
         return list;
     }
+
+
 
     /*
      * returns true if there is an attendance relationship between event and account in the database.
