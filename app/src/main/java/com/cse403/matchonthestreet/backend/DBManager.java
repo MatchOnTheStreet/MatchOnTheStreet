@@ -285,6 +285,11 @@ public final class DBManager {
         return list;
     }
 
+    private static void createEvent_addAccountToEvent(Event event, Account account) throws SQLException, ClassNotFoundException {
+        addEvent(event);
+        addAccountToEvent(account, event);
+    }
+
     /* Connection code to MySQL.  */
     private static Connection openConnection() throws ClassNotFoundException, SQLException {
         Class.forName(JDBC_DRIVER);
