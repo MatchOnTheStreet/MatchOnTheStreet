@@ -21,6 +21,7 @@ import com.cse403.matchonthestreet.R;
 import com.cse403.matchonthestreet.backend.DBManager;
 import com.cse403.matchonthestreet.controller.MOTSApp;
 import com.cse403.matchonthestreet.controller.ViewController;
+import com.cse403.matchonthestreet.models.Account;
 import com.cse403.matchonthestreet.models.Event;
 
 import java.text.ParseException;
@@ -178,7 +179,13 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
             @Override
             protected Event doInBackground(Event[] params) {
                 try {
-                    DBManager.addEvent(params[0]);
+                    Account accnt = ((MOTSApp) getApplication()).getMyAccount();
+                    if (params[0] != null) {
+                        DBManager.addEvent(params[0]);
+                        if (accnt != null) {
+                            DBManager.addAccountToEvent(accnt, params[0]);
+                        }
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

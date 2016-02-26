@@ -576,8 +576,6 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             double top = vr.latLngBounds.northeast.latitude;
             double bottom = vr.latLngBounds.southwest.latitude;
 
-            //mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
-
             LatLng centerScreen = mMap.getCameraPosition().target;
             double cLat = centerScreen.latitude;
             double cLon = centerScreen.longitude;
@@ -699,7 +697,13 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         }
         if (event.description != null)
             args.putString("description", event.description);
-
+        if (event.attending != null && event.attending.size() > 0) {
+            Log.d(TAG, "Event has attendees");
+            List<Account> attendees = event.attending;
+            Log.d(TAG, attendees.toString());
+        } else {
+            Log.d(TAG, "Event has no attendees");
+        }
 
         MapDetailFragment mapDetailFragment = new MapDetailFragment();
         mapDetailFragment.setArguments(args);
