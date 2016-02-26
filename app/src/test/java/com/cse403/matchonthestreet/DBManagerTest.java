@@ -19,10 +19,9 @@ import java.util.Random;
 
 /**
  * Created by larioj on 2/25/16.
- *
+ * <p/>
  * Every test name has to start with test!!
  * It is some bull.
- *
  */
 public class DBManagerTest extends TestCase {
     private Event makeRandomEvent() {
@@ -88,19 +87,19 @@ public class DBManagerTest extends TestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
 
-        for(Event e: events) {
+        for (Event e : events) {
             DBManager.removeEvent(e);
             Event e3 = DBManager.getEventById(e.eid);
             assertNull(e3);
         }
 
-        for(Account a: accounts) {
+        for (Account a : accounts) {
             DBManager.removeAccount(a);
             Account a3 = DBManager.getAccountById(a.getUid());
             assertNull(a3);
         }
 
-        for(Attending pair: attending) {
+        for (Attending pair : attending) {
             DBManager.removeAttendance(pair.a, pair.e);
         }
     }
@@ -151,14 +150,14 @@ public class DBManagerTest extends TestCase {
         al = DBManager.getAccountsAttendingEvent(e);
         assertEquals(2, al.size());
         int count = 0;
-        for (Account account: al) {
+        for (Account account : al) {
             if (account.equals(a)) {
                 count++;
             }
         }
         assertEquals(1, count);
         count = 0;
-        for (Account account: al) {
+        for (Account account : al) {
             if (account.equals(a2)) {
                 count++;
             }
@@ -181,12 +180,76 @@ public class DBManagerTest extends TestCase {
         Event[] arr = {e0, e1};
         for (Event exp : arr) {
             int count = 0;
-            for (Event res: el) {
+            for (Event res : el) {
                 if (exp.equals(res)) {
                     count++;
                 }
             }
             assertEquals(1, count);
         }
+    }
+
+    @Test
+    public void testGetEventsInRadius() throws SQLException, ClassNotFoundException {
+        Event e1 = makeRandomEvent();
+        Event e2 = makeRandomEvent();
+        Event e3 = makeRandomEvent();
+
+        e1.location.setLatitude(0);
+        e2.location.setLatitude(0);
+        e3.location.setLatitude(20);
+
+        e1.location.setLongitude(0);
+        e2.location.setLongitude(20);
+        e3.location.setLongitude(10);
+
+
+        Location center = new Location("");
+        center.setLatitude(10);
+        center.setLongitude(10);
+
+        Location origin = new Location("");
+        origin.setLatitude(0);
+        origin.setLongitude(0);
+
+        // Add the events to the database.
+        Event[] eventsArr = {e1, e2, e3};
+        for (Event e : eventsArr) {
+            DBManager.addEvent(e);
+            Event er = DBManager.getEventById(e.eid);
+            assertTrue(e.equals(er));
+            events.add(e);
+        }
+
+        List<Event> all = DBManager.getEventsInRadius(center, 20);
+        for (Event e : eventsArr) {
+            int count = 0;
+            for (Event er : all) {
+                if (e.equals(er)) {
+                    count++;
+                }
+            }
+            assertEquals(1, count);
+        }
+
+        List<Event> none = DBManager.getEventsInRadius(center, 2);
+        for (Event e : eventsArr) {
+            int count = 0;
+            for (Event er : none) {
+                if (e.equals(er)) {
+                    count++;
+                }
+            }
+            assertEquals(0, count);
+        }
+
+        List<Event> one = DBManager.getEventsInRadius(origin, 11);
+        int count = 0;
+        for (Event er : none) {
+            if (e1.equals(er)) {
+                count++;
+            }
+        }
+        assertEquals(0, count);
     }
 }
