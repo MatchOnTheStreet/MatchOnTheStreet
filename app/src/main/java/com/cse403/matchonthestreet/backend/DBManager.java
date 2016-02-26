@@ -77,7 +77,6 @@ public final class DBManager {
    // Methods
 
     public static void addEvent(Event event) throws SQLException, ClassNotFoundException {
-        Log.d("DBManager", "addEvent");
         Connection conn = openConnection();
         PreparedStatement addEventStatement = conn.prepareStatement(ADD_EVENT_SQL);
         addEventStatement.clearParameters();
