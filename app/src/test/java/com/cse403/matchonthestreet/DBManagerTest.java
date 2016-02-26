@@ -11,7 +11,11 @@ import junit.framework.TestCase;
 import org.junit.Test;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -22,8 +26,6 @@ import java.util.Random;
  *
  */
 public class DBManagerTest extends TestCase {
-
-
     private Event makeRandomEvent() {
         Random rand = new Random(System.currentTimeMillis());
         String title = "randomEvent" + rand.nextInt();
@@ -45,25 +47,62 @@ public class DBManagerTest extends TestCase {
         return new Account(uid, name);
     }
 
-    @Test
-    public void testAddGetRemoveEvent() throws SQLException, ClassNotFoundException {
-        Event e = makeRandomEvent();
-        DBManager.addEvent(e);
-        Event e2 = DBManager.getEventById(e.eid);
-        assertTrue(e.equals(e2));
-        DBManager.removeEvent(e);
-        Event e3 = DBManager.getEventById(e.eid);
-        assertNull(e3);
+    private class Attending {
+        public Event e;
+        public Account a;
+    }
+
+    private List<Event> events;
+    private List<Account> accounts;
+    private List<Attending> attending;
+
+    private static final int NUM = 3;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        events = new ArrayList<>();
+        accounts = new ArrayList<>();
+        attending = new ArrayList<>();
+
+        for (int i = 0; i < NUM; i++) {
+            Event e = makeRandomEvent();
+            DBManager.addEvent(e);
+            Event e2 = DBManager.getEventById(e.eid);
+            assertTrue(e.equals(e2));
+            events.add(e);
+
+            Account a = makeRandomAccount();
+            DBManager.addAccount(a);
+            Account a2 = DBManager.getAccountById(a.getUid());
+            assertTrue(a.equals(a2));
+            accounts.add(a);
+        }
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+
+        for(Event e: events) {
+            DBManager.removeEvent(e);
+            Event e3 = DBManager.getEventById(e.eid);
+            assertNull(e3);
+        }
+
+        for(Account a: accounts) {
+            DBManager.removeAccount(a);
+            Account a3 = DBManager.getAccountById(a.getUid());
+            assertNull(a3);
+        }
+
+        for(Attending pair: attending) {
+            DBManager.removeAttendance(pair.a, pair.e);
+        }
     }
 
     @Test
-    public void testAddGetRemoveAccount() throws SQLException, ClassNotFoundException {
-        Account a = makeRandomAccount();
-        DBManager.addAccount(a);
-        Account a2 = DBManager.getAccountById(a.getUid());
-        assertTrue(a.equals(a2));
-        DBManager.removeAccount(a);
-        Account a3 = DBManager.getAccountById(a.getUid());
-        assertNull(a3);
+    public void testAddGetRemoveCheckNullEventsAccounts() throws SQLException, ClassNotFoundException {
+        // Everything is done in the setup and teardown.
     }
 }
