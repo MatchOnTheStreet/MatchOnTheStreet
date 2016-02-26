@@ -36,14 +36,32 @@ public class DBManagerTest extends TestCase {
         return new Event(title, loc, date, duration, timeCreated, description);
     }
 
+    private Account makeRandomAccount() {
+        Random rand = new Random(System.currentTimeMillis());
+        int uid = rand.nextInt();
+        String name = "randname" + rand.nextInt();
+        return new Account(uid, name);
+    }
+
     @Test
-    public void testAddGetEvent() throws SQLException, ClassNotFoundException {
+    public void testAddGetRemoveEvent() throws SQLException, ClassNotFoundException {
         Event e = makeRandomEvent();
         DBManager.addEvent(e);
         Event e2 = DBManager.getEventById(e.eid);
-        assertEquals(e.eid, e2.eid);
-        assertEquals(e.title, e2.title);
-        assertEquals(e.duration, e2.duration);
-        assertEquals(e.description, e2.description);
+        assertTrue(e.equals(e2));
+        DBManager.removeEvent(e);
+        Event e3 = DBManager.getEventById(e.eid);
+        assertNull(e3);
+    }
+
+    @Test
+    public void testAddGetRemoveAccount() throws SQLException, ClassNotFoundException {
+        Account a = makeRandomAccount();
+        DBManager.addAccount(a);
+        Account a2 = DBManager.getAccountById(a.getUid());
+        assertTrue(a.equals(a2));
+        DBManager.removeAccount(a);
+        Account a3 = DBManager.getAccountById(a.getUid());
+        assertNull(a3);
     }
 }

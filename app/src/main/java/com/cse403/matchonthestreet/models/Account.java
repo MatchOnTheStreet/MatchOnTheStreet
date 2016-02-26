@@ -80,6 +80,6 @@ public class  Account {
         }
 
         Account a = (Account) o;
-        return a.uid == uid;
+        return a.uid == uid && a.name.equals(name);
     }
 }

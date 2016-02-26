@@ -75,6 +75,33 @@ public class Event implements Parcelable {
         this.attending = new ArrayList<>();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        // If the object is compared with itself then return true
+        if (o == this) {
+            return true;
+        }
+
+        /* Check if o is an instance of Event or not
+          "null instanceof [type]" also returns false */
+        if (!(o instanceof Event)) {
+            return false;
+        }
+
+        // typecast o to Event so that we can compare data members
+        Event e = (Event) o;
+
+        // Compare the data members and return accordingly
+        return eid == e.eid
+                && title.equals(e.title)
+                && time.equals(e.time)
+                && duration == e.duration
+                && timeCreated.equals(e.timeCreated)
+                && description.equals(e.description)
+                && Double.compare(location.getLatitude(), e.location.getLatitude()) == 0
+                && Double.compare(location.getLongitude(), e.location.getLongitude()) == 0;
+    }
+
     /*
     public Event(int eid, String title, Location location, Date time, String description) {
         this.eid = eid;

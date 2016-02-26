@@ -15,12 +15,12 @@ import java.util.Date;
  */
 public final class DBManager {
     // JDBC driver name and database URL
-    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://matchonthestreetdb.crqizzvrxges.us-east-1.rds.amazonaws.com:3306/motsdb";
+    private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+    private static final String DB_URL = "jdbc:mysql://matchonthestreetdb.crqizzvrxges.us-east-1.rds.amazonaws.com:3306/motsdb";
 
     //  Database credentials
-    static final String USER = "larioj";
-    static final String PASS = "motspassword";
+    private static final String USER = "larioj";
+    private static final String PASS = "motspassword";
 
     // Queries
     private static final String USER_LOGIN_SQL =
@@ -64,6 +64,21 @@ public final class DBManager {
             = "SELECT COUNT(*) "
             + "FROM Accounts a, Attending at "
             + "WHERE at.eid = ? AND at.uid = a.uid;";
+
+    private static final String REMOVE_EVENT_SQL
+            = "DELETE FROM Events WHERE eid=?;";
+
+    private static final String REMOVE_ACCOUNT_SQL
+            = "DELETE FROM Accounts WHERE uid=?;";
+
+    private static final String REMOVE_ATTENDANCE_SQL
+            = "DELETE FROM Attending WHERE uid=? AND eid=?";
+
+    private static final String REMOVE_EVENT_ATTENDANCE_SQL
+            = "DELETE FROM Attending WHERE eid=?";
+
+    private static final String REMOVE_ACCOUNT_ATTENDANCE_SQL
+            = "DELETE FROM Attending WHERE uid=?";
 
     /* transactions */
     private static final String BEGIN_TRANSACTION_SQL =
@@ -114,6 +129,46 @@ public final class DBManager {
             return new Event(eid, title, loc, time, duration, timeCreated, description);
         }
         return null;
+    }
+
+    public static void removeEvent(Event event) throws SQLException, ClassNotFoundException {
+        Connection conn = openConnection();
+        PreparedStatement getEventByIdStatement = conn.prepareStatement(REMOVE_EVENT_SQL);
+        getEventByIdStatement.clearParameters();
+        getEventByIdStatement.setInt(1, event.eid);
+        getEventByIdStatement.executeUpdate();
+    }
+
+    public static void removeAccount(Account account) throws SQLException, ClassNotFoundException {
+        Connection conn = openConnection();
+        PreparedStatement getEventByIdStatement = conn.prepareStatement(REMOVE_ACCOUNT_SQL);
+        getEventByIdStatement.clearParameters();
+        getEventByIdStatement.setInt(1, account.getUid());
+        getEventByIdStatement.executeUpdate();
+    }
+
+    public static void removeAttendance(Account account, Event event) throws SQLException, ClassNotFoundException {
+        Connection conn = openConnection();
+        PreparedStatement getEventByIdStatement = conn.prepareStatement(REMOVE_ATTENDANCE_SQL);
+        getEventByIdStatement.clearParameters();
+        getEventByIdStatement.setInt(1, account.getUid());
+        getEventByIdStatement.setInt(2, event.eid);
+        getEventByIdStatement.executeUpdate();
+    }
+
+    public static void removeEventAttendance(Event event) throws SQLException, ClassNotFoundException {
+        Connection conn = openConnection();
+        PreparedStatement getEventByIdStatement = conn.prepareStatement(REMOVE_ATTENDANCE_SQL);
+        getEventByIdStatement.clearParameters();
+        getEventByIdStatement.setInt(1, event.eid);
+        getEventByIdStatement.executeUpdate();
+    }
+    public static void removeAccountAttendance(Account account) throws SQLException, ClassNotFoundException {
+        Connection conn = openConnection();
+        PreparedStatement getEventByIdStatement = conn.prepareStatement(REMOVE_ATTENDANCE_SQL);
+        getEventByIdStatement.clearParameters();
+        getEventByIdStatement.setInt(1, account.getUid());
+        getEventByIdStatement.executeUpdate();
     }
 
     public static Account getAccountById(int uid) throws SQLException, ClassNotFoundException {
