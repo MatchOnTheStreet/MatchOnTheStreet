@@ -181,6 +181,7 @@ public class RecyclerViewAdapter
                     showOnMapIntent.putExtra("fromListItem", true);
                     showOnMapIntent.putExtra("selectedEid", currentItem.eid);
                     showOnMapIntent.putExtra("selectedEvent", currentItem);
+                    showOnMapIntent.putExtra("selectedEventLocation", currentItem.location);
                     Log.d("Recycler", "passing eid: " + currentItem.eid);
                     context.startActivity(showOnMapIntent);
                 }
