@@ -44,6 +44,9 @@ public final class DBManager {
     private static final String GET_EVENT_BY_ID_SQL =
             "SELECT * FROM Events WHERE eid = ?;";
 
+    private static final String GET_ACCOUNT_BY_ID_SQL =
+            "SELECT * FROM Accounts WHERE uid = ?;";
+
     private static final String GET_EVENTS_ATTENDED_BY_ACCOUNT_SQL
             = "SELECT e.eid AS eid, e.title AS title, e.longitude AS longitude, "
                     + "e.latitude AS latitude, e.start_time AS start_time, "
@@ -51,16 +54,6 @@ public final class DBManager {
                     + "e.description AS description "
             + "FROM Events e, Attending a"
             + "WHERE a.uid = ? AND a.eid = e.eid";
-
-    private static final String GET_ACCOUNTS_ATTENDING_EVENT_SQL
-            = "SELECT a.uid AS uid, a.name AS name "
-            + "FROM Accounts a, Attending at "
-            + "WHERE at.eid = ? AND at.uid = a.uid;";
-
-    private static final String GET_COUNT_OF_ACCOUNTS_ATTENDING_EVENT_SQL
-        = "SELECT COUNT(*) "
-        + "FROM Accounts a, Attending at "
-        + "WHERE at.eid = ? AND at.uid = a.uid;";
 
     /* transactions */
     private static final String BEGIN_TRANSACTION_SQL =
@@ -114,6 +107,21 @@ public final class DBManager {
         return null;
     }
 
+    public static Account getAccountById(int uid) throws SQLException, ClassNotFoundException {
+        Connection conn = openConnection();
+        PreparedStatement getAccountByIdStatement = conn.prepareStatement(GET_ACCOUNT_BY_ID_SQL);
+        getAccountByIdStatement.clearParameters();
+        getAccountByIdStatement.setInt(1, uid);
+        ResultSet rs = getAccountByIdStatement.executeQuery();
+        closeConnection(conn);
+        if (rs.next()) {
+            String name = rs.getString("name");
+            return new Account(uid, name);
+        }
+        return null;
+    }
+
+
     public static List<Event> getEventsInRadius(Location location, double radius) throws SQLException, ClassNotFoundException {
         Connection conn = openConnection();
         PreparedStatement getEventByRadiusStatement = conn.prepareStatement(GET_EVENTS_IN_RADIUS_SQL);
@@ -159,35 +167,6 @@ public final class DBManager {
         createAccountStatement.setString(2, account.getName());
         createAccountStatement.executeUpdate();
         closeConnection(conn);
-    }
-
-    public static int getCountOfAccountsAttendingEvent(Event event) throws SQLException, ClassNotFoundException {
-        Connection conn = openConnection();
-        PreparedStatement st = conn.prepareStatement(GET_COUNT_OF_ACCOUNTS_ATTENDING_EVENT_SQL);
-        int count = 0;
-        st.clearParameters();
-        st.setInt(1, event.eid);
-        ResultSet rs = st.executeQuery();
-        if (rs.next()) {
-            count = rs.getInt(1);
-        }
-        return count;
-    }
-
-    public static List<Account> getAccountsAttendingEvent(Event event) throws SQLException, ClassNotFoundException {
-        Connection conn = openConnection();
-        PreparedStatement st = conn.prepareStatement(GET_ACCOUNTS_ATTENDING_EVENT_SQL);
-        List<Account> list = new ArrayList<>();
-        st.clearParameters();
-        st.setInt(1, event.eid);
-        ResultSet rs = st.executeQuery();
-        while (rs.next()) {
-            int uid = rs.getInt("uid");
-            String name = rs.getString("name");
-            Account account = new Account(uid, name);
-            list.add(account);
-        }
-        return list;
     }
 
     public static List<Event> getEventsAttendedByAccount(Account account) throws SQLException, ClassNotFoundException {
