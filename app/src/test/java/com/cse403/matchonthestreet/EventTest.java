@@ -19,6 +19,7 @@ public class EventTest extends TestCase {
 
     Event e1;
     Event e2;
+    Event e3;
     Account a1;
     Account a2;
 
@@ -26,13 +27,16 @@ public class EventTest extends TestCase {
     public void setUp() throws Exception {
         super.setUp();
         Location location = new Location("");
+        location.setLatitude(0.0d);
+        location.setLongitude(0.0d);
 
-        // Throwing error
-        //location.setLatitude(0.0d);
-        //location.setLongitude(0.0d);
+        Location loc2 = new Location("bar");
+        loc2.setLatitude(0.0d);
+        loc2.setLongitude(0.0d);
 
         e1 = new Event(0, "Basketball", location, new Date(100), 100, new Date(80), "fun");
         e2 = new Event(0, "Basketball", location, new Date(100), 200, new Date(23), "fun");
+        e3 = new Event(0, "Basketball", loc2, new Date(100), 200, new Date(23), "fun");
 
         a1 = new Account(123, "baro");
         a2 = new Account(456, "baro");
@@ -87,4 +91,8 @@ public class EventTest extends TestCase {
         assertFalse(e1.containsString("zzzz"));
     }
 
+    @Test
+    public void testEquals() throws Exception {
+        assertTrue(e2.equals(e3));
+    }
 }
