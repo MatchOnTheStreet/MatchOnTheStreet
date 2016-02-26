@@ -678,17 +678,13 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     }
 
     private void displayMarkerInfo(Event event) {
-        Account accnt = ((MOTSApp) getApplication()).getMyAccount();
-        if (accnt != null) {
-            Log.d(TAG, "Account: " + accnt.getName() + " found");
-        } else {
-            Log.d(TAG, "no account found");
-        }
+
         FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
         fl.setVisibility(View.VISIBLE);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         Bundle args = new Bundle();
         args.putString("detailText", event.getTitle());
+        args.putParcelable("eventObject", event);
         if (event.time != null) {
             args.putString("date", event.time.toString() + " for " + event.duration + " minutes");
         } else {

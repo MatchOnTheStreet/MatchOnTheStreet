@@ -2,6 +2,7 @@ package com.cse403.matchonthestreet.view;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
@@ -11,11 +12,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.cse403.matchonthestreet.R;
+import com.cse403.matchonthestreet.backend.DBManager;
+import com.cse403.matchonthestreet.controller.MOTSApp;
+import com.cse403.matchonthestreet.models.Account;
+import com.cse403.matchonthestreet.models.Event;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.w3c.dom.Text;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
@@ -56,12 +62,19 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
             descriptionText.setText(description);
         }
 
+
         final FloatingActionButton fabButton = (FloatingActionButton) mView.findViewById(R.id.fab_attend_event);
         fabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "Attend Event Button");
                 fabButton.setBackgroundTintList(ColorStateList.valueOf(Color.BLUE));
+                Event event = getArguments().getParcelable("eventObject");
+                if (event != null) {
+                    attendEvent(event);
+                } else {
+                    Log.d(TAG, "event for 'eventObject' is null");
+                }
 
             }
         });
@@ -69,5 +82,38 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
         return mView;
     }
 
+    private void attendEvent(Event event) {
+        AsyncTask<Event, Event, Event> task = new AsyncTask<Event, Event, Event>() {
+            @Override
+            protected Event doInBackground(Event[] params) {
+                Account accnt = ((MOTSApp) getActivity().getApplication()).getMyAccount();
+                if (accnt != null) {
+                    Log.d(TAG, "Account: " + accnt.getName() + " found");
+                } else {
+                    Log.d(TAG, "no account found");
+                }
+                try {
+                    if (params.length == 1) {
+                        Event event1 = params[0];
+                        DBManager.addAccountToEvent(accnt, event1);
+                        return event1;
+                    }
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                } catch (SQLException e) {
+                    Log.d(TAG, "SQL Exception");
+                    e.printStackTrace();
+                }
+                return null;
+            }
+            @Override
+            protected void onPostExecute(Event passedEvent) {
+                if (passedEvent!=null) {
+                    Log.d(TAG, "user is now attending: " + passedEvent.title);
+                }
+            }
+        };
+        task.execute(event);
 
+    }
 }
