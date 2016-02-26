@@ -42,6 +42,7 @@ import android.Manifest;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -761,7 +762,9 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             BitmapDrawable iconDrawable = (BitmapDrawable) SportsIconFinder.getAssetImage(this, iconPath);
             if (iconDrawable != null) {
                 Bitmap iconBitmap = iconDrawable.getBitmap();
-                iconBitmap = Bitmap.createScaledBitmap(iconBitmap, 64, 64, false);
+                Point screenRes = MOTSApp.getScreenRes();
+                int size = Math.max(Math.min(screenRes.x, screenRes.y) / 17, 24);
+                iconBitmap = Bitmap.createScaledBitmap(iconBitmap, size, size, false);
                 BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(iconBitmap);
                 marker.setIcon(icon);
             } else {
