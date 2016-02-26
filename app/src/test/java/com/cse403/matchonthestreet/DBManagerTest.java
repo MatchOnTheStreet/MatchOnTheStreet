@@ -12,10 +12,9 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 /**
@@ -48,8 +47,13 @@ public class DBManagerTest extends TestCase {
     }
 
     private class Attending {
-        public Event e;
         public Account a;
+        public Event e;
+
+        public Attending(Account a, Event e) {
+            this.a = a;
+            this.e = e;
+        }
     }
 
     private List<Event> events;
@@ -104,5 +108,29 @@ public class DBManagerTest extends TestCase {
     @Test
     public void testAddGetRemoveCheckNullEventsAccounts() throws SQLException, ClassNotFoundException {
         // Everything is done in the setup and teardown.
+    }
+
+    @Test
+    public void testAddEventToAccount() throws SQLException, ClassNotFoundException {
+        // Everything is done in the setup and teardown.
+        Event e = events.get(0);
+        Account a = accounts.get(0);
+        DBManager.addAccountToEvent(a, e);
+        attending.add(new Attending(a, e));
+    }
+
+    @Test
+    public void testGetCountOfAccountsAttendingEvent() throws SQLException, ClassNotFoundException {
+        // Everything is done in the setup and teardown.
+        Event e = events.get(0);
+        int c0 = DBManager.getCountOfAccountsAttendingEvent(e);
+        assertEquals(0, c0);
+
+        Account a = accounts.get(0);
+        DBManager.addAccountToEvent(a, e);
+        attending.add(new Attending(a, e));
+
+        int c1 = DBManager.getCountOfAccountsAttendingEvent(e);
+        assertEquals(1, c1);
     }
 }
