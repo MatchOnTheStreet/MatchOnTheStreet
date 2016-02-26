@@ -112,7 +112,6 @@ public class DBManagerTest extends TestCase {
 
     @Test
     public void testAddEventToAccount() throws SQLException, ClassNotFoundException {
-        // Everything is done in the setup and teardown.
         Event e = events.get(0);
         Account a = accounts.get(0);
         DBManager.addAccountToEvent(a, e);
@@ -121,7 +120,6 @@ public class DBManagerTest extends TestCase {
 
     @Test
     public void testGetCountOfAccountsAttendingEvent() throws SQLException, ClassNotFoundException {
-        // Everything is done in the setup and teardown.
         Event e = events.get(0);
         int c0 = DBManager.getCountOfAccountsAttendingEvent(e);
         assertEquals(0, c0);
@@ -132,5 +130,63 @@ public class DBManagerTest extends TestCase {
 
         int c1 = DBManager.getCountOfAccountsAttendingEvent(e);
         assertEquals(1, c1);
+    }
+
+    @Test
+    public void testGetAccountsAttendingEvent() throws SQLException, ClassNotFoundException {
+        Event e = events.get(0);
+        List<Account> al = DBManager.getAccountsAttendingEvent(e);
+        assertEquals(0, al.size());
+
+        Account a = accounts.get(0);
+        DBManager.addAccountToEvent(a, e);
+        attending.add(new Attending(a, e));
+        al = DBManager.getAccountsAttendingEvent(e);
+        assertEquals(1, al.size());
+        assertTrue(a.equals(al.get(0)));
+
+        Account a2 = accounts.get(1);
+        DBManager.addAccountToEvent(a2, e);
+        attending.add(new Attending(a2, e));
+        al = DBManager.getAccountsAttendingEvent(e);
+        assertEquals(2, al.size());
+        int count = 0;
+        for (Account account: al) {
+            if (account.equals(a)) {
+                count++;
+            }
+        }
+        assertEquals(1, count);
+        count = 0;
+        for (Account account: al) {
+            if (account.equals(a2)) {
+                count++;
+            }
+        }
+        assertEquals(1, count);
+    }
+
+    @Test
+    public void testGetEventsAttendedByAccount() throws SQLException, ClassNotFoundException {
+        Event e0 = events.get(0);
+        Event e1 = events.get(1);
+        Account a0 = accounts.get(0);
+
+        DBManager.addAccountToEvent(a0, e0);
+        attending.add(new Attending(a0, e0));
+        DBManager.addAccountToEvent(a0, e1);
+        attending.add(new Attending(a0, e1));
+
+        List<Event> el = DBManager.getEventsAttendedByAccount(a0);
+        Event[] arr = {e0, e1};
+        for (Event exp : arr) {
+            int count = 0;
+            for (Event res: el) {
+                if (exp.equals(res)) {
+                    count++;
+                }
+            }
+            assertEquals(1, count);
+        }
     }
 }

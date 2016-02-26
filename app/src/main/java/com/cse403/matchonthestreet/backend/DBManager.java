@@ -52,7 +52,7 @@ public final class DBManager {
             + "e.latitude AS latitude, e.start_time AS start_time, "
             + "e.duration AS duration, e.time_created AS time_created, "
             + "e.description AS description "
-            + "FROM Events e, Attending a"
+            + "FROM Events e, Attending a "
             + "WHERE a.uid = ? AND a.eid = e.eid";
 
     private static final String GET_ACCOUNTS_ATTENDING_EVENT_SQL
