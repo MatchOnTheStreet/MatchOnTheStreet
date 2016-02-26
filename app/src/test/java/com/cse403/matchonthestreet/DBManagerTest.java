@@ -17,6 +17,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import dalvik.annotation.TestTarget;
+
 /**
  * Created by larioj on 2/25/16.
  * <p/>
@@ -114,6 +116,14 @@ public class DBManagerTest extends TestCase {
         Event e = events.get(0);
         Account a = accounts.get(0);
         DBManager.addAccountToEvent(a, e);
+        attending.add(new Attending(a, e));
+    }
+
+    @Test
+    public boid testCreateEventAndAddAccountToEvent() throws SQLException, ClassNotFoundException {
+        Event e = events.get(0);
+        Account a = accounts.get(0);
+        DBManager.createEventAndAddAccountToEvent(e, a);
         attending.add(new Attending(a, e));
     }
 
