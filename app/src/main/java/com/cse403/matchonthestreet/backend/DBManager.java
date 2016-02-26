@@ -309,15 +309,15 @@ public final class DBManager {
         return list;
     }
 
-     /*
-     * Gets a list of events within the square whose center lies at location, and whose height is radius.
-     * Does not return events with the attending field populated.
-     *
-     */
+    /*
+    * Gets a list of events within the square whose center lies at location, and whose height is radius.
+    * Does not return events with the attending field populated.
+    *
+    */
     public static List<Event> getEventsInRadiusWithAttendance(Location location, double radius) throws SQLException, ClassNotFoundException {
         Connection conn = openConnection();
         List<Event> list = getEventsInRadius(conn, location, radius);
-        for(Event e: list) {
+        for (Event e : list) {
             e.attending = getAccountsAttendingEvent(conn, e);
         }
         closeConnection(conn);
@@ -359,7 +359,7 @@ public final class DBManager {
         closeConnection(conn);
     }
 
-        private static void addAccountToEvent(Connection conn, Account account, Event event) throws SQLException, ClassNotFoundException {
+    private static void addAccountToEvent(Connection conn, Account account, Event event) throws SQLException, ClassNotFoundException {
         PreparedStatement st = conn.prepareStatement(ADD_ACCOUNT_TO_EVENT_SQL);
         st.clearParameters();
         st.setInt(1, account.getUid());
