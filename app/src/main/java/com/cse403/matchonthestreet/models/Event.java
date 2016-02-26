@@ -4,6 +4,9 @@ import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.cse403.matchonthestreet.R;
+import com.cse403.matchonthestreet.controller.MOTSApp;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -39,6 +42,8 @@ public class Event implements Parcelable {
     // A list of accounts who have said they will be attending the event.
     public List<Account> attending;
 
+    private static Random rand = new Random();
+
     public Event(int eid, String title, Location location, Date time,
                  int duration, Date timeCreated, String description) {
         this.eid = eid;
@@ -73,6 +78,70 @@ public class Event implements Parcelable {
         this.timeCreated = new Date();
         this.description = description;
         this.attending = new ArrayList<>();
+    }
+
+    public Event(boolean random) {
+        if (random) {
+            // Sample string values to store in list
+            Calendar cal = Calendar.getInstance();
+            String largeStr = MOTSApp.getContext().getResources().getString(R.string.large_text);
+
+            String[] values = new String[]{"## @ IMA",
+                    "Casual play of ##",
+                    "Team Potato needs a skillful ## player",
+                    "IMA 5v5 ##",
+                    "Come and play ##",
+                    "Competitive ## match",
+                    "2 hours of ##",
+                    "Needs a little ##",
+                    "Feeling like playing ##?",
+                    "Great weather! Play ##",
+                    "##. 3 yrs or experience required",
+                    "Group ##",
+                    "## -- don't bail!",
+                    "## after lunch",
+                    "looking for ## players",
+                    "Would someone teach me ##?",
+                    "I dont really know what to put in the title",
+                    "Play ## like a boss",
+                    "Get down tonight and do some ##",
+                    "I miss my girlfriend but let's play ##",
+                    "This is another randomly generated event containing the keyword ##"
+            };
+
+            String[] sports = new String[]{"basketball", "tennis", "soccer", "football",
+                    "badminton", "ping pong", "snooker", "billiard", "running", "swimming",
+                    "squash", "baseball", "rowing", "sailing", "climbing", "skating",
+                    "chess", "boating", "arch shooting", "skiing", "surfing"};
+
+            String randStr = "";
+            for (int j = 0; j < rand.nextInt(9); j++) {
+                randStr += (char) ('A' + rand.nextInt(48));
+            }
+            String randTitle = values[rand.nextInt(values.length)] + " " + randStr;
+            randTitle = randTitle.replace("##", sports[rand.nextInt(sports.length)]);
+            this.title = randTitle;
+
+            Location l = new Location("dummy");
+            l.setLatitude(46 + rand.nextInt(2) + rand.nextDouble());      // center at 47
+            l.setLongitude(-123 + rand.nextInt(2) + rand.nextDouble());    // center at 122
+
+            int start = rand.nextInt(largeStr.length() - randTitle.length());
+            String d = largeStr.substring(start, start + randTitle.length() + rand.nextInt(10));
+
+            cal.set(2000 + rand.nextInt(17), rand.nextInt(12), 1 + rand.nextInt(28),
+                    rand.nextInt(24), rand.nextInt(60));
+            Date dateStart = cal.getTime();
+            cal.add(Calendar.HOUR, -1 * rand.nextInt(240));
+            cal.add(Calendar.MINUTE, -1 * rand.nextInt(60));
+            Date dateCreate = cal.getTime();
+
+            this.location = l;
+            this.time = dateStart;
+            this.duration = rand.nextInt(600) + 20;
+            this.timeCreated = dateCreate;
+            this.description = d;
+        }
     }
 
     @Override
