@@ -314,7 +314,6 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             if (mLastLocation != null && centerOnLocation) {
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()),ZOOM_IN_MAGNITUDE));
-                //mMap.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_IN_MAGNITUDE));
             }
         } else {
             Log.d(TAG, "Do not have COARSE LOCATION permission");
@@ -326,7 +325,6 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             if (mLastLocation != null && centerOnLocation) {
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), ZOOM_IN_MAGNITUDE));
-                //mMap.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_IN_MAGNITUDE));
             }
         } else {
             Log.d(TAG, "do not have FINE LOCATION permission");
@@ -664,7 +662,6 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                  */
                 createPin(address.getLatitude(), address.getLongitude());
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM_IN_MAGNITUDE-2));
-                //mMap.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_IN_MAGNITUDE - 2));
             }
         }
     }
@@ -804,9 +801,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                 Location loc = listEvent.get(0).location;
 
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(loc.getLatitude(), loc.getLongitude()), ZOOM_IN_MAGNITUDE));
-                //mMap.animateCamera(CameraUpdateFactory.zoomTo(ZOOM_IN_MAGNITUDE));
                 centerOnLocation = false;
-                //displayMarkerInfo(listEvent.get(0));
                 Log.d(TAG, "end of onActivityResult");
             } else {
                 Log.d(TAG, "eventList is null or no elements");
@@ -819,6 +814,9 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         }
     }
 
+    /**
+     * Workaround since we cannot call displayMarkerInfo in onActivityResult
+     */
     @Override
     protected void onPostResume() {
         super.onPostResume();

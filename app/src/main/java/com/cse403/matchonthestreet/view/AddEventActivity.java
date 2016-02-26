@@ -15,6 +15,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.NumberPicker;
+import android.widget.SeekBar;
 import android.widget.TimePicker;
 
 import com.cse403.matchonthestreet.R;
@@ -48,6 +49,7 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
     private SimpleDateFormat timeFormatter;
     private Calendar calendar;
 
+    private SeekBar seekBar;
 
     private Location location;
 
@@ -106,18 +108,40 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
 
         durationET = (EditText) findViewById(R.id.durationET);
 
-        durationPicker = (NumberPicker) findViewById(R.id.durationPicker);
+       // durationPicker = (NumberPicker) findViewById(R.id.durationPicker);
         final String[] timeValues = {"1", "1.5", "2", "2.5", "3", "3.5", "4", "4.5", "5", "5.5", "6", "6.5", "7", "7.5", "8", "8.5", "9"};
-        durationPicker.setDisplayedValues(timeValues);
-        durationPicker.setMinValue(0);
-        durationPicker.setMaxValue(10);
-        durationPicker.setOnClickListener(this);
-        durationPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+//        durationPicker.setDisplayedValues(timeValues);
+//        durationPicker.setMinValue(0);
+//        durationPicker.setMaxValue(10);
+//        durationPicker.setOnClickListener(this);
+//        durationPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+//            @Override
+//            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+//                durationET.setText(timeValues[newVal]);
+//            }
+//        });
+
+
+        seekBar = (SeekBar) findViewById(R.id.duration_seek_bar);
+        seekBar.setMax(timeValues.length - 1);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                durationET.setText(timeValues[newVal]);
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                durationET.setText(timeValues[progress]);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
             }
         });
+
+
     }
 
     @Override
