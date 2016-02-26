@@ -8,7 +8,7 @@ import java.util.List;
  *
  * Represents a user's account.
  */
-public class Account {
+public class  Account {
 
     // User ID given by facebook.
     private int uid;
