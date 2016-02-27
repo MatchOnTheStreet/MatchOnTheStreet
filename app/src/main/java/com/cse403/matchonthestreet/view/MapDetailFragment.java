@@ -36,13 +36,13 @@ import java.util.ArrayList;
 public class MapDetailFragment extends android.support.v4.app.Fragment {
     // Tag for logging purposes
     private String TAG = "MapDetailFrag";
-
+    private View mView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG,"onCreateView");
         /** Inflating the layout for this fragment **/
-        View mView = inflater.inflate(R.layout.map_detail_layout, null);
+        mView = inflater.inflate(R.layout.map_detail_layout, null);
 
         // Update the title of the event from the passed bundle
         TextView tv = (TextView) mView.findViewById(R.id.detail_text);
@@ -92,10 +92,11 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
     }
 
     private void setNumAttending(int numAttending, View mView) {
-        if (numAttending > 0 && mView != null) {
+        if (numAttending >= 0 && mView != null) {
             TextView attendanceText = (TextView) mView.findViewById(R.id.attendees);
             String text = "" + numAttending + " attending";
             attendanceText.setText(text);
+            mView.invalidate();
         }
     }
 
@@ -106,6 +107,7 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
                 Account accnt = ((MOTSApp) getActivity().getApplication()).getMyAccount();
                 if (accnt != null) {
                     Log.d(TAG, "Account: " + accnt.getName() + " found");
+
                 } else {
                     Log.d(TAG, "no account found");
                 }
@@ -127,6 +129,8 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
             protected void onPostExecute(Event passedEvent) {
                 if (passedEvent!=null) {
                     Log.d(TAG, "user is not attending: " + passedEvent.title);
+                    int numAttendees = getArguments().getInt("numAttendees");
+                    setNumAttending(numAttendees - 1, mView);
                 }
             }
         };
@@ -162,6 +166,8 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
             protected void onPostExecute(Event passedEvent) {
                 if (passedEvent!=null) {
                     Log.d(TAG, "user is now attending: " + passedEvent.title);
+                    int numAttendees = getArguments().getInt("numAttendees");
+                    setNumAttending(numAttendees + 1, mView);
                 }
             }
         };
