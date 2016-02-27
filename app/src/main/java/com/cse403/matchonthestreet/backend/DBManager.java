@@ -120,7 +120,7 @@ public final class DBManager {
      * @param event event to be added to the database.
      *
      */
-    public void addEventWithAttendance(Event event) throws SQLException, ClassNotFoundException {
+    public static void addEventWithAttendance(Event event) throws SQLException, ClassNotFoundException {
         Connection conn = openConnection();
         addEvent(conn, event);
         for (Account account: event.attending) {
