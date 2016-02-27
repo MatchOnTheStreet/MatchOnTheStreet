@@ -12,6 +12,10 @@ import java.util.Date;
 
 /**
  * Created by Iris on 2/7/16.
+ *
+ * DBManager performs all backend computations on data. It can add and retrieve items from the
+ * database, whose schema is define in file scripts/createTables.sql.
+ *
  */
 public final class DBManager {
     // JDBC driver name and database URL
@@ -75,7 +79,6 @@ public final class DBManager {
     private static final String CHECK_ATTENDANCE_SQL
             = "SELECT * From Attending WHERE uid=? AND eid=?";
 
-    // May Implement Later.
     private static final String REMOVE_EVENT_ATTENDANCE_SQL
             = "DELETE FROM Attending WHERE eid=?";
 
@@ -116,6 +119,7 @@ public final class DBManager {
      * in events.attending to the database.
      *
      * @requires event must not already be in the database.
+     * @requires attending relationships in events.attending must not be in the database.
      *
      * @param event event to be added to the database.
      *
@@ -129,6 +133,11 @@ public final class DBManager {
         closeConnection(conn);
     }
 
+    /*
+     * Performs the actual query eperation for the public funtion of the same name. It is built
+     * without openning and closing connection so that it can be reused in other methods.
+     *
+     */
     private static void addEvent(Connection conn, Event event) throws SQLException, ClassNotFoundException {
         PreparedStatement addEventStatement = conn.prepareStatement(ADD_EVENT_SQL);
         addEventStatement.clearParameters();
@@ -178,6 +187,11 @@ public final class DBManager {
     }
 
 
+    /*
+     * Performs the actual query eperation for the public funtion of the same name. It is built
+     * without openning and closing connection so that it can be reused in other methods.
+     *
+     */
     private static Event getEventById(Connection conn, int eid) throws SQLException, ClassNotFoundException {
         PreparedStatement getEventByIdStatement = conn.prepareStatement(GET_EVENT_BY_ID_SQL);
         getEventByIdStatement.clearParameters();
@@ -210,6 +224,11 @@ public final class DBManager {
         closeConnection(conn);
     }
 
+    /*
+     * Performs the actual query eperation for the public funtion of the same name. It is built
+     * without openning and closing connection so that it can be reused in other methods.
+     *
+     */
     private static void removeEvent(Connection conn, Event event) throws SQLException, ClassNotFoundException {
         PreparedStatement getEventByIdStatement = conn.prepareStatement(REMOVE_EVENT_SQL);
         getEventByIdStatement.clearParameters();
@@ -247,6 +266,11 @@ public final class DBManager {
         closeConnection(conn);
     }
 
+    /*
+     * Performs the actual query eperation for the public funtion of the same name. It is built
+     * without openning and closing connection so that it can be reused in other methods.
+     *
+     */
     private static void removeAttendance(Connection conn, Account account, Event event) throws SQLException, ClassNotFoundException {
         PreparedStatement getEventByIdStatement = conn.prepareStatement(REMOVE_ATTENDANCE_SQL);
         getEventByIdStatement.clearParameters();
@@ -265,6 +289,11 @@ public final class DBManager {
         closeConnection(conn);
     }
 
+    /*
+     * Performs the actual query eperation for the public funtion of the same name. It is built
+     * without openning and closing connection so that it can be reused in other methods.
+     *
+     */
     private static void removeEventAttendance(Connection conn, Event event) throws SQLException, ClassNotFoundException {
         PreparedStatement getEventByIdStatement = conn.prepareStatement(REMOVE_EVENT_ATTENDANCE_SQL);
         getEventByIdStatement.clearParameters();
@@ -282,6 +311,11 @@ public final class DBManager {
         closeConnection(conn);
     }
 
+    /*
+     * Performs the actual query operation for the public funtion of the same name. It is built
+     * without opening and closing connection so that it can be reused in other methods.
+     *
+     */
     private static void removeAccountAttendance(Connection conn, Account account) throws SQLException, ClassNotFoundException {
         PreparedStatement getEventByIdStatement = conn.prepareStatement(REMOVE_ACCOUNT_ATTENDANCE_SQL);
         getEventByIdStatement.clearParameters();
@@ -304,6 +338,11 @@ public final class DBManager {
         return account;
     }
 
+    /*
+     * Performs the actual query operation for the public funtion of the same name. It is built
+     * without opening and closing connection so that it can be reused in other methods.
+     *
+     */
     private static Account getAccountById(Connection conn, int uid) throws SQLException, ClassNotFoundException {
         PreparedStatement getAccountByIdStatement = conn.prepareStatement(GET_ACCOUNT_BY_ID_SQL);
         getAccountByIdStatement.clearParameters();
@@ -343,6 +382,11 @@ public final class DBManager {
         return list;
     }
 
+    /*
+     * Performs the actual query operation for the public funtion of the same name. It is built
+     * without opening and closing connection so that it can be reused in other methods.
+     *
+     */
     private static List<Event> getEventsInRadius(Connection conn, Location location, double radius) throws SQLException, ClassNotFoundException {
         PreparedStatement getEventByRadiusStatement = conn.prepareStatement(GET_EVENTS_IN_RADIUS_SQL);
         getEventByRadiusStatement.clearParameters();
@@ -378,6 +422,11 @@ public final class DBManager {
         closeConnection(conn);
     }
 
+    /*
+     * Performs the actual query operation for the public funtion of the same name. It is built
+     * without opening and closing connection so that it can be reused in other methods.
+     *
+     */
     private static void addAccountToEvent(Connection conn, Account account, Event event) throws SQLException, ClassNotFoundException {
         PreparedStatement st = conn.prepareStatement(ADD_ACCOUNT_TO_EVENT_SQL);
         st.clearParameters();
@@ -398,6 +447,11 @@ public final class DBManager {
         closeConnection(conn);
     }
 
+    /*
+     * Performs the actual query operation for the public funtion of the same name. It is built
+     * without opening and closing connection so that it can be reused in other methods.
+     *
+     */
     private static void addAccount(Connection conn, Account account) throws SQLException, ClassNotFoundException {
         PreparedStatement createAccountStatement = conn.prepareStatement(CREATE_ACCOUNT_SQL);
         createAccountStatement.clearParameters();
@@ -419,6 +473,11 @@ public final class DBManager {
         return list;
     }
 
+    /*
+     * Performs the actual query operation for the public funtion of the same name. It is built
+     * without opening and closing connection so that it can be reused in other methods.
+     *
+     */
     private static List<Event> getEventsAttendedByAccount(Connection conn, Account account) throws SQLException, ClassNotFoundException {
         PreparedStatement getUserEventStatement = conn.prepareStatement(GET_EVENTS_ATTENDED_BY_ACCOUNT_SQL);
         List<Event> list = new ArrayList<Event>();
@@ -469,6 +528,11 @@ public final class DBManager {
         return list;
     }
 
+    /*
+     * Performs the actual query operation for the public funtion of the same name. It is built
+     * without opening and closing connection so that it can be reused in other methods.
+     *
+     */
     private static List<Account> getAccountsAttendingEvent(Connection conn, Event event) throws SQLException, ClassNotFoundException {
         PreparedStatement st = conn.prepareStatement(GET_ACCOUNTS_ATTENDING_EVENT_SQL);
         List<Account> list = new ArrayList<>();
@@ -484,11 +548,9 @@ public final class DBManager {
         return list;
     }
 
-
-
     /*
      * returns true if there is an attendance relationship between event and account in the database.
-     * returns false otherwise.
+     * returns false otherwise. This method is merely for the purpose of testing.
      *
      */
     public static boolean checkAttendance(Account account, Event event) throws SQLException, ClassNotFoundException {
