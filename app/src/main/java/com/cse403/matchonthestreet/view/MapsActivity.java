@@ -45,6 +45,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -587,7 +588,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                             Location loc = new Location("AsyncReloadPins");
                             loc.setLatitude(params[1]);
                             loc.setLongitude(params[2]);
-                            List<Event> events = DBManager.getEventsInRadius(loc, params[0]);
+                            List<Event> events = DBManager.getEventsInRadiusWithAttendance(loc, params[0]);
                             ArrayList<Event> eventArrayList = new ArrayList<>(events);
                             Log.d(TAG, "found " + eventArrayList.size() + " events");
                             return events;
@@ -698,6 +699,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         if (event.attending != null && event.attending.size() > 0) {
             Log.d(TAG, "Event has attendees");
             List<Account> attendees = event.attending;
+            args.putInt("numAttendees", attendees.size());
             Log.d(TAG, attendees.toString());
         } else {
             Log.d(TAG, "Event has no attendees");

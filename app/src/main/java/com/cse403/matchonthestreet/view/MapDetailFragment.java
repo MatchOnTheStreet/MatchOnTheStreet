@@ -62,6 +62,12 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
             descriptionText.setText(description);
         }
 
+        int numAttendees = getArguments().getInt("numAttendees");
+        if (numAttendees > 0) {
+            TextView attendanceText = (TextView) mView.findViewById(R.id.attendees);
+            String text = "" + numAttendees + " attending";
+            attendanceText.setText(text);
+        }
 
         final FloatingActionButton fabButton = (FloatingActionButton) mView.findViewById(R.id.fab_attend_event);
         fabButton.setOnClickListener(new View.OnClickListener() {
