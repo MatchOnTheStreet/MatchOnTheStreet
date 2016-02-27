@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.cse403.matchonthestreet.R;
 import com.cse403.matchonthestreet.backend.DBManager;
@@ -18,6 +19,7 @@ import com.cse403.matchonthestreet.models.Account;
 import com.cse403.matchonthestreet.models.Event;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.TileOverlay;
 
 import org.w3c.dom.Text;
 
@@ -63,29 +65,73 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
         }
 
         int numAttendees = getArguments().getInt("numAttendees");
-        if (numAttendees > 0) {
-            TextView attendanceText = (TextView) mView.findViewById(R.id.attendees);
-            String text = "" + numAttendees + " attending";
-            attendanceText.setText(text);
-        }
+        setNumAttending(numAttendees, mView);
 
-        final FloatingActionButton fabButton = (FloatingActionButton) mView.findViewById(R.id.fab_attend_event);
-        fabButton.setOnClickListener(new View.OnClickListener() {
+
+        ToggleButton toggleButton = (ToggleButton) mView.findViewById(R.id.attendingToggle);
+        boolean attending = getArguments().getBoolean("amAttending");
+        toggleButton.setChecked(attending);
+        toggleButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Log.d(TAG, "Attend Event Button");
-                fabButton.setBackgroundTintList(ColorStateList.valueOf(Color.BLUE));
+            public void onClick(View v) {
                 Event event = getArguments().getParcelable("eventObject");
-                if (event != null) {
-                    attendEvent(event);
+                if (((ToggleButton) v).isChecked()) {
+                    Log.d(TAG, "attend event");
+                    if (event != null) {
+                        attendEvent(event);
+                    }
                 } else {
-                    Log.d(TAG, "event for 'eventObject' is null");
+                    Log.d(TAG, "unattend event");
+                    if (event != null) {
+                        unattendEvent(event);
+                    }
                 }
-
             }
         });
-
         return mView;
+    }
+
+    private void setNumAttending(int numAttending, View mView) {
+        if (numAttending > 0 && mView != null) {
+            TextView attendanceText = (TextView) mView.findViewById(R.id.attendees);
+            String text = "" + numAttending + " attending";
+            attendanceText.setText(text);
+        }
+    }
+
+    private void unattendEvent(Event event) {
+        AsyncTask<Event, Event, Event> task = new AsyncTask<Event, Event, Event>() {
+            @Override
+            protected Event doInBackground(Event[] params) {
+                Account accnt = ((MOTSApp) getActivity().getApplication()).getMyAccount();
+                if (accnt != null) {
+                    Log.d(TAG, "Account: " + accnt.getName() + " found");
+                } else {
+                    Log.d(TAG, "no account found");
+                }
+                try {
+                    if (params.length == 1) {
+                        Event event1 = params[0];
+                        DBManager.removeAttendance(accnt, event1);
+                        return event1;
+                    }
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                } catch (SQLException e) {
+                    Log.d(TAG, "SQL Exception");
+                    e.printStackTrace();
+                }
+                return null;
+            }
+            @Override
+            protected void onPostExecute(Event passedEvent) {
+                if (passedEvent!=null) {
+                    Log.d(TAG, "user is not attending: " + passedEvent.title);
+                }
+            }
+        };
+        task.execute(event);
+
     }
 
     private void attendEvent(Event event) {
