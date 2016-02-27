@@ -204,11 +204,13 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
             protected Event doInBackground(Event[] params) {
                 try {
                     Account accnt = ((MOTSApp) getApplication()).getMyAccount();
-                    if (params[0] != null) {
-                        DBManager.addEvent(params[0]);
-                        if (accnt != null) {
-                            DBManager.addAccountToEvent(accnt, params[0]);
-                        }
+                    Event e = params[0];
+                    if (e != null) {
+                        DBManager.addEventWithAttendance(e);
+                    }
+
+                    if (accnt != null) {
+                        DBManager.addAccountToEvent(accnt, e);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
