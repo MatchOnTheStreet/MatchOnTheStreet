@@ -21,9 +21,11 @@ import dalvik.annotation.TestTarget;
 
 /**
  * Created by larioj on 2/25/16.
- * <p/>
- * Every test name has to start with test!!
- * It is some bull.
+ *
+ * Exercises the functionality found in DBManager.
+ *
+ * Note that every test name has to start with test!!
+ *
  */
 public class DBManagerTest extends TestCase {
     private Event makeRandomEvent() {
@@ -63,6 +65,10 @@ public class DBManagerTest extends TestCase {
 
     private static final int NUM = 3;
 
+    /*
+     * Adds NUM events to the database and verifies that they have been added. It
+     * also adds NUM accounts to the database and verifies they have been added.
+     */
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -85,6 +91,10 @@ public class DBManagerTest extends TestCase {
         }
     }
 
+    /*
+     * Removes all accounts, events, and attending relationships added in the tests and setup,
+     * and verifies they have been removed.
+     */
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
@@ -102,10 +112,19 @@ public class DBManagerTest extends TestCase {
         }
 
         for (Attending pair : attending) {
+            assertTrue(DBManager.checkAttendance(pair.a, pair.e));
             DBManager.removeAttendance(pair.a, pair.e);
+            assertFalse(DBManager.checkAttendance(pair.a, pair.e));
         }
     }
 
+    /*
+     * In the setup method we add a known set of elements to the database, and verify that they
+     * exist. We need this for the rest of the tests. In tearDown() we remove the events we added
+     * and verify that they have been removed. This function merely tests the setup and teardown
+     * although it uses a lot of DBMethods.
+     *
+     */
     @Test
     public void testAddGetRemoveCheckNullEventsAccounts() throws SQLException, ClassNotFoundException {
         // Everything is done in the setup and teardown.
@@ -125,12 +144,14 @@ public class DBManagerTest extends TestCase {
         int c0 = DBManager.getCountOfAccountsAttendingEvent(e);
         assertEquals(0, c0);
 
-        Account a = accounts.get(0);
-        DBManager.addAccountToEvent(a, e);
-        attending.add(new Attending(a, e));
+        for (int i = 1; i <= NUM; i++) {
+            Account a = accounts.get(i - 1);
+            DBManager.addAccountToEvent(a, e);
+            attending.add(new Attending(a, e));
 
-        int c1 = DBManager.getCountOfAccountsAttendingEvent(e);
-        assertEquals(1, c1);
+            int c1 = DBManager.getCountOfAccountsAttendingEvent(e);
+            assertEquals(i, c1);
+        }
     }
 
     @Test
