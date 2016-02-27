@@ -571,57 +571,54 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     }
 
     private boolean reloadPinsOnScreen() {
-        if (mCurrentLocation != null) {
-            VisibleRegion vr = mMap.getProjection().getVisibleRegion();
-            double top = vr.latLngBounds.northeast.latitude;
-            double bottom = vr.latLngBounds.southwest.latitude;
 
-            LatLng centerScreen = mMap.getCameraPosition().target;
-            double cLat = centerScreen.latitude;
-            double cLon = centerScreen.longitude;
-            AsyncTask<Double, Integer, List<Event>> task = new AsyncTask<Double, Integer, List<Event>>() {
-                @Override
-                protected List<Event> doInBackground(Double[] params) {
-                    try {
-                        if (params.length == 3) {
-                            Log.d(TAG, "getEventsInRadius of " + params[0]);
-                            Location loc = new Location("AsyncReloadPins");
-                            loc.setLatitude(params[1]);
-                            loc.setLongitude(params[2]);
-                            List<Event> events = DBManager.getEventsInRadiusWithAttendance(loc, params[0]);
-                            ArrayList<Event> eventArrayList = new ArrayList<>(events);
-                            Log.d(TAG, "found " + eventArrayList.size() + " events");
-                            return events;
-                        }
-                        return null;
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (SQLException e) {
-                        Log.d(TAG, "SQL Exception");
-                        e.printStackTrace();
+        VisibleRegion vr = mMap.getProjection().getVisibleRegion();
+        double top = vr.latLngBounds.northeast.latitude;
+        double bottom = vr.latLngBounds.southwest.latitude;
+
+        LatLng centerScreen = mMap.getCameraPosition().target;
+        double cLat = centerScreen.latitude;
+        double cLon = centerScreen.longitude;
+        AsyncTask<Double, Integer, List<Event>> task = new AsyncTask<Double, Integer, List<Event>>() {
+            @Override
+            protected List<Event> doInBackground(Double[] params) {
+                try {
+                    if (params.length == 3) {
+                        Log.d(TAG, "getEventsInRadius of " + params[0]);
+                        Location loc = new Location("AsyncReloadPins");
+                        loc.setLatitude(params[1]);
+                        loc.setLongitude(params[2]);
+                        List<Event> events = DBManager.getEventsInRadiusWithAttendance(loc, params[0]);
+                        ArrayList<Event> eventArrayList = new ArrayList<>(events);
+                        Log.d(TAG, "found " + eventArrayList.size() + " events");
+                        return events;
                     }
                     return null;
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                } catch (SQLException e) {
+                    Log.d(TAG, "SQL Exception");
+                    e.printStackTrace();
                 }
+                return null;
+            }
 
-                protected void onPostExecute(List<Event> events) {
-                    Log.d(TAG, "On Post Execute");
-                    if (events != null) {
-                        removeAllMarkers();
-                        ArrayList<Event> eventArrayList = new ArrayList<>(events);
-                        viewController.updateEventList(new HashSet<>(events));
-                        addEventsToMap(eventArrayList);
+            protected void onPostExecute(List<Event> events) {
+                Log.d(TAG, "On Post Execute");
+                if (events != null) {
+                    removeAllMarkers();
+                    ArrayList<Event> eventArrayList = new ArrayList<>(events);
+                    viewController.updateEventList(new HashSet<>(events));
+                    addEventsToMap(eventArrayList);
 
-                    }
                 }
+            }
 
-            };
+        };
 
 
-            task.execute(Math.abs(top - bottom), cLat, cLon);
+        task.execute(Math.abs(top - bottom), cLat, cLon);
 
-        } else {
-            return false;
-        }
         return true;
     }
 
