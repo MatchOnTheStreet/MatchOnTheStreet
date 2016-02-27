@@ -21,11 +21,10 @@ import dalvik.annotation.TestTarget;
 
 /**
  * Created by larioj on 2/25/16.
- *
+ * <p/>
  * Exercises the functionality found in DBManager.
- *
+ * <p/>
  * Note that every test name has to start with test!!
- *
  */
 public class DBManagerTest extends TestCase {
     private Event makeRandomEvent() {
@@ -257,6 +256,87 @@ public class DBManagerTest extends TestCase {
                 }
             }
             assertEquals(1, count);
+        }
+    }
+
+    @Test
+    public void testGetEventByIdWithAttendance() throws SQLException, ClassNotFoundException {
+        Event e1 = events.get(0);
+        Account a1 = accounts.get(0);
+        Account a2 = accounts.get(1);
+
+        DBManager.addAccountToEvent(a1, e1);
+        attending.add(new Attending(a1, e1));
+        DBManager.addAccountToEvent(a2, e1);
+        attending.add(new Attending(a2, e1));
+
+        Event er = DBManager.getEventByIdWithAttendance(e1.eid);
+        assertNotNull(er);
+        assertEquals(2, er.attending.size());
+
+        Account[] accounts12 = {a1, a2};
+        for (Account a : accounts12) {
+            int count = 0;
+            for (Account ar: er.attending) {
+                if (a.equals(ar)) {
+                    count++;
+                }
+            }
+            assertEquals(1, count);
+        }
+    }
+
+    @Test
+    public void testGetEventsInRadiusWithAttendingTWo() throws SQLException, ClassNotFoundException {
+        Event e1 = events.get(0);
+        Event e2 = events.get(1);
+        Account a1 = accounts.get(0);
+        Account a2 = accounts.get(1);
+
+        DBManager.addAccountToEvent(a1, e1);
+        attending.add(new Attending(a1, e1));
+        DBManager.addAccountToEvent(a2, e1);
+        attending.add(new Attending(a2, e1));
+
+        DBManager.addAccountToEvent(a1, e2);
+        attending.add(new Attending(a1, e2));
+        DBManager.addAccountToEvent(a2, e2);
+        attending.add(new Attending(a2, e2));
+
+
+        double latdiff = Math.abs(e1.location.getLatitude() - e2.location.getLatitude());
+        double londiff = Math.abs(e1.location.getLongitude() - e2.location.getLongitude());
+        double radius = Math.max(latdiff, londiff) + 2;
+
+        Location loc = new Location("");
+        loc.setLatitude(e1.location.getLatitude());
+        loc.setLongitude(e1.location.getLongitude());
+        List<Event> el = DBManager.getEventsInRadiusWithAttendance(loc, radius);
+
+        Event[] events12 = {e1, e2};
+        for (Event e : events12) {
+            int count = 0;
+            for (Event er : el) {
+                if (er.equals(e)) {
+                    count++;
+                }
+            }
+            assertEquals(1, count);
+        }
+
+        Account[] accounts12 = {a1, a2};
+        for (Event e : el) {
+            if (e.equals(e1) || e.equals(e2)) {
+                for (Account a : accounts12) {
+                    int count = 0;
+                    for (Account ar : e.attending) {
+                        if (ar.equals(a)) {
+                            count++;
+                        }
+                    }
+                    assertEquals(1, count);
+                }
+            }
         }
     }
 }
