@@ -352,10 +352,16 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             Log.d(TAG, "From List");
             centerOnLocation = false;
             Event event = intent.getParcelableExtra("selectedEvent");
-            Log.d(TAG, "Maps was passed the event: " + event.title);
-            Log.d(TAG, "passed event location " + event.location.getLatitude() + " " + event.location.getLongitude());
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(event.location.getLatitude(), event.location.getLongitude()), ZOOM_IN_MAGNITUDE));
-            displayMarkerInfo(event);
+            if (event != null ) {
+                Log.d(TAG, "Maps was passed the event: " + event.title);
+                Log.d(TAG, "passed event location " + event.location.getLatitude() + " " + event.location.getLongitude());
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(event.location.getLatitude(), event.location.getLongitude()), ZOOM_IN_MAGNITUDE));
+                displayMarkerInfo(event);
+            } else {
+                centerOnLocation = true;
+                if (mCurrentLocation != null)
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), ZOOM_IN_MAGNITUDE));
+            }
         }
     }
 
