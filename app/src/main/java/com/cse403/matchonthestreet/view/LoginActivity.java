@@ -95,6 +95,12 @@ public class LoginActivity extends NavActivity {
                     mProfileTracker.startTracking();
                 } else {
                     Profile profile = Profile.getCurrentProfile();
+                    Account me = new Account((int) Long.parseLong(profile.getId()), profile.getName());
+                    ((MOTSApp) getApplication()).setMyAccount(me);
+                    Account accnt = ((MOTSApp) getApplication()).getMyAccount();
+                    Log.d(TAG, "my account is: " + accnt.getName());
+                    saveUserIDtoDB(accnt);
+
                     Log.d(TAG, profile.getName());
 
                 }
