@@ -9,6 +9,15 @@ import java.util.List;
  * Represents a user's account.
  */
 public class  Account {
+    /**
+     * Representation Invariant:
+     *      uid is in the database.
+     *      name is the same name as the name assigned to uid in the database.
+     *
+     * Abstraction Function:
+     *      Account a represents the account of a user with the facebook id a.uid, the full name
+     *      given by a.name, who is attending the list of events given by a.events.
+     */
 
     // User ID given by facebook.
     private int uid;

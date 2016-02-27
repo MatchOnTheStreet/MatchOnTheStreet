@@ -17,6 +17,17 @@ import java.util.*;
  * Represents a sporting Event.
  */
 public class Event implements Parcelable {
+    /**
+     * Representation Invariant:
+     *      eid is in the database of events
+     *      location is on earth
+     *
+     * Abstraction Function:
+     *      Event e represents an event called e.title, taking place at the coordinates marked by
+     *      e.location, at the time denoted by e.time, taking the number of hours of e.duration,
+     *      created at the time denoted by e.timeCreated, described by the user in the way denoted
+     *      by e.description, which is attended by the list of accounts contained in e.attending.
+     */
 
     // The id number of the event
     public int eid;

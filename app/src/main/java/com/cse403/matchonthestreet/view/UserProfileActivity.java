@@ -57,12 +57,6 @@ public class UserProfileActivity extends NavActivity {
             }
         });
 
-        // TODO: change from dummy data to db data
-        Account dummyAccount = new Account(123, "bar");
-        Event e1 = new Event(123, "Basketball", null, null, 60, null, "Cool 1v1 basketball");
-        Event e2 = new Event(123, "Soccer", null, null, 60, null, "3v3 Soccer");
-        dummyAccount.addEvent(e1);
-        dummyAccount.addEvent(e2);
         Profile profile = Profile.getCurrentProfile();
         username = (TextView) findViewById(R.id.username);
 
@@ -71,48 +65,7 @@ public class UserProfileActivity extends NavActivity {
         } else {
             username.setText("null username");
         }
-
-        AsyncTask<Integer, Integer, List<Event>> task = new AsyncTask<Integer, Integer, List<Event>>() {
-            @Override
-            protected List<Event> doInBackground(Integer[] params) {
-                Log.d(TAG, "here");
-                try {
-                    Account account = ((MOTSApp) getApplication()).getMyAccount();
-                    List<Event> events = DBManager.getEventsAttendedByAccount(account);
-                    Log.d(TAG, account.getName());
-                    if (events.isEmpty()) {
-                        Log.d(TAG, "empty events");
-                    } else {
-                        for (Event e : events) {
-                            Log.d(TAG, e.title);
-                        }
-                    }
-                    return events;
-                } catch (ClassNotFoundException e) {
-                    Log.d(TAG, "ClassNotFoundException");
-                    e.printStackTrace();
-                } catch (SQLException e) {
-                    Log.d(TAG, "SQL Exception");
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            protected void onPostExecute(List<Event> events) {
-                Log.d(TAG, "On Post Execute");
-                if (events != null) {
-                    List<String> vals = new ArrayList<String>();
-                    for (Event e : events) {
-                        vals.add(e.title + ": " + e.description);
-                        addEventsToList(vals);
-
-                    }
-                }
-
-            }
-
-        };
-        task.execute();
+        (new setListEventsTask()).execute();
     }
 
 
@@ -122,4 +75,47 @@ public class UserProfileActivity extends NavActivity {
         listView.setAdapter(listAdapter);
 
     }
+
+    private class setListEventsTask extends AsyncTask<Integer, Integer, List<Event>> {
+
+        @Override
+        protected List<Event> doInBackground(Integer... params) {
+            Log.d(TAG, "here");
+            try {
+                Account account = ((MOTSApp) getApplication()).getMyAccount();
+                List<Event> events = DBManager.getEventsAttendedByAccount(account);
+                Log.d(TAG, account.getName());
+                if (events.isEmpty()) {
+                    Log.d(TAG, "empty events");
+                } else {
+                    for (Event e : events) {
+                        Log.d(TAG, e.title);
+                    }
+                }
+                return events;
+            } catch (ClassNotFoundException e) {
+                Log.d(TAG, "ClassNotFoundException");
+                e.printStackTrace();
+            } catch (SQLException e) {
+                Log.d(TAG, "SQL Exception");
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(List<Event> events) {
+            Log.d(TAG, "On Post Execute");
+            if (events != null) {
+                List<String> vals = new ArrayList<String>();
+                for (Event e : events) {
+                    vals.add(e.title + ": " + e.description);
+                    addEventsToList(vals);
+
+                }
+            }
+
+        }
+
+    };
+
 }
