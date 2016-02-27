@@ -71,48 +71,7 @@ public class UserProfileActivity extends NavActivity {
         } else {
             username.setText("null username");
         }
-
-        AsyncTask<Integer, Integer, List<Event>> task = new AsyncTask<Integer, Integer, List<Event>>() {
-            @Override
-            protected List<Event> doInBackground(Integer[] params) {
-                Log.d(TAG, "here");
-                try {
-                    Account account = ((MOTSApp) getApplication()).getMyAccount();
-                    List<Event> events = DBManager.getEventsAttendedByAccount(account);
-                    Log.d(TAG, account.getName());
-                    if (events.isEmpty()) {
-                        Log.d(TAG, "empty events");
-                    } else {
-                        for (Event e : events) {
-                            Log.d(TAG, e.title);
-                        }
-                    }
-                    return events;
-                } catch (ClassNotFoundException e) {
-                    Log.d(TAG, "ClassNotFoundException");
-                    e.printStackTrace();
-                } catch (SQLException e) {
-                    Log.d(TAG, "SQL Exception");
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            protected void onPostExecute(List<Event> events) {
-                Log.d(TAG, "On Post Execute");
-                if (events != null) {
-                    List<String> vals = new ArrayList<String>();
-                    for (Event e : events) {
-                        vals.add(e.title + ": " + e.description);
-                        addEventsToList(vals);
-
-                    }
-                }
-
-            }
-
-        };
-        task.execute();
+        (new setListEventsTask()).execute();
     }
 
 
@@ -122,4 +81,47 @@ public class UserProfileActivity extends NavActivity {
         listView.setAdapter(listAdapter);
 
     }
+
+    private class setListEventsTask extends AsyncTask<Integer, Integer, List<Event>> {
+
+        @Override
+        protected List<Event> doInBackground(Integer... params) {
+            Log.d(TAG, "here");
+            try {
+                Account account = ((MOTSApp) getApplication()).getMyAccount();
+                List<Event> events = DBManager.getEventsAttendedByAccount(account);
+                Log.d(TAG, account.getName());
+                if (events.isEmpty()) {
+                    Log.d(TAG, "empty events");
+                } else {
+                    for (Event e : events) {
+                        Log.d(TAG, e.title);
+                    }
+                }
+                return events;
+            } catch (ClassNotFoundException e) {
+                Log.d(TAG, "ClassNotFoundException");
+                e.printStackTrace();
+            } catch (SQLException e) {
+                Log.d(TAG, "SQL Exception");
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(List<Event> events) {
+            Log.d(TAG, "On Post Execute");
+            if (events != null) {
+                List<String> vals = new ArrayList<String>();
+                for (Event e : events) {
+                    vals.add(e.title + ": " + e.description);
+                    addEventsToList(vals);
+
+                }
+            }
+
+        }
+
+    };
+
 }
