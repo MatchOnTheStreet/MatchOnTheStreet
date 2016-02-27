@@ -698,6 +698,17 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             List<Account> attendees = event.attending;
             args.putInt("numAttendees", attendees.size());
             Log.d(TAG, attendees.toString());
+            Account accnt = ((MOTSApp) getApplication()).getMyAccount();
+            if (accnt != null) {
+                if (attendees.contains(accnt)) {
+                    Log.d(TAG, "I am already attending the event: " + event.title);
+                    args.putBoolean("amAttending", true);
+                } else {
+                    Log.d(TAG, "I am not currently attending the event: " + event.title);
+                    args.putBoolean("amAttending", false);
+                }
+            }
+
         } else {
             Log.d(TAG, "Event has no attendees");
         }
