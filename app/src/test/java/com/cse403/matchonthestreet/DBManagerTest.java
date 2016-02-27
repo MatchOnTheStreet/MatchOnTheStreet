@@ -22,7 +22,8 @@ import dalvik.annotation.TestTarget;
 /**
  * Created by larioj on 2/25/16.
  * <p/>
- * Exercises the functionality found in DBManager.
+ * Exercises the functionality found in DBManager. This is a "system test" since it mocks the
+ * flow of data from database to application.
  * <p/>
  * Note that every test name has to start with test!!
  */
