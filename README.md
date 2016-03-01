@@ -9,7 +9,7 @@ https://homes.cs.washington.edu/~liuh25/matchonthestreet/
 
 ## [Documents](https://github.com/MatchOnTheStreet/Docs)
 
-# Current release: [Beta (v0.1)](https://github.com/MatchOnTheStreet/MatchOnTheStreet/releases/tag/v0.1)
+# Current release: [Feature Complete (v0.5)](https://github.com/MatchOnTheStreet/MatchOnTheStreet/releases/tag/v0.5)
 ## Features Working
 * Creating Events!
 * Identifying User Location!
@@ -18,14 +18,14 @@ https://homes.cs.washington.edu/~liuh25/matchonthestreet/
 * Location Pins!
 * User Athentication!
 * Personal Information!
-
-## Features Not Working
 * Joining Events
-* Event Garbage Collection
-* Title Search
 * Filtering
+* Title Search
 * Time Search
 * Tag Search
+
+## Features Not Working
+* Event Garbage Collection
 
 ## Major Changes:
 * Name changes:
