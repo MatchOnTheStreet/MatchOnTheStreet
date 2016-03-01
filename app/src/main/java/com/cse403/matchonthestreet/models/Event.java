@@ -3,10 +3,12 @@ package com.cse403.matchonthestreet.models;
 import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.cse403.matchonthestreet.R;
 import com.cse403.matchonthestreet.controller.MOTSApp;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -232,6 +234,13 @@ public class Event implements Parcelable {
         return false;
     }
 
+    public boolean removeAttendee(Account account) {
+        if (isAttendedBy(account)) {
+            this.attending.remove(account);
+            return true;
+        }
+        return false;
+    }
     public String getTitle() { return this.title; }
 
     public String getDescription() { return this.description; }
@@ -291,6 +300,7 @@ public class Event implements Parcelable {
 
         parcel.writeInt(duration);
 
+        parcel.writeSerializable((Serializable)attending);
 
     }
 
@@ -318,8 +328,15 @@ public class Event implements Parcelable {
         this.eid = in.readInt();
         this.duration = in.readInt();
 
+        List<Account> accnts = (List<Account>)in.readSerializable();
+        if (accnts != null) {
+            Log.d("Event", "List of accounts converted to serialiable and back");
+            this.attending = accnts;
+        } else {
+            Log.d("Event", "Failed to serialize list of accounts");
+            this.attending = new ArrayList<>();
+        }
 
-        this.attending = new ArrayList<>();
 
     }
 

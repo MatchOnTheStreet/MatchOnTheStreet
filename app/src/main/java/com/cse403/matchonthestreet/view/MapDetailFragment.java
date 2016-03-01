@@ -1,5 +1,6 @@
 package com.cse403.matchonthestreet.view;
 
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -37,6 +38,7 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
     // Tag for logging purposes
     private String TAG = "MapDetailFrag";
     private View mView;
+    private ToggleButton toggleButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -68,7 +70,7 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
         setNumAttending(numAttendees, mView);
 
 
-        ToggleButton toggleButton = (ToggleButton) mView.findViewById(R.id.attendingToggle);
+        toggleButton = (ToggleButton) mView.findViewById(R.id.attendingToggle);
         boolean attending = getArguments().getBoolean("amAttending");
         toggleButton.setChecked(attending);
         toggleButton.setOnClickListener(new View.OnClickListener() {
@@ -79,11 +81,15 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
                     Log.d(TAG, "attend event");
                     if (event != null) {
                         attendEvent(event);
+                    } else {
+                        toggleButton.setChecked(getArguments().getBoolean("amAttending"));
                     }
                 } else {
                     Log.d(TAG, "unattend event");
                     if (event != null) {
                         unattendEvent(event);
+                    } else {
+                        toggleButton.setChecked(getArguments().getBoolean("amAttending"));
                     }
                 }
             }
@@ -107,22 +113,23 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
                 Account accnt = ((MOTSApp) getActivity().getApplication()).getMyAccount();
                 if (accnt != null) {
                     Log.d(TAG, "Account: " + accnt.getName() + " found");
-
+                    try {
+                        if (params.length == 1) {
+                            Event event1 = params[0];
+                            DBManager.removeAttendance(accnt, event1);
+                            event1.removeAttendee(accnt);
+                            return event1;
+                        }
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (SQLException e) {
+                        Log.d(TAG, "SQL Exception");
+                        e.printStackTrace();
+                    }
                 } else {
                     Log.d(TAG, "no account found");
                 }
-                try {
-                    if (params.length == 1) {
-                        Event event1 = params[0];
-                        DBManager.removeAttendance(accnt, event1);
-                        return event1;
-                    }
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                } catch (SQLException e) {
-                    Log.d(TAG, "SQL Exception");
-                    e.printStackTrace();
-                }
+
                 return null;
             }
             @Override
@@ -131,6 +138,8 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
                     Log.d(TAG, "user is not attending: " + passedEvent.title);
                     int numAttendees = getArguments().getInt("numAttendees");
                     setNumAttending(numAttendees - 1, mView);
+
+                    ((MapsActivity) getActivity()).addEventToMap(passedEvent);
                 }
             }
         };
@@ -145,21 +154,23 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
                 Account accnt = ((MOTSApp) getActivity().getApplication()).getMyAccount();
                 if (accnt != null) {
                     Log.d(TAG, "Account: " + accnt.getName() + " found");
+                    try {
+                        if (params.length == 1) {
+                            Event event1 = params[0];
+                            DBManager.addAccountToEvent(accnt, event1);
+                            event1.addAttendee(accnt);
+                            return event1;
+                        }
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (SQLException e) {
+                        Log.d(TAG, "SQL Exception");
+                        e.printStackTrace();
+                    }
                 } else {
                     Log.d(TAG, "no account found");
                 }
-                try {
-                    if (params.length == 1) {
-                        Event event1 = params[0];
-                        DBManager.addAccountToEvent(accnt, event1);
-                        return event1;
-                    }
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                } catch (SQLException e) {
-                    Log.d(TAG, "SQL Exception");
-                    e.printStackTrace();
-                }
+
                 return null;
             }
             @Override
@@ -168,6 +179,7 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
                     Log.d(TAG, "user is now attending: " + passedEvent.title);
                     int numAttendees = getArguments().getInt("numAttendees");
                     setNumAttending(numAttendees + 1, mView);
+                    ((MapsActivity) getActivity()).addEventToMap(passedEvent);
                 }
             }
         };

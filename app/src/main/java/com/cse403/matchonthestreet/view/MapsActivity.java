@@ -39,6 +39,7 @@
 package com.cse403.matchonthestreet.view;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -145,6 +146,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     private ViewController viewController;
 
     private Event passedEvent;
+
+    private ProgressDialog progress;
     /**
      *
      * @param savedInstanceState
@@ -190,13 +193,10 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
         // Obtain the current instance of ViewController
         viewController = ((MOTSApp) getApplicationContext()).getViewController();
-        // TODO: Here the dummy data is used in the ViewController, when the activity
-        // is first launched.
-        if (FIRST_LAUNCH) {
-            viewController.populateDummyData();
-            FIRST_LAUNCH = false;
-        }
 
+        progress = new ProgressDialog(this);
+        progress.setTitle("Loading");
+        progress.setMessage("Wait while loading...");
 
 
         // Set the DetailFragment to be invisible
@@ -362,6 +362,14 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                 if (mCurrentLocation != null)
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), ZOOM_IN_MAGNITUDE));
             }
+        }
+
+        // TODO: Here the dummy data is used in the ViewController, when the activity
+        // is first launched.
+        if (FIRST_LAUNCH) {
+            //viewController.populateDummyData();
+            reloadPinsOnScreen();
+            FIRST_LAUNCH = false;
         }
     }
 
@@ -577,6 +585,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     }
 
     private boolean reloadPinsOnScreen() {
+        progress.show();
 
         VisibleRegion vr = mMap.getProjection().getVisibleRegion();
         double top = vr.latLngBounds.northeast.latitude;
@@ -616,6 +625,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                     ArrayList<Event> eventArrayList = new ArrayList<>(events);
                     viewController.updateEventList(new HashSet<>(events));
                     addEventsToMap(eventArrayList);
+                    progress.dismiss();
 
                 }
             }
@@ -764,7 +774,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         }
     }
 
-    private void addEventToMap(Event event) {
+    public void addEventToMap(Event event) {
         Location tLoc = event.location;
         //Log.d(TAG, "The location is: " + tLoc.getLongitude() + " " + tLoc.getLatitude());
 

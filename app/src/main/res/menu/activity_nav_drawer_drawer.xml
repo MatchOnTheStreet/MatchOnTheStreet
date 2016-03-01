@@ -26,10 +26,10 @@
                 android:icon="@drawable/ic_bug_report"
                 android:title="Report a bug"/>
 
-            <item
+          <!--  <item
                 android:id="@+id/nav_manage"
                 android:icon="@drawable/ic_menu_manage"
-                android:title="Settings" />
+                android:title="Settings" />-->
         </menu>
     </item>
 

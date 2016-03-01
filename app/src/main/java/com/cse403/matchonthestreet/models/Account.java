@@ -1,5 +1,6 @@
 package com.cse403.matchonthestreet.models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +9,8 @@ import java.util.List;
  *
  * Represents a user's account.
  */
-public class  Account {
+public class  Account implements Serializable {
+
     /**
      * Representation Invariant:
      *      uid is in the database.
