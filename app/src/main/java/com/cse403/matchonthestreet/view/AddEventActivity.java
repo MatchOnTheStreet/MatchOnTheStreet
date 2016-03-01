@@ -30,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -196,6 +197,9 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
 
         Log.d("AddEventActivity", "Date toString is: " + event.time.getTime());
 
+        Account me = ((MOTSApp) getApplication()).getMyAccount();
+        event.addAttendee(me);
+
         ArrayList<Event> list = new ArrayList<>();
         list.add(event);
 
@@ -207,10 +211,6 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
                     Event e = params[0];
                     if (e != null) {
                         DBManager.addEventWithAttendance(e);
-                    }
-
-                    if (accnt != null) {
-                        DBManager.addAccountToEvent(accnt, e);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
