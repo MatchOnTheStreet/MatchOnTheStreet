@@ -234,6 +234,11 @@ public class Event implements Parcelable {
         return false;
     }
 
+    /**
+     * Removes the passed account from the list of attendees
+     * @param account the account to remove
+     * @return if the account was in the list of attendees
+     */
     public boolean removeAttendee(Account account) {
         if (isAttendedBy(account)) {
             this.attending.remove(account);
@@ -267,19 +272,21 @@ public class Event implements Parcelable {
             return false;
         }
         String lower = string.toLowerCase();
-        if (title != null && title.toLowerCase().contains(lower)) {
-            return true;
-        }
-        if (description != null && description.toLowerCase().contains(lower)) {
-            return true;
-        }
-        return false;
+        return title != null && title.toLowerCase().contains(lower) || description != null && description.toLowerCase().contains(lower);
     }
 
     public int describeContents() {
         return 0;
     }
 
+
+    // The following are used for the parcelable interface which allows events to be passed through intents
+    // Serializable would be cleaner, but wasn't working for some reason
+    /**
+     * Writes the data of an event into primitive data types
+     * @param parcel the parcel to write to
+     * @param flags any special flags
+     */
     public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeString(title);
         parcel.writeString(description);
@@ -304,6 +311,11 @@ public class Event implements Parcelable {
 
     }
 
+    /**
+     * The constructor when reconstructing from a parcel
+     * @param in the event as a Parcel object
+     */
+    @SuppressWarnings("unchecked")
     private Event(Parcel in) {
         this.title = in.readString();
         this.description = in.readString();
@@ -336,8 +348,6 @@ public class Event implements Parcelable {
             Log.d("Event", "Failed to serialize list of accounts");
             this.attending = new ArrayList<>();
         }
-
-
     }
 
     public static final Parcelable.Creator<Event> CREATOR

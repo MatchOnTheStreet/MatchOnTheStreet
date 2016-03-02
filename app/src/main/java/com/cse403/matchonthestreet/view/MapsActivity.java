@@ -1,29 +1,23 @@
 /**
  *
- * This is the Maps view for MOTS, this is the first screen the app will open to.
- * The first time a user runs the app, they will be prompted with the Facebook login screen.
- * Currently in the developer release this can be bypassed by clicking the cancel button upon loggin in.
+ * This is the Maps view for MOTS, The first time a user runs the app, they will be prompted with the Facebook login screen.
  * The Maps view provides the user with a high level overview of all the events nearby them or
  * near a specified location.
  *
  * The search bar is used to find events around the searched location.
- * There are 4 buttons, and 3 are used to navigate the app:
+ * There are 3 buttons,
  *   * The target icon will center the map on the users current location, provided MOTS has the permissions
- *   * The plus icon will change to the add event view
- *   * The square icon will change to the list view where you can sort and filter events
- *   * The face icon will change to the user profile view where you can view your events
+ *   * The list icon will change to the list view where you can sort and filter events
+ *   * The refresh icon will reload the list of events based on the view the user sees
  *
  *
- * Note: to get the location services working, you will need to follow these steps first
+ * Note: If you are not prompted to allow location permissions on the first launch
+ * to get the location services working, you will need to follow these steps first
  * Open the settings app within the emulator
  * Under the 'Device' subheading click the 'Apps'
  * Find 'Match on the Street'
  * Click 'Permissions'
  * Turn location services on
- *
- * This should get changed later to be turned on through a popup dialogue
- *
- *
  *
  *
  * NOTE: Emulator will not emulate location services automatically, you must open a terminal and
@@ -42,14 +36,11 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -108,19 +99,22 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         LocationListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener,
         GoogleMap.OnMapLongClickListener {
 
+    /** Check if the intent was passed from AddEventActivity */
     public static final int ADD_EVENT_REQUEST_CODE = 1;
-    public static final int LIST_VIEW_REQUEST_CODE = 2;
+    /** Check if intent is from the listactivity */
+    private boolean FROM_LIST;
+    /** Check if the intent is from the recycleviewadapter (selecting an item in the listactivity)*/
+    private boolean FROM_LIST_ITEM;
+    /** Check if the app is being launched for the first time */
+    private static boolean FIRST_LAUNCH = true;
 
     public static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 10;
     public static final int NO_SELECTED_EVENT = -1;
+
+    /** Default zoom value for the map */
     public static final int ZOOM_IN_MAGNITUDE = 15;
 
-
-    private boolean FROM_LIST;
-    private boolean FROM_LIST_ITEM;
-    private static boolean FIRST_LAUNCH = true;
-    private int selectedEventID = NO_SELECTED_EVENT;
-
+    /** If the map should zoom in on the users current location when loading */
     private boolean centerOnLocation = true;
 
     /** Tag used for printing to debugger */
@@ -141,15 +135,21 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     /** If continuous location updates are needed */
     private boolean mRequestingLocationUpdates = true;
 
+    /** Map of the Marker and Event objects, used when selecting a marker */
     private Map<Marker, Event> mapMarkerEvent = new HashMap<>();
 
+    /** ViewController used to get the list of working events */
     private ViewController viewController;
 
+    /** The event passed from the AddEventActivity since the event can't be added to the working set
+     *  on the initial callback method */
     private Event passedEvent;
 
+    /** Used to show the loading dialog when querying the database */
     private ProgressDialog progress;
+
+
     /**
-     *
      * @param savedInstanceState
      *
      * When the view is created, initialize the map, locaiton requests, and buttons
@@ -172,37 +172,19 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         checkLocationPermission();
         createLocationRequest();
 
-
-        Log.d(TAG, "onCreate");
-        Intent intent = getIntent();
-
-        FROM_LIST = intent.getBooleanExtra(ListViewActivity.EXTRA_MESSAGE, false);
-        selectedEventID = intent.getIntExtra(ListViewActivity.class.toString() + ".VIEW_EVENT",
-                NO_SELECTED_EVENT);
-        FROM_LIST_ITEM = intent.getBooleanExtra("fromListItem", false);
-
-
-        // Creates the buttons that look like floating action buttons
-        createButtons();
-
-        if (FROM_LIST || FROM_LIST_ITEM) {
-            Log.d(TAG, "From List");
-            centerOnLocation = false;
-        }
-
-
         // Obtain the current instance of ViewController
         viewController = ((MOTSApp) getApplicationContext()).getViewController();
 
+        // Setup of the progress dialog
         progress = new ProgressDialog(this);
         progress.setTitle("Loading");
         progress.setMessage("Wait while loading...");
-
 
         // Set the DetailFragment to be invisible
         FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
         fl.setVisibility(View.GONE);
 
+        // Disable the automatic keyboard popup
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(findViewById(R.id.map_search_bar).getWindowToken(), 0);
 
@@ -241,7 +223,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
-
+                Log.d(TAG, "should show reason for location services");
                 // Show an expanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
@@ -263,22 +245,21 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
+                    Log.d(TAG, "Permission granted by user");
                     // permission was granted, yay!
                     // Do tasks that needs location services.
 
                 } else {
-
+                    Log.d(TAG, "Permission denied by user");
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                 }
-                return;
             }
 
             // other 'case' lines to check for other
@@ -309,7 +290,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         mMap.setOnMarkerClickListener(this);
         mMap.setOnMapClickListener(this);
         mMap.setOnMapLongClickListener(this);
-        // Check permissions both Coarse and Fine
+
+        // Check permissions both Coarse and Fine and zoom to that location
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "Have COARSE LOCATION permission");
             Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
@@ -336,12 +318,9 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             startLocationUpdates();
         }
 
-
         Intent intent = getIntent();
 
         FROM_LIST = intent.getBooleanExtra(ListViewActivity.EXTRA_MESSAGE, false);
-        selectedEventID = intent.getIntExtra(ListViewActivity.class.toString() + ".VIEW_EVENT",
-                NO_SELECTED_EVENT);
         FROM_LIST_ITEM = intent.getBooleanExtra("fromListItem", false);
 
 
@@ -354,7 +333,6 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             Event event = intent.getParcelableExtra("selectedEvent");
             if (event != null ) {
                 Log.d(TAG, "Maps was passed the event: " + event.title);
-                Log.d(TAG, "passed event location " + event.location.getLatitude() + " " + event.location.getLongitude());
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(event.location.getLatitude(), event.location.getLongitude()), ZOOM_IN_MAGNITUDE));
                 displayMarkerInfo(event);
             } else {
@@ -389,18 +367,12 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
 
     /**
-     *
      * @param location  the new location of the device
-     *
      */
     @Override
     public void onLocationChanged(Location location) {
-
-        Log.d(TAG, "Location Changed ");
-
         // Set the users current location
         mCurrentLocation = location;
-
     }
 
     /**
@@ -522,24 +494,6 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                 }
             }
         });
-/*
-        // The button that adds a pin to the current location
-        // Should redirect to add event screen
-        FloatingActionButton fabAddButton = (FloatingActionButton) findViewById(R.id.fab_add_event);
-        fabAddButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "Add button pressed");
-                Intent intent = new Intent(MapsActivity.this, AddEventActivity.class);
-                startActivity(intent);
-                if (mCurrentLocation != null) {
-                    Log.d(TAG, "" + mCurrentLocation.getLatitude() + mCurrentLocation.getLongitude());
-                    //createPin(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-                } else {
-                    Log.d(TAG, "No last known location");
-                }
-            }
-        }); */
 
         // The button that moves to the ListViewActivity
         if (!FROM_LIST && !FROM_LIST_ITEM) {
@@ -558,18 +512,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             fabListMap.hide();
         }
 
-        // The button that moves to the UserProfileActivity
-        FloatingActionButton fabEvents = (FloatingActionButton) findViewById(R.id.fab_map_to_myevents);
-        fabEvents.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "map to list pressed");
-                Intent intent = new Intent(MapsActivity.this, UserProfileActivity.class);
-                startActivity(intent);
-            }
-        });
-
-
+        // The button to pull the newest events from the database
         FloatingActionButton fabRefresh = (FloatingActionButton) findViewById(R.id.fab_refresh);
         fabRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -579,26 +522,31 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             }
         });
 
-
-        fabEvents.hide();
-
     }
 
-    private boolean reloadPinsOnScreen() {
-        progress.show();
+    /**
+     *  Pulls the newest events within the radius (square) of the screen from the database,
+     *  updates the viewController with the list of these events, and displays the events on the map
+     */
+    private void reloadPinsOnScreen() {
+        progress.show(); // show the progress bar
 
+        // The the lat of the top and bottom of the visible map, used to calculate the 'radius'
         VisibleRegion vr = mMap.getProjection().getVisibleRegion();
         double top = vr.latLngBounds.northeast.latitude;
         double bottom = vr.latLngBounds.southwest.latitude;
 
+        // The center of the screen of the center of the 'circle'
         LatLng centerScreen = mMap.getCameraPosition().target;
         double cLat = centerScreen.latitude;
         double cLon = centerScreen.longitude;
+
+        // Create the AsyncTask to query the database, will run in the background
         AsyncTask<Double, Integer, List<Event>> task = new AsyncTask<Double, Integer, List<Event>>() {
             @Override
             protected List<Event> doInBackground(Double[] params) {
                 try {
-                    if (params.length == 3) {
+                    if (params.length == 3) { // radius, centerLat, centerLon
                         Log.d(TAG, "getEventsInRadius of " + params[0]);
                         Location loc = new Location("AsyncReloadPins");
                         loc.setLatitude(params[1]);
@@ -606,7 +554,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                         List<Event> events = DBManager.getEventsInRadiusWithAttendance(loc, params[0]);
                         ArrayList<Event> eventArrayList = new ArrayList<>(events);
                         Log.d(TAG, "found " + eventArrayList.size() + " events");
-                        return events;
+                        return events; // once completed pass the list of events to onPostExecute
                     }
                     return null;
                 } catch (ClassNotFoundException e) {
@@ -619,12 +567,14 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             }
 
             protected void onPostExecute(List<Event> events) {
-                Log.d(TAG, "On Post Execute");
                 if (events != null) {
-                    removeAllMarkers();
+                    removeAllMarkers(); // remove the current outdated markers
                     ArrayList<Event> eventArrayList = new ArrayList<>(events);
+                    // update the viewControllers working set of events
                     viewController.updateEventList(new HashSet<>(events));
+                    // Add the new events to the map
                     addEventsToMap(eventArrayList);
+                    // dismiss the progress notification
                     progress.dismiss();
 
                 }
@@ -632,10 +582,9 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
         };
 
+        // Assumes our app is only used in portrait
+        task.execute(Math.abs(top - bottom) / 2, cLat, cLon);
 
-        task.execute(Math.abs(top - bottom), cLat, cLon);
-
-        return true;
     }
 
 
@@ -687,18 +636,23 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
      */
     public boolean onMarkerClick(Marker marker) {
         Log.d(TAG, "marker clicked: " + marker.getTitle());
-
         if (mapMarkerEvent.containsKey(marker)) {
            displayMarkerInfo(mapMarkerEvent.get(marker));
         }
         return false;
     }
 
+    /**
+     * Initializes and displays the MapDetailFragment which contains the specifics of the passed
+     * event and allows the user to join or unjoin the event
+     * @param event the event to display the detailed info for
+     */
     private void displayMarkerInfo(Event event) {
-
+        // Setup the info to send to the fragment
         FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
         fl.setVisibility(View.VISIBLE);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
         Bundle args = new Bundle();
         args.putString("detailText", event.getTitle());
         args.putParcelable("eventObject", event);
@@ -728,7 +682,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         } else {
             Log.d(TAG, "Event has no attendees");
         }
-
+        // Initialize and display the event
         MapDetailFragment mapDetailFragment = new MapDetailFragment();
         mapDetailFragment.setArguments(args);
         ft.replace(R.id.fragment_container, mapDetailFragment, "detailFragment");
@@ -740,33 +694,22 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
      * @param latLng the lat and longitude of where the map was pressed
      */
     public void onMapClick(LatLng latLng) {
-        Log.d(TAG, "map clicked ");
-
         FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
         fl.setVisibility(View.GONE);
-/*
-        DisplayMetrics dm = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(dm);
-        int height = dm.heightPixels;
-
-        SupportMapFragment mMapFragment = (SupportMapFragment) (getSupportFragmentManager()
-                .findFragmentById(R.id.map));
-        ViewGroup.LayoutParams params;
-        try {
-            params = mMapFragment.getView().getLayoutParams();
-            params.height = height + 150;
-            mMapFragment.getView().setLayoutParams(params);
-        }catch (NullPointerException e) {
-            Log.d(TAG, e.toString());
-        }
-*/
     }
 
+    /**
+     * Removes all the markers from the map and resets the map of markers to events
+     */
     private void removeAllMarkers() {
         mMap.clear();
         mapMarkerEvent.clear();
     }
 
+    /**
+     * Adds the list of events to the map
+     * @param workingSet the list of events to add to the map
+     */
     private void addEventsToMap(ArrayList<Event> workingSet) {
         for (int i = 0; i < workingSet.size(); i++) {
             Event temp = workingSet.get(i);
@@ -774,12 +717,15 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         }
     }
 
+    /**
+     * Adds the passed event to the map. (is public so the mapdetailfragment can use it to update attendance)
+     * @param event the event to add to the map
+     */
     public void addEventToMap(Event event) {
         Location tLoc = event.location;
-        //Log.d(TAG, "The location is: " + tLoc.getLongitude() + " " + tLoc.getLatitude());
-
         Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(tLoc.getLatitude(), tLoc.getLongitude())).title(event.title));
 
+        // Pulls an icon (random?) to display for the passed event
         String iconPath = viewController.getEventIconPath(event);
         if (iconPath != null) {
             BitmapDrawable iconDrawable = (BitmapDrawable) SportsIconFinder.getAssetImage(this, iconPath);
@@ -794,10 +740,15 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                 Log.d(TAG, "Icon file not found!");
             }
         }
-
+        // adds the marker to the Map of markers to events so it can be accessed to display the map detail fragment
         mapMarkerEvent.put(marker, event);
     }
 
+    /**
+     * The callback from tapping and holding on a location of the map. Creates a new event at the held location
+     * starts the AddEventActivity
+     * @param latLng the location of the tap and hold
+     */
     @Override
     public void onMapLongClick(LatLng latLng) {
         Log.d(TAG, "onMapLongClick");
@@ -811,24 +762,31 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         startActivityForResult(intent, ADD_EVENT_REQUEST_CODE);
     }
 
+    /**
+     * Callback when an activity was started from the startActivityForResult like in on onMapLongClick
+     * @param requestCode the assigned request code when the activity was started to identify what activity is returning
+     * @param resultCode the result code from the previous activity (successful return or not)
+     * @param data any data passed when the last activity finished
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
+        // Check that this is getting called by the AddEventActivity
         if (resultCode == RESULT_OK && requestCode == ADD_EVENT_REQUEST_CODE) {
-
+            // Get the list of events (should just be a single event)
             ArrayList<Event> listEvent = data.getParcelableArrayListExtra("eventList");
 
             if (listEvent != null && listEvent.size() > 0) {
                 Log.d(TAG, "event list has: " + listEvent.get(0).title);
-                Log.d(TAG, "event coords: " + listEvent.get(0).location.getLatitude() + ", " + listEvent.get(0).location.getLongitude());
-                Log.d(TAG, "event date: " + listEvent.get(0).time.toString());
                 passedEvent = listEvent.get(0);
                 addEventsToMap(listEvent);
                 Location loc = listEvent.get(0).location;
-
+                // move the camera to the added events location
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(loc.getLatitude(), loc.getLongitude()), ZOOM_IN_MAGNITUDE));
                 centerOnLocation = false;
                 Log.d(TAG, "end of onActivityResult");
+
+                // we want to display the mapdetailfragment here for the event here, but that is not allowed
+                // so we must wait for the onPostResume() to be called, so we save the passed event as a variable (passedEvent)
             } else {
                 Log.d(TAG, "eventList is null or no elements");
                 centerOnLocation = true;

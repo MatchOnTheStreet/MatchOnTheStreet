@@ -37,12 +37,14 @@ import java.util.ArrayList;
 public class MapDetailFragment extends android.support.v4.app.Fragment {
     // Tag for logging purposes
     private String TAG = "MapDetailFrag";
+    /** The MapDetailFragment view */
     private View mView;
+    /** The button that allows the user to attend / unattend an event */
     private ToggleButton toggleButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d(TAG,"onCreateView");
+
         /** Inflating the layout for this fragment **/
         mView = inflater.inflate(R.layout.map_detail_layout, null);
 
@@ -53,6 +55,7 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
             tv.setText(passedText);
         }
 
+        // Update the date of the event
         String eventDate = getArguments().getString("date");
         if (eventDate != null) {
             TextView dateText = (TextView) mView.findViewById(R.id.event_date);
@@ -60,16 +63,18 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
             dateText.setText(eventDate);
         }
 
+        // Update the description of the event
         String description = getArguments().getString("description");
         if (description != null) {
             TextView descriptionText = (TextView) mView.findViewById(R.id.event_description);
             descriptionText.setText(description);
         }
 
+        // Update the number of people attending the event
         int numAttendees = getArguments().getInt("numAttendees");
         setNumAttending(numAttendees, mView);
 
-
+        // Initialize the toggle button
         toggleButton = (ToggleButton) mView.findViewById(R.id.attendingToggle);
         boolean attending = getArguments().getBoolean("amAttending");
         toggleButton.setChecked(attending);
@@ -82,6 +87,7 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
                     if (event != null) {
                         attendEvent(event);
                     } else {
+                        // don't change the state of the button if the event is null
                         toggleButton.setChecked(getArguments().getBoolean("amAttending"));
                     }
                 } else {
@@ -89,6 +95,7 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
                     if (event != null) {
                         unattendEvent(event);
                     } else {
+                        // don't change the state of the button if the event is null
                         toggleButton.setChecked(getArguments().getBoolean("amAttending"));
                     }
                 }
@@ -97,6 +104,11 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
         return mView;
     }
 
+    /**
+     * This sets and updates the number of people attending an event
+     * @param numAttending the new value for the number of people attending
+     * @param mView the view to update
+     */
     private void setNumAttending(int numAttending, View mView) {
         if (numAttending >= 0 && mView != null) {
             TextView attendanceText = (TextView) mView.findViewById(R.id.attendees);
@@ -106,6 +118,10 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
         }
     }
 
+    /**
+     * Removes the users attendance from the passed event
+     * @param event the event to remove the current user from
+     */
     private void unattendEvent(Event event) {
         AsyncTask<Event, Event, Event> task = new AsyncTask<Event, Event, Event>() {
             @Override
@@ -138,7 +154,7 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
                     Log.d(TAG, "user is not attending: " + passedEvent.title);
                     int numAttendees = getArguments().getInt("numAttendees");
                     setNumAttending(numAttendees - 1, mView);
-
+                    // Overwrite the old event in the MapsActivity to have the new list of attendees
                     ((MapsActivity) getActivity()).addEventToMap(passedEvent);
                 }
             }
@@ -147,6 +163,10 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
 
     }
 
+    /**
+     * Adds the current user to the attendees of the passed event
+     * @param event the event to add the current user to
+     */
     private void attendEvent(Event event) {
         AsyncTask<Event, Event, Event> task = new AsyncTask<Event, Event, Event>() {
             @Override
@@ -179,6 +199,7 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
                     Log.d(TAG, "user is now attending: " + passedEvent.title);
                     int numAttendees = getArguments().getInt("numAttendees");
                     setNumAttending(numAttendees + 1, mView);
+                    // Overwrite the old event in the MapsActivity to have the new list of attendees
                     ((MapsActivity) getActivity()).addEventToMap(passedEvent);
                 }
             }
