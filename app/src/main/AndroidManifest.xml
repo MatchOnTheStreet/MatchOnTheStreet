@@ -35,9 +35,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>-->
         </activity>
+
         <activity
             android:name=".view.AddEventActivity"
-            android:label="AddEvent" />
+            android:label="AddEvent"
+            android:launchMode="singleTask"/>
 
         <activity android:name=".view.ListViewActivity"
             android:parentActivityName=".view.MapsActivity"
@@ -55,8 +57,12 @@
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-        <activity android:name=".view.LoginActivity">
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:launchMode="singleTask"/>
+
+        <activity
+            android:name=".view.LoginActivity"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -64,7 +70,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".view.UserProfileActivity" />
+        <activity
+            android:name=".view.UserProfileActivity"
+            android:launchMode="singleTask"/>
 
         <activity
             android:name=".view.NavActivity"
