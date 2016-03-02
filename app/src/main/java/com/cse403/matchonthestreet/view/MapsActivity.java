@@ -34,6 +34,7 @@ package com.cse403.matchonthestreet.view;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -41,10 +42,8 @@ import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -55,12 +54,13 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 
@@ -97,10 +97,8 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -190,8 +188,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         // Setup of the progress dialog
         progress = new ProgressDialog(this);
         progress.setTitle("Loading");
-        progress.setMessage("Wait while loading...");
-
+        progress.setMessage("Loading events...");
 
 
         // Set the DetailFragment to be invisible
@@ -199,9 +196,41 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         fl.setVisibility(View.GONE);
 
         // Disable the automatic keyboard popup
-        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(findViewById(R.id.map_search_bar).getWindowToken(), 0);
+        /*InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(findViewById(R.id.map_search_bar).getWindowToken(), 0);*/
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.map_search, menu);
+
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+
+        final SearchView searchView =
+                (SearchView) menu.findItem(R.id.map_search_bar).getActionView();
+
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName())
+        );
+
+        searchView.setSubmitButtonEnabled(true);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                onSearch(searchView);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+        return true;
     }
 
     /**
@@ -301,7 +330,6 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         Log.d(TAG, "onConnected");
 
         // Setup callbacks for interactions with the map. Primarily for the MapDetailFragment
-        mMap.setOnMarkerClickListener(this);
         mMap.setOnMapClickListener(this);
         mMap.setOnMapLongClickListener(this);
 
@@ -341,7 +369,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         // Creates the buttons that look like floating action buttons
         createButtons();
 
-        setUpClusterManager();
+
 
         if (FROM_LIST || FROM_LIST_ITEM) {
             Log.d(TAG, "From List");
@@ -444,8 +472,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
+     * This is where we can add markers or lines, add listeners or move the camera.
+     *
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
@@ -453,6 +481,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        setUpClusterManager();
 
         Set<Event> currentEvents = viewController.getEventSet();
         addEventsToMap(new ArrayList<>(currentEvents));
@@ -629,8 +659,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
      *  So far only good for searching large locations. Ex. Searching ima will not work
      */
     public void onSearch(View view) {
-        EditText searchText = (EditText) findViewById(R.id.map_search_bar);
-        String search = searchText.getText().toString();
+        SearchView searchText = (SearchView) findViewById(R.id.map_search_bar);
+        String search = searchText.getQuery().toString();
 
         if (!search.equals("")) {
 
@@ -753,6 +783,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             Event temp = workingSet.get(i);
             addEventToMap(temp);
         }
+        clusterManager.cluster();
     }
 
     /**

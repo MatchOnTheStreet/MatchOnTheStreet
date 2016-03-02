@@ -30,7 +30,6 @@ import com.cse403.matchonthestreet.controller.ViewController;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashSet;
 import java.util.Locale;
 
 //import android.support.v7.app.AppCompatActivity;
@@ -140,10 +139,10 @@ public class ListViewActivity extends AppCompatActivity {
         });
     }
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.list_view_search, menu);
+        inflater.inflate(R.menu.map_search, menu);
 
         // Associate searchable configuration with the SearchView
         SearchManager searchManager =
@@ -171,7 +170,7 @@ public class ListViewActivity extends AppCompatActivity {
         });
 
         return true;
-    }
+    }*/
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent motionEvent) {

@@ -115,5 +115,5 @@
     <string name="title_activity_nav">NavActivity</string>
 
     <!-- ListView search bar -->
-    <string name="filter_search_hint">Search for keyword</string>
+    <string name="map_search_hint">Search for location</string>
 </resources>
