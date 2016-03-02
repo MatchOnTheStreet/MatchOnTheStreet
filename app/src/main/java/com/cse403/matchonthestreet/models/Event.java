@@ -7,6 +7,8 @@ import android.util.Log;
 
 import com.cse403.matchonthestreet.R;
 import com.cse403.matchonthestreet.controller.MOTSApp;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.clustering.ClusterItem;
 
 import java.io.Serializable;
 import java.text.ParseException;
@@ -18,7 +20,7 @@ import java.util.*;
  *
  * Represents a sporting Event.
  */
-public class Event implements Parcelable {
+public class Event implements Parcelable, ClusterItem {
     /**
      * Representation Invariant:
      *      eid is in the database of events
@@ -155,6 +157,11 @@ public class Event implements Parcelable {
             this.timeCreated = dateCreate;
             this.description = d;
         }
+    }
+
+    @Override
+    public LatLng getPosition() {
+        return new LatLng(this.location.getLatitude(), this.location.getLongitude());
     }
 
     @Override

@@ -202,8 +202,6 @@ public class RecyclerViewAdapter
 
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-            // convert CharSequence constraint into the needed search parameters
-            // return this.performFiltering(.....)
             String[] queryTokens = constraint.toString().toLowerCase().split(Pattern.quote("::"), -1);
             String keyword = queryTokens[0];
             String fromDateStr = queryTokens[1];
@@ -268,55 +266,6 @@ public class RecyclerViewAdapter
             return filterResults;
         }
 
-
-        private FilterResults performFiltering(String queryString, Date startTime, Date endTime,
-                                               Location centralLocation, int searchRadius) {
-            ListViewFilterAndSearch searcher
-                    = new ListViewFilterAndSearch(queryString, startTime, endTime, centralLocation, searchRadius);
-
-            List<Event> searchAndFilterResults = null;
-            try {
-                searchAndFilterResults = searcher.getFilterAndSearchResults();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            ListViewSorter sorter = new ListViewSorter(searchAndFilterResults);
-
-            List<Event> finalResultsList = sorter.sortByDistance(centralLocation);
-
-            FilterResults filterResults = new FilterResults();
-            filterResults.values = finalResultsList;
-            filterResults.count = finalResultsList.size();
-
-            return filterResults;
-        }
-
-
-        /* @Override
-                        protected FilterResults performFiltering(CharSequence constraint) {
-                            String filterString = constraint.toString().toLowerCase();
-
-                            FilterResults filterResults = new FilterResults();
-
-                            final List<Event> originalList = items;
-                            final List<Event> resultList = new ArrayList<>(originalList.size());
-
-                            for (Event item : originalList) {
-                                String title = item.getTitle().toLowerCase();
-                                String desc = item.getDescription().toLowerCase();
-
-                                if (title.contains(filterString) || desc.contains(filterString)) {
-                                    resultList.add(item);
-                                }
-                            }
-
-                            filterResults.values = resultList;
-                            filterResults.count = resultList.size();
-
-                            return filterResults;
-                        }
-                */
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             filteredItems = (List<Event>) results.values;

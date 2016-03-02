@@ -36,11 +36,15 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -52,12 +56,15 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 
+import com.amulyakhare.textdrawable.TextDrawable;
 import com.cse403.matchonthestreet.R;
 import com.cse403.matchonthestreet.backend.DBManager;
 import com.cse403.matchonthestreet.controller.MOTSApp;
@@ -81,6 +88,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
+import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.view.DefaultClusterRenderer;
+import com.google.maps.android.ui.IconGenerator;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -91,6 +101,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 
@@ -135,8 +146,9 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     /** If continuous location updates are needed */
     private boolean mRequestingLocationUpdates = true;
 
-    /** Map of the Marker and Event objects, used when selecting a marker */
-    private Map<Marker, Event> mapMarkerEvent = new HashMap<>();
+    //private Map<Marker, Event> mapMarkerEvent = new HashMap<>();
+
+    private ClusterManager<Event> clusterManager;
 
     /** ViewController used to get the list of working events */
     private ViewController viewController;
@@ -179,6 +191,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         progress = new ProgressDialog(this);
         progress.setTitle("Loading");
         progress.setMessage("Wait while loading...");
+
+
 
         // Set the DetailFragment to be invisible
         FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
@@ -327,6 +341,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         // Creates the buttons that look like floating action buttons
         createButtons();
 
+        setUpClusterManager();
+
         if (FROM_LIST || FROM_LIST_ITEM) {
             Log.d(TAG, "From List");
             centerOnLocation = false;
@@ -445,6 +461,26 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         UiSettings mapSettings = mMap.getUiSettings();
         mapSettings.setZoomControlsEnabled(true);
         mapSettings.setMyLocationButtonEnabled(false);
+    }
+
+    /**
+     * Sets up the cluster manager for marker clustering
+     */
+    public void setUpClusterManager() {
+        clusterManager = new ClusterManager<>(this, mMap);
+
+        clusterManager.setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<Event>() {
+            @Override
+            public boolean onClusterItemClick(Event event) {
+                displayMarkerInfo(event);
+                return false;
+            }
+        });
+
+        clusterManager.setRenderer(new SportsIconRenderer());
+
+        mMap.setOnCameraChangeListener(clusterManager);
+        mMap.setOnMarkerClickListener(clusterManager);
     }
 
     /**
@@ -636,9 +672,10 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
      */
     public boolean onMarkerClick(Marker marker) {
         Log.d(TAG, "marker clicked: " + marker.getTitle());
-        if (mapMarkerEvent.containsKey(marker)) {
+
+        /*if (mapMarkerEvent.containsKey(marker)) {
            displayMarkerInfo(mapMarkerEvent.get(marker));
-        }
+        }*/
         return false;
     }
 
@@ -703,7 +740,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
      */
     private void removeAllMarkers() {
         mMap.clear();
-        mapMarkerEvent.clear();
+        clusterManager.clearItems();
+        //mapMarkerEvent.clear();
     }
 
     /**
@@ -722,26 +760,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
      * @param event the event to add to the map
      */
     public void addEventToMap(Event event) {
-        Location tLoc = event.location;
-        Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(tLoc.getLatitude(), tLoc.getLongitude())).title(event.title));
-
-        // Pulls an icon (random?) to display for the passed event
-        String iconPath = viewController.getEventIconPath(event);
-        if (iconPath != null) {
-            BitmapDrawable iconDrawable = (BitmapDrawable) SportsIconFinder.getAssetImage(this, iconPath);
-            if (iconDrawable != null) {
-                Bitmap iconBitmap = iconDrawable.getBitmap();
-                Point screenRes = MOTSApp.getScreenRes();
-                int size = Math.max(Math.min(screenRes.x, screenRes.y) / 17, 24);
-                iconBitmap = Bitmap.createScaledBitmap(iconBitmap, size, size, false);
-                BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(iconBitmap);
-                marker.setIcon(icon);
-            } else {
-                Log.d(TAG, "Icon file not found!");
-            }
-        }
-        // adds the marker to the Map of markers to events so it can be accessed to display the map detail fragment
-        mapMarkerEvent.put(marker, event);
+        clusterManager.addItem(event);
     }
 
     /**
@@ -809,6 +828,69 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             displayMarkerInfo(passedEvent);
             passedEvent = null;
         }
+    }
+
+    /**
+     * The custom implementation of the Renderer used for cluster icons
+     */
+    protected class SportsIconRenderer extends DefaultClusterRenderer<Event> {
+        private final IconGenerator iconGenerator = new IconGenerator(getApplicationContext());
+        private final ImageView iconImageView;
+        private final int iconDimensions;
+
+        public SportsIconRenderer() {
+            super(getApplicationContext(), mMap, clusterManager);
+
+            Point screenRes = MOTSApp.getScreenRes();
+            iconDimensions = Math.max(Math.min(screenRes.x, screenRes.y) / 17, 24);
+
+            iconImageView = new ImageView(getApplicationContext());
+            iconImageView.setLayoutParams(new ViewGroup.LayoutParams(iconDimensions, iconDimensions));
+
+            iconGenerator.setContentView(iconImageView);
+        }
+
+        @Override
+        protected void onBeforeClusterItemRendered(Event event, MarkerOptions markerOptions) {
+            iconImageView.setImageDrawable(getIconDrawable(event));
+            Bitmap icon = iconGenerator.makeIcon();
+            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon)).title(event.getTitle());
+        }
+
+        /**
+         * Finds a matching icon from the SportsIconFinder
+         * @param event the event whose icon to be found
+         * @return the matching icon from the library, or a random text icon if none exists
+         */
+        private Drawable getIconDrawable(Event event) {
+            String iconPath = viewController.getEventIconPath(event);
+            if (iconPath != null) {
+                return SportsIconFinder.getAssetImage(getApplicationContext(), iconPath);
+            } else {
+                Random rand = new Random();
+                String firstLetter = "" + event.getTitle().toUpperCase().charAt(0);
+                int randomColor = Color.rgb(20 + rand.nextInt(200), 20 + rand.nextInt(220), 20 + rand.nextInt(220));
+                return TextDrawable.builder().buildRound(firstLetter, randomColor);
+            }
+        }
+
+        protected Bitmap makeIcon(Event event) {
+            String iconPath = viewController.getEventIconPath(event);
+            if (iconPath != null) {
+                BitmapDrawable iconDrawable = (BitmapDrawable) SportsIconFinder.getAssetImage(getApplicationContext(), iconPath);
+                if (iconDrawable != null) {
+                    Bitmap iconBitmap = iconDrawable.getBitmap();
+                    Point screenRes = MOTSApp.getScreenRes();
+                    int size = Math.max(Math.min(screenRes.x, screenRes.y) / 17, 24);
+                    iconBitmap = Bitmap.createScaledBitmap(iconBitmap, size, size, false);
+                    BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(iconBitmap);
+                } else {
+                    Log.d(TAG, "Icon file not found!");
+                }
+            }
+            return null;
+        }
+
     }
 }
 
