@@ -94,11 +94,12 @@ import com.google.maps.android.ui.IconGenerator;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
 
@@ -118,7 +119,6 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     private static boolean FIRST_LAUNCH = true;
 
     public static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 10;
-    public static final int NO_SELECTED_EVENT = -1;
 
     /** Default zoom value for the map */
     public static final int ZOOM_IN_MAGNITUDE = 15;
@@ -162,7 +162,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     /**
      * @param savedInstanceState
      *
-     * When the view is created, initialize the map, locaiton requests, and buttons
+     * When the view is created, initialize the map, location requests, and buttons
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -386,7 +386,6 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             }
         }
 
-        // TODO: Here the dummy data is used in the ViewController, when the activity
         // is first launched.
         if (FIRST_LAUNCH) {
             //viewController.populateDummyData();
@@ -489,8 +488,9 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
 
         UiSettings mapSettings = mMap.getUiSettings();
-        mapSettings.setZoomControlsEnabled(true);
-        mapSettings.setMyLocationButtonEnabled(false);
+        mapSettings.setZoomControlsEnabled(false);
+        //mapSettings.setMyLocationButtonEnabled(false);
+        mapSettings.setMapToolbarEnabled(false);
     }
 
     /**
@@ -511,16 +511,6 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
         mMap.setOnCameraChangeListener(clusterManager);
         mMap.setOnMarkerClickListener(clusterManager);
-    }
-
-    /**
-     * Creates a pin at the specified location
-     * @param lat the latitude of the pin
-     * @param lon the longitude of the pin
-     */
-    private void createPin(double lat, double lon) {
-        String date = DateFormat.getTimeInstance().format(new Date());
-        mMap.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).title(date));
     }
 
     /**
@@ -689,7 +679,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                   compare it with the coordinates of the search results and choose based on what is closer to the user
                   and/or add it to a popup list.
                  */
-                createPin(address.getLatitude(), address.getLongitude());
+                //createPin(address.getLatitude(), address.getLongitude());
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, ZOOM_IN_MAGNITUDE-2));
             }
         }
@@ -724,7 +714,9 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         args.putString("detailText", event.getTitle());
         args.putParcelable("eventObject", event);
         if (event.time != null) {
-            args.putString("date", event.time.toString() + " for " + event.duration + " minutes");
+            String formattedDate = new SimpleDateFormat("MM/dd/yy", Locale.US).format(event.time);
+            DecimalFormat oneDigit = new DecimalFormat("#,##0.0");
+            args.putString("date", formattedDate + " for " + oneDigit.format(event.duration/60.0) + " hours");
         } else {
             Log.d(TAG, "Event has null date " + event.title);
         }

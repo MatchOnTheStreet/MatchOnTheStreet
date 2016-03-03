@@ -1,11 +1,7 @@
 package com.cse403.matchonthestreet.view;
 
-import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,14 +14,8 @@ import com.cse403.matchonthestreet.backend.DBManager;
 import com.cse403.matchonthestreet.controller.MOTSApp;
 import com.cse403.matchonthestreet.models.Account;
 import com.cse403.matchonthestreet.models.Event;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.TileOverlay;
-
-import org.w3c.dom.Text;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 /**
  * Created by Lance on 2/7/16.
