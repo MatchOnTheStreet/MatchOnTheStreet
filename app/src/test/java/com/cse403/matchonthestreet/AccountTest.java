@@ -17,12 +17,12 @@ import java.util.List;
  */
 public class AccountTest extends TestCase {
 
-    Account a1;
-    Account a2;
-    Account a3;
-    Account a4;
-    Event e1;
-    Event e2;
+    private Account a1;
+    private Account a2;
+    private Account a3;
+    private Account a4;
+    private Event e1;
+    private Event e2;
 
     @Override
     public void setUp() throws Exception {
