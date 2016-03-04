@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -33,9 +34,7 @@ import java.util.List;
  * name and a list of events they are currently signed up to attend.
  */
 public class UserProfileActivity extends NavActivity {
-    private ListView listView;
     private Button button;
-    private TextView username;
     private RecyclerView recyclerView;
     protected RecyclerViewAdapter recyclerViewAdapter;
 
@@ -65,12 +64,16 @@ public class UserProfileActivity extends NavActivity {
         });
 
         Profile profile = Profile.getCurrentProfile();
-        username = (TextView) findViewById(R.id.username);
 
-        if (profile != null) {
-            username.setText(profile.getName());
-        } else {
-            username.setText("null username");
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        if (getSupportActionBar() != null) {
+
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            if (profile != null) {
+                getSupportActionBar().setTitle(profile.getName() + "\'s Events");
+            } else {
+                getSupportActionBar().setTitle("Not logged in!");
+            }
         }
         (new setListEventsTask()).execute();
     }
