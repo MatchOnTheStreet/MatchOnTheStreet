@@ -6,13 +6,13 @@ time="$(java GetTime)"
 rm GetTime.class
 
 # Sql Queries
-removeOldSql="DELETE FROM Events WHERE start_time < ${time};"
+removeOldSql="DELETE FROM Events WHERE (start_time + (duration * 1000)) < ${time};"
 removeOrphanedSql="DELETE FROM Attending WHERE eid NOT IN (SELECT e.eid FROM Events e);"
 
 # Update the file that contains the sql
-echo $removeOldSql > GCQueries.sql # this deletes contents of file
+echo "$removeOldSql" > GCQueries.sql # this deletes contents of file
 echo "" >> GCQueries.sql
-echo $removeOrphanedSql >> GCQueries.sql
+echo "$removeOrphanedSql" >> GCQueries.sql
 
 # Execute the GC queries
 mysql -h matchonthestreetdb.crqizzvrxges.us-east-1.rds.amazonaws.com -P 3306 -u larioj motsdb -pmotspassword < GCQueries.sql
