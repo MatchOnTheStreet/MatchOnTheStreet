@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -14,6 +17,7 @@ import android.widget.TextView;
 import com.cse403.matchonthestreet.R;
 import com.cse403.matchonthestreet.backend.DBManager;
 import com.cse403.matchonthestreet.controller.MOTSApp;
+import com.cse403.matchonthestreet.controller.RecyclerViewAdapter;
 import com.cse403.matchonthestreet.models.Account;
 import com.cse403.matchonthestreet.models.Event;
 import com.facebook.FacebookSdk;
@@ -30,9 +34,9 @@ import java.util.List;
  * name and a list of events they are currently signed up to attend.
  */
 public class UserProfileActivity extends NavActivity {
-    private ListView listView;
     private Button button;
-    private TextView username;
+    private RecyclerView recyclerView;
+    protected RecyclerViewAdapter recyclerViewAdapter;
 
     private static final String TAG = "UserProfileActivity";
 
@@ -46,7 +50,9 @@ public class UserProfileActivity extends NavActivity {
 
         setContentView(R.layout.activity_user_profile);
 
-        listView = (ListView) findViewById(android.R.id.list);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, null));
 
         button = (Button) findViewById(android.R.id.button1);
         button.setOnClickListener(new View.OnClickListener() {
@@ -58,21 +64,25 @@ public class UserProfileActivity extends NavActivity {
         });
 
         Profile profile = Profile.getCurrentProfile();
-        username = (TextView) findViewById(R.id.username);
 
-        if (profile != null) {
-            username.setText(profile.getName());
-        } else {
-            username.setText("null username");
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        if (getSupportActionBar() != null) {
+
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            if (profile != null) {
+                getSupportActionBar().setTitle(profile.getName() + "\'s Events");
+            } else {
+                getSupportActionBar().setTitle("Not logged in!");
+            }
         }
         (new setListEventsTask()).execute();
     }
 
 
 
-    private void addEventsToList(List<String> vals) {
-        ArrayAdapter<String> listAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, vals);
-        listView.setAdapter(listAdapter);
+    private void addEventsToList(List<Event> events) {
+        RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, events);
+        recyclerView.setAdapter(adapter);
 
     }
 
@@ -80,7 +90,6 @@ public class UserProfileActivity extends NavActivity {
 
         @Override
         protected List<Event> doInBackground(Integer... params) {
-            Log.d(TAG, "here");
             try {
                 Account account = ((MOTSApp) getApplication()).getMyAccount();
                 List<Event> events = DBManager.getEventsAttendedByAccount(account);
@@ -104,15 +113,7 @@ public class UserProfileActivity extends NavActivity {
         }
 
         protected void onPostExecute(List<Event> events) {
-            Log.d(TAG, "On Post Execute");
-            if (events != null) {
-                List<String> vals = new ArrayList<String>();
-                for (Event e : events) {
-                    vals.add(e.title + ": " + e.description);
-                    addEventsToList(vals);
-
-                }
-            }
+            addEventsToList(events);
 
         }
 

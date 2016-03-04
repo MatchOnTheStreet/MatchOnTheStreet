@@ -17,11 +17,11 @@ import java.util.Date;
  */
 public class EventTest extends TestCase {
 
-    Event e1;
-    Event e2;
-    Event e3;
-    Account a1;
-    Account a2;
+    private Event e1;
+    private Event e2;
+    private Event e3;
+    private Account a1;
+    private Account a2;
 
     @Override
     public void setUp() throws Exception {
