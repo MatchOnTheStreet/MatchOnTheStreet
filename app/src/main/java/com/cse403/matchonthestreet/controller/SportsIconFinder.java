@@ -97,8 +97,7 @@ public class SportsIconFinder {
                         }
                     }
                 }
-                if (matchCount > bestCount ||
-                        (matchCount == bestCount && new Random().nextDouble() < 0.5)) {
+                if (matchCount > bestCount) {
                     bestCount = matchCount;
                     bestMatch = drawableMap.get(tokens);
                 }
