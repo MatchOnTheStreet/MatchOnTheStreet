@@ -116,4 +116,13 @@
 
     <!-- ListView search bar -->
     <string name="map_search_hint">Search for location</string>
+    <string name="login_bk_desc">backgound</string>
+    <string name="text_welcome">Welcome.</string>
+    <string name="hint_from">From</string>
+    <string name="hint_to">To</string>
+    <string name="hint_radius_start">Search within:</string>
+    <string name="hint_radius_unit">km</string>
+    <string name="button_text_apply">Apply</string>
+    <string name="text_username">Username</string>
+    <string name="text_logout">Logout</string>
 </resources>
