@@ -245,7 +245,7 @@ public class RecyclerViewAdapter
 
                 boolean matchesKeyword = title.contains(keyword) || desc.contains(keyword);
                 boolean withinDate = (fromDate == null || toDate == null) ||
-                        (eventDate.before(fromDate) && eventDate.after(toDate));
+                        (eventDate.after(fromDate) && eventDate.before(toDate));
                 boolean withinRadius = true;
                 if (!(radius < 0 || Double.isNaN(lat) || Double.isNaN(lon))) {
                     Location userLocation = new Location("");
