@@ -552,7 +552,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         });
 
         // The button that moves to the ListViewActivity
-        if (!FROM_LIST && !FROM_LIST_ITEM) {
+       // if (!FROM_LIST && !FROM_LIST_ITEM) {
             FloatingActionButton fabListMap = (FloatingActionButton) findViewById(R.id.fab_map_to_list);
             fabListMap.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -563,10 +563,10 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                     startActivity(intent);
                 }
             });
-        } else {
-            FloatingActionButton fabListMap = (FloatingActionButton) findViewById(R.id.fab_map_to_list);
-            fabListMap.hide();
-        }
+     //   } else {
+            //FloatingActionButton fabListMap = (FloatingActionButton) findViewById(R.id.fab_map_to_list);
+            //fabListMap.hide();
+     //   }
 
         // The button to pull the newest events from the database
         FloatingActionButton fabRefresh = (FloatingActionButton) findViewById(R.id.fab_refresh);
@@ -639,7 +639,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         };
 
         // Assumes our app is only used in portrait
-        task.execute(Math.abs(top - bottom) / 2, cLat, cLon);
+        task.execute(Math.abs(top - bottom) / 1.2, cLat, cLon);
 
     }
 
@@ -847,8 +847,10 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     protected void onPostResume() {
         super.onPostResume();
         Log.d(TAG, "onPostResume");
+
         if (passedEvent != null) {
             displayMarkerInfo(passedEvent);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(passedEvent.location.getLatitude(), passedEvent.location.getLongitude()), ZOOM_IN_MAGNITUDE));
             passedEvent = null;
         }
     }
@@ -914,6 +916,30 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             return null;
         }
 
+    }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+        Log.d(TAG, "onNewIntent");
+        FROM_LIST = intent.getBooleanExtra(ListViewActivity.EXTRA_MESSAGE, false);
+        FROM_LIST_ITEM = intent.getBooleanExtra("fromListItem", false);
+
+
+        if (FROM_LIST || FROM_LIST_ITEM) {
+            Log.d(TAG, "From List in onNewIntent");
+            centerOnLocation = false;
+            passedEvent = intent.getParcelableExtra("selectedEvent");
+           /* Event event = intent.getParcelableExtra("selectedEvent");
+            if (event != null ) {
+                Log.d(TAG, "Maps was passed the event: " + event.title);
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(event.location.getLatitude(), event.location.getLongitude()), ZOOM_IN_MAGNITUDE));
+                displayMarkerInfo(event);
+            } else {
+                centerOnLocation = true;
+                if (mCurrentLocation != null)
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), ZOOM_IN_MAGNITUDE));
+            }*/
+        }
     }
 }
 

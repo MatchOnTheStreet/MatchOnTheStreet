@@ -29,6 +29,7 @@
         <activity
             android:name=".view.MapsActivity"
             android:label="@string/title_activity_maps"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -46,7 +47,7 @@
 
         <activity android:name=".view.ListViewActivity"
             android:parentActivityName=".view.MapsActivity"
-            android:launchMode="singleTop" >
+            android:launchMode="singleTask" >
             <meta-data android:name="android.support.PARENT_ACTIVITY"
                 android:value=".view.MapsActivity" />
             <!--<meta-data android:name="android.app.searchable"

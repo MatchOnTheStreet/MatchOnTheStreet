@@ -16,6 +16,7 @@ import com.cse403.matchonthestreet.models.Account;
 import com.cse403.matchonthestreet.models.Event;
 
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Created by Lance on 2/7/16.
@@ -60,9 +61,13 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
             descriptionText.setText(description);
         }
 
+        Event event = getArguments().getParcelable("eventObject");
+
         // Update the number of people attending the event
         int numAttendees = getArguments().getInt("numAttendees");
-        setNumAttending(numAttendees, mView);
+        setNumAttending(numAttendees, mView, event);
+
+
 
         // Initialize the toggle button
         toggleButton = (ToggleButton) mView.findViewById(R.id.attendingToggle);
@@ -99,12 +104,29 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
      * @param numAttending the new value for the number of people attending
      * @param mView the view to update
      */
-    private void setNumAttending(int numAttending, View mView) {
+    private void setNumAttending(int numAttending, View mView, Event event) {
         if (numAttending >= 0 && mView != null) {
             TextView attendanceText = (TextView) mView.findViewById(R.id.attendees);
-            String text = "" + numAttending + " attending";
+            String attendees = "";
+            if (event != null && event.attending.size() > 0) {
+                List<Account> accnts = event.attending;
+                for(int i = 0; i < accnts.size() - 1; i++) {
+                    Log.d(TAG, "Attendee " + i + ": " + accnts.get(i).getName());
+                    attendees += accnts.get(i).getName() + ", ";
+                }
+                attendees += accnts.get(accnts.size() - 1).getName();
+            } else {
+                attendanceText.setText("0 attending");
+            }
+            String text = "" + numAttending + " attending: " + attendees;
             attendanceText.setText(text);
             mView.invalidate();
+        } else if (mView != null) {
+            TextView attendanceText = (TextView) mView.findViewById(R.id.attendees);
+            if (attendanceText != null)
+                attendanceText.setText("0 attending");
+            mView.invalidate();
+
         }
     }
 
@@ -143,7 +165,7 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
                 if (passedEvent!=null) {
                     Log.d(TAG, "user is not attending: " + passedEvent.title);
                     int numAttendees = getArguments().getInt("numAttendees");
-                    setNumAttending(numAttendees - 1, mView);
+                    setNumAttending(numAttendees - 1, mView, passedEvent);
                     // Overwrite the old event in the MapsActivity to have the new list of attendees
                     ((MapsActivity) getActivity()).addEventToMap(passedEvent);
                 }
@@ -188,7 +210,7 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
                 if (passedEvent!=null) {
                     Log.d(TAG, "user is now attending: " + passedEvent.title);
                     int numAttendees = getArguments().getInt("numAttendees");
-                    setNumAttending(numAttendees + 1, mView);
+                    setNumAttending(numAttendees + 1, mView, passedEvent);
                     // Overwrite the old event in the MapsActivity to have the new list of attendees
                     ((MapsActivity) getActivity()).addEventToMap(passedEvent);
                 }
