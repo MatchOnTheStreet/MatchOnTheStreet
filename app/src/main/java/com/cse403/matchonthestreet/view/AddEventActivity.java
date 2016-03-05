@@ -4,7 +4,6 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.LinearGradient;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,7 +14,6 @@ import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.NumberPicker;
 import android.widget.SeekBar;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -32,7 +30,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -43,23 +40,23 @@ import java.util.Locale;
  */
 public class AddEventActivity extends NavActivity implements OnClickListener {
 
+    /** The text for the date the event takes place */
     private EditText fromDateET;
+    /** The picker that shows the calendar */
     private DatePickerDialog fromDatePD;
+    /** The text that shows the time the event begins */
     private EditText fromTimeET;
+    /** The picker that shows the clock to select a time */
     private TimePickerDialog fromTimePD;
-    
+    /** The text that shows how long the event will last */
     private EditText durationET;
-    private NumberPicker durationPicker;
-
+    /** The format that the dates will be displayed in */
     private SimpleDateFormat dateFormatter;
-    private SimpleDateFormat timeFormatter;
-    private Calendar calendar;
-
-    private SeekBar seekBar;
-
+    /** The location that the event will take place at (passed from the mapsactivity */
     private Location location;
-
-    /*
+    /** The potential durations for the event */
+    private final String[] timeValues = {"1", "1.5", "2", "2.5", "3", "3.5", "4", "4.5", "5", "5.5", "6", "6.5", "7", "7.5", "8", "8.5", "9"};
+    /**
      * Intializes the various items in the view.
      */
     @Override
@@ -77,8 +74,8 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
         location.setLongitude(lon);
 
 
-        // We will need to format the date later.
-        calendar  = Calendar.getInstance();
+        // Set the date format
+        Calendar calendar  = Calendar.getInstance();
         dateFormatter = new SimpleDateFormat("dd-MM-yy", Locale.US);
 
         // setup the date box, and register the handler.
@@ -118,22 +115,8 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
 
         durationET = (EditText) findViewById(R.id.durationET);
 
-       // durationPicker = (NumberPicker) findViewById(R.id.durationPicker);
-        final String[] timeValues = {"1", "1.5", "2", "2.5", "3", "3.5", "4", "4.5", "5", "5.5", "6", "6.5", "7", "7.5", "8", "8.5", "9"};
-//        durationPicker.setDisplayedValues(timeValues);
-//        durationPicker.setMinValue(0);
-//        durationPicker.setMaxValue(10);
-//        durationPicker.setOnClickListener(this);
-//        durationPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-//            @Override
-//            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-//                durationET.setText(timeValues[newVal]);
-//            }
-//        });
-
-
         // seekbar for picking the duration.
-        seekBar = (SeekBar) findViewById(R.id.duration_seek_bar);
+        SeekBar seekBar = (SeekBar) findViewById(R.id.duration_seek_bar);
         seekBar.setMax(timeValues.length - 1);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -155,8 +138,9 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
 
     }
 
-    /*
-     * handles the click events on the date and time elements.
+    /**
+     * Handles the click events on the date and time elements.
+     * @param v the view that has been clicked
      */
     @Override
     public void onClick(View v) {
@@ -167,19 +151,21 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
         }
     }
 
-    /*
-     * Handles the creation of an activity.
+    /**
+     * Handles the creation of an activity when the 'Let's Play' button has been pressed.
+     * @param view the current view
      */
     public void createEvent(View view) {
         Log.d("AddEventActivity", "createEvent running");
-        //TODO: Check that all the fields were filled out
 
+        // hide the keyboard
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
+        // get the values from the fields
         EditText titleET = (EditText)findViewById(R.id.event_title);
         EditText eventDescET = (EditText)findViewById(R.id.event_description);
-
+        // verify that the fields have been filled out
         if (fromDateET.getText().toString().matches("") || fromTimeET.getText().toString().matches("") ||
                 durationET.getText().toString().matches("") || titleET.getText().toString().matches("")
                 || eventDescET.getText().toString().matches("")) {
@@ -188,9 +174,10 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
             incompleteToast.show();
             return;
         }
-
+        // the string containing the date and time of the event
         String timerange = fromDateET.getText().toString() + " " + fromTimeET.getText().toString();
 
+        // format the string into a more readable format
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-yy HH:mm", Locale.US);
         Date date;
         try {
@@ -202,34 +189,25 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
             Log.d("AddEventActivity", "Date parse failed");
         }
         Log.d("AddEventActivity", "Date toString is: " + date.toString());
-
-
-
+        // Get the values from the fields and create a new event with those values
         String title = titleET.getText().toString();
-
-
         String description = eventDescET.getText().toString();
-
-
         float duration = Float.parseFloat(durationET.getText().toString()) * 60;
-
         Event event = new Event(title, location, date, (int)duration, description);
 
         // Adds this newly added event to ViewController
         // So that it appears in the list view as well
         ViewController viewController = ((MOTSApp)getApplicationContext()).getViewController();
         viewController.addEventToSet(event);
-
-        Intent resultIntent = new Intent(); 
-
-        Log.d("AddEventActivity", "Date toString is: " + event.getTime().getTime());
-
+        // create the intent to send to the mapsactivity
+        Intent resultIntent = new Intent();
+        // get the current account
         Account me = ((MOTSApp) getApplication()).getMyAccount();
         event.addAttendee(me);
 
         ArrayList<Event> list = new ArrayList<>();
         list.add(event);
-
+        // Add the event to the database
         AsyncTask<Event, Event, Event> task = new AsyncTask<Event, Event, Event>() {
             @Override
             protected Event doInBackground(Event[] params) {
@@ -248,11 +226,10 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
         Event[] events = new Event[1];
         events[0] = event;
 
+        // start the communication with the database
         task.execute(events);
 
-
         resultIntent.putParcelableArrayListExtra("eventList", list);
-
         setResult(RESULT_OK, resultIntent);
 
         finish();

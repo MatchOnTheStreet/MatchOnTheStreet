@@ -57,8 +57,19 @@ public class Event implements Parcelable, ClusterItem {
     // A list of accounts who have said they will be attending the event.
     private List<Account> attending = new ArrayList<>();
 
+    // Random object used for the empty constructor to generate a random event
     private static Random rand = new Random();
 
+    /**
+     * Constructor mainly used by the database when retrieving events from the server
+     * @param eid the unique identifier for the event
+     * @param title the title of the event
+     * @param location the Location object containing the lat, lon of where the event takes place
+     * @param time the time that the event is starting
+     * @param duration how long the event is going to be
+     * @param timeCreated the timestamp of when the event was created
+     * @param description the description of the event
+     */
     public Event(int eid, String title, Location location, Date time,
                  int duration, Date timeCreated, String description) {
 
@@ -66,7 +77,15 @@ public class Event implements Parcelable, ClusterItem {
         this.eid = eid;
         this.timeCreated = timeCreated;
     }
-
+    /**
+     * The main constructor used, the eid is generated based on the title and the timestamp
+     * is generated at the time of construction
+     * @param title the title of the event
+     * @param location the Location object containing the lat, lon of where the event takes place
+     * @param time the time that the event is starting
+     * @param duration how long the event is going to be
+     * @param description the description of the event
+     */
     public Event(String title, Location location, Date time, int duration, String description) {
         this.eid = title.hashCode();
         this.title = title;
@@ -78,6 +97,11 @@ public class Event implements Parcelable, ClusterItem {
         this.attending = new ArrayList<>();
     }
 
+
+    /**
+     * Empty constructor used to generate dummy events that are randomly created based on a few keywords and phrases
+     *
+     */
     public Event() {
         // Sample string values to store in list
         Calendar cal = Calendar.getInstance();
@@ -141,17 +165,16 @@ public class Event implements Parcelable, ClusterItem {
     }
 
 
+    // All the setters and getters
     public int getEid() {
         return eid;
-    }
-
-    public void setEid(int eid) {
-        this.eid = eid;
     }
 
     public void setTitle(String title) {
         this.title = title;
     }
+    public String getTitle() { return this.title; }
+
 
     public Location getLocation() {
         return location;
@@ -188,6 +211,7 @@ public class Event implements Parcelable, ClusterItem {
     public void setDescription(String description) {
         this.description = description;
     }
+    public String getDescription() { return this.description; }
 
     public List<Account> getAttending() {
         return attending;
@@ -197,11 +221,20 @@ public class Event implements Parcelable, ClusterItem {
         this.attending = attending;
     }
 
+    /**
+     * Used to get a LatLng object containing the latitude and longitude of the event
+     * @return a LatLng object containing the latitude and longitude of the event
+     */
     @Override
     public LatLng getPosition() {
         return new LatLng(this.location.getLatitude(), this.location.getLongitude());
     }
 
+    /**
+     * Checks for equality between two events
+     * @param o the other event object to compare to
+     * @return if the two events are equivalent
+     */
     @Override
     public boolean equals(Object o) {
         // If the object is compared with itself then return true
@@ -272,18 +305,30 @@ public class Event implements Parcelable, ClusterItem {
         }
         return false;
     }
-    public String getTitle() { return this.title; }
 
-    public String getDescription() { return this.description; }
-
+    /**
+     * Checks if the event occurs after the specified date
+     * @param time the date to compare to
+     * @return if the event takes place after the passed date
+     */
     public boolean isAfter(Date time) {
         return this.time.after(time) || this.time.equals(time);
     }
 
+    /**
+     * Checks if the event occurs before the specified date
+     * @param time the date to compare to
+     * @return if the event takes place before the passed date
+     */
     public boolean isBefore(Date time) {
         return this.time.before(time);
     }
 
+    /**
+     * Used for filtering, checks if the event contains the passed strings in the title or description
+     * @param stringList the list of strings to check for
+     * @return if the event contains one or more of the passed strings
+     */
     public boolean containsStrings(List<String> stringList) {
         for(String s : stringList) {
             if (!containsString(s)) {
@@ -293,6 +338,11 @@ public class Event implements Parcelable, ClusterItem {
         return true;
     }
 
+    /**
+     * Used by the containsStrings to check if the event has the passed string in the description or title
+     * @param string the string to check for in the description or title
+     * @return if the event contains the passed string in the description or title regardless of case
+     */
     public boolean containsString(String string) {
         if (string == null) {
             return false;
@@ -300,8 +350,6 @@ public class Event implements Parcelable, ClusterItem {
         String lower = string.toLowerCase();
         return title != null && title.toLowerCase().contains(lower) || description != null && description.toLowerCase().contains(lower);
     }
-
-
 
 
     // The following are used for the parcelable interface which allows events to be passed through intents
@@ -351,14 +399,20 @@ public class Event implements Parcelable, ClusterItem {
      */
     @SuppressWarnings("unchecked")
     private Event(Parcel in) {
+        // set the title
         this.title = in.readString();
+        // set the description
         this.description = in.readString();
+        // get the lat and long, create the Location object
         double lat = in.readDouble();
         double lon = in.readDouble();
         Location location = new Location("created in parcel");
         location.setLatitude(lat);
         location.setLongitude(lon);
+        // set the location
         this.location = location;
+
+        // read in the date and the timestamp
         String dateString = in.readString();
         String timestampString = in.readString();
 
@@ -371,9 +425,11 @@ public class Event implements Parcelable, ClusterItem {
             e.printStackTrace();
         }
 
+        // set the eid
         this.eid = in.readInt();
+        // set the duration
         this.duration = in.readInt();
-
+        // set the accounts attending
         List<Account> accnts = (List<Account>)in.readSerializable();
         if (accnts != null) {
             Log.d("Event", "List of accounts converted to serialiable and back");
@@ -384,6 +440,9 @@ public class Event implements Parcelable, ClusterItem {
         }
     }
 
+    /**
+     * Needed for the parcelable interface
+     */
     public static final Parcelable.Creator<Event> CREATOR
             = new Parcelable.Creator<Event>() {
 
