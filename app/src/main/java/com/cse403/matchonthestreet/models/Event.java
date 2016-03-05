@@ -34,54 +34,37 @@ public class Event implements Parcelable, ClusterItem {
      */
 
     // The id number of the event
-    public int eid;
+    private int eid;
 
     // The title of the event
-    public String title;
+    private String title;
 
     // Where the event is held.
-    public Location location;
+    private Location location;
 
     // The time of the event
-    public Date time;
+    private Date time;
 
     // The duration of the event, in minutes
-    public int duration;
+    private int duration;
 
     // The time stamp of the event creation
-    public Date timeCreated;
+    private Date timeCreated;
 
     // A description of the event.
-    public String description = "";
+    private String description = "";
 
     // A list of accounts who have said they will be attending the event.
-    public List<Account> attending;
+    private List<Account> attending = new ArrayList<>();
 
     private static Random rand = new Random();
 
     public Event(int eid, String title, Location location, Date time,
                  int duration, Date timeCreated, String description) {
+
+        this(title, location, time, duration, description);
         this.eid = eid;
-        this.title = title;
-        this.location = location;
-        this.time = time;
-        this.duration = duration;
         this.timeCreated = timeCreated;
-        this.description = description;
-        this.attending = new ArrayList<>();
-
-    }
-
-    public Event(String title, Location location, Date time, int duration,
-                 Date timeCreated, String description) {
-        this.eid = title.hashCode();
-        this.title = title;
-        this.location = location;
-        this.time = time;
-        this.duration = duration;
-        this.timeCreated = timeCreated;
-        this.description = description;
-        this.attending = new ArrayList<>();
     }
 
     public Event(String title, Location location, Date time, int duration, String description) {
@@ -95,68 +78,123 @@ public class Event implements Parcelable, ClusterItem {
         this.attending = new ArrayList<>();
     }
 
-    public Event(boolean random) {
-        if (random) {
-            // Sample string values to store in list
-            Calendar cal = Calendar.getInstance();
-            String largeStr = MOTSApp.getContext().getResources().getString(R.string.large_text);
+    public Event() {
+        // Sample string values to store in list
+        Calendar cal = Calendar.getInstance();
+        String largeStr = MOTSApp.getContext().getResources().getString(R.string.large_text);
 
-            String[] values = new String[]{"## @ IMA",
-                    "Casual play of ##",
-                    "Team Potato needs a skillful ## player",
-                    "IMA 5v5 ##",
-                    "Come and play ##",
-                    "Competitive ## match",
-                    "2 hours of ##",
-                    "Needs a little ##",
-                    "Feeling like playing ##?",
-                    "Great weather! Play ##",
-                    "##. 3 yrs or experience required",
-                    "Group ##",
-                    "## -- don't bail!",
-                    "## after lunch",
-                    "looking for ## players",
-                    "Would someone teach me ##?",
-                    "I dont really know what to put in the title",
-                    "Play ## like a boss",
-                    "Get down tonight and do some ##",
-                    "I miss my girlfriend but let's play ##",
-                    "This is another randomly generated event containing the keyword ##"
-            };
+        String[] values = new String[]{"## @ IMA",
+                "Casual play of ##",
+                "Team Potato needs a skillful ## player",
+                "IMA 5v5 ##",
+                "Come and play ##",
+                "Competitive ## match",
+                "2 hours of ##",
+                "Needs a little ##",
+                "Feeling like playing ##?",
+                "Great weather! Play ##",
+                "##. 3 yrs or experience required",
+                "Group ##",
+                "## -- don't bail!",
+                "## after lunch",
+                "looking for ## players",
+                "Would someone teach me ##?",
+                "I dont really know what to put in the title",
+                "Play ## like a boss",
+                "Get down tonight and do some ##",
+                "I miss my girlfriend but let's play ##",
+                "This is another randomly generated event containing the keyword ##"
+        };
 
-            String[] sports = new String[]{"basketball", "tennis", "soccer", "football",
-                    "badminton", "ping pong", "snooker", "billiard", "running", "swimming",
-                    "squash", "baseball", "rowing", "sailing", "climbing", "skating",
-                    "chess", "boating", "arch shooting", "skiing", "surfing"};
+        String[] sports = new String[]{"basketball", "tennis", "soccer", "football",
+                "badminton", "ping pong", "snooker", "billiard", "running", "swimming",
+                "squash", "baseball", "rowing", "sailing", "climbing", "skating",
+                "chess", "boating", "arch shooting", "skiing", "surfing"};
 
-            String randStr = "";
-            for (int j = 0; j < rand.nextInt(9); j++) {
-                randStr += (char) ('A' + rand.nextInt(48));
-            }
-            String randTitle = values[rand.nextInt(values.length)] + " " + randStr;
-            randTitle = randTitle.replace("##", sports[rand.nextInt(sports.length)]);
-            this.title = randTitle;
-
-            Location l = new Location("dummy");
-            l.setLatitude(46 + rand.nextInt(2) + rand.nextDouble());      // center at 47
-            l.setLongitude(-123 + rand.nextInt(2) + rand.nextDouble());    // center at 122
-
-            int start = rand.nextInt(largeStr.length() - randTitle.length());
-            String d = largeStr.substring(start, start + randTitle.length() + rand.nextInt(10));
-
-            cal.set(2000 + rand.nextInt(17), rand.nextInt(12), 1 + rand.nextInt(28),
-                    rand.nextInt(24), rand.nextInt(60));
-            Date dateStart = cal.getTime();
-            cal.add(Calendar.HOUR, -1 * rand.nextInt(240));
-            cal.add(Calendar.MINUTE, -1 * rand.nextInt(60));
-            Date dateCreate = cal.getTime();
-
-            this.location = l;
-            this.time = dateStart;
-            this.duration = rand.nextInt(600) + 20;
-            this.timeCreated = dateCreate;
-            this.description = d;
+        String randStr = "";
+        for (int j = 0; j < rand.nextInt(9); j++) {
+            randStr += (char) ('A' + rand.nextInt(48));
         }
+        String randTitle = values[rand.nextInt(values.length)] + " " + randStr;
+        randTitle = randTitle.replace("##", sports[rand.nextInt(sports.length)]);
+        this.title = randTitle;
+
+        Location l = new Location("dummy");
+        l.setLatitude(46 + rand.nextInt(2) + rand.nextDouble());      // center at 47
+        l.setLongitude(-123 + rand.nextInt(2) + rand.nextDouble());    // center at 122
+
+        int start = rand.nextInt(largeStr.length() - randTitle.length());
+        String d = largeStr.substring(start, start + randTitle.length() + rand.nextInt(10));
+
+        cal.set(2000 + rand.nextInt(17), rand.nextInt(12), 1 + rand.nextInt(28),
+                rand.nextInt(24), rand.nextInt(60));
+        Date dateStart = cal.getTime();
+        cal.add(Calendar.HOUR, -1 * rand.nextInt(240));
+        cal.add(Calendar.MINUTE, -1 * rand.nextInt(60));
+        Date dateCreate = cal.getTime();
+
+        this.location = l;
+        this.time = dateStart;
+        this.duration = rand.nextInt(600) + 20;
+        this.timeCreated = dateCreate;
+        this.description = d;
+    }
+
+
+    public int getEid() {
+        return eid;
+    }
+
+    public void setEid(int eid) {
+        this.eid = eid;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public Date getTimeCreated() {
+        return timeCreated;
+    }
+
+    public void setTimeCreated(Date timeCreated) {
+        this.timeCreated = timeCreated;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<Account> getAttending() {
+        return attending;
+    }
+
+    public void setAttending(List<Account> attending) {
+        this.attending = attending;
     }
 
     @Override
@@ -190,25 +228,6 @@ public class Event implements Parcelable, ClusterItem {
                 && Double.compare(location.getLatitude(), e.location.getLatitude()) == 0
                 && Double.compare(location.getLongitude(), e.location.getLongitude()) == 0;
     }
-
-    /*
-    public Event(int eid, String title, Location location, Date time, String description) {
-        this.eid = eid;
-        this.title = title;
-        this.location = location;
-        this.time = time;
-        this.description = description;
-        this.attending = new ArrayList<>();
-    }
-
-    public Event(String title, Location location, Date time, String description) {
-        this.eid = title.hashCode();
-        this.title = title;
-        this.location = location;
-        this.time = time;
-        this.description = description;
-        this.attending = new ArrayList<>();
-    }*/
 
     /**
      * Tests if an account is attending this event.
@@ -282,13 +301,21 @@ public class Event implements Parcelable, ClusterItem {
         return title != null && title.toLowerCase().contains(lower) || description != null && description.toLowerCase().contains(lower);
     }
 
-    public int describeContents() {
-        return 0;
-    }
+
 
 
     // The following are used for the parcelable interface which allows events to be passed through intents
     // Serializable would be cleaner, but wasn't working for some reason
+
+    /**
+     * Required for the parcelable interface
+     * @return a bitmask indicating the set of special object types marshalled by the Parcelable
+     */
+    public int describeContents() {
+        // We don't have child classes so return the default 0
+        return 0;
+    }
+
     /**
      * Writes the data of an event into primitive data types
      * @param parcel the parcel to write to

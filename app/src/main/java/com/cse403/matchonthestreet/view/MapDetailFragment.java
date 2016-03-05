@@ -33,6 +33,7 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
     /** The button that allows the user to attend / unattend an event */
     private ToggleButton toggleButton;
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -108,8 +109,8 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
         if (numAttending >= 0 && mView != null) {
             TextView attendanceText = (TextView) mView.findViewById(R.id.attendees);
             String attendees = "";
-            if (event != null && event.attending.size() > 0) {
-                List<Account> accnts = event.attending;
+            if (event != null && event.getAttending().size() > 0) {
+                List<Account> accnts = event.getAttending();
                 for(int i = 0; i < accnts.size() - 1; i++) {
                     Log.d(TAG, "Attendee " + i + ": " + accnts.get(i).getName());
                     attendees += accnts.get(i).getName() + ", ";
@@ -163,7 +164,7 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
             @Override
             protected void onPostExecute(Event passedEvent) {
                 if (passedEvent!=null) {
-                    Log.d(TAG, "user is not attending: " + passedEvent.title);
+                    Log.d(TAG, "user is not attending: " + passedEvent.getTitle());
                     int numAttendees = getArguments().getInt("numAttendees");
                     setNumAttending(numAttendees - 1, mView, passedEvent);
                     // Overwrite the old event in the MapsActivity to have the new list of attendees
@@ -208,7 +209,7 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
             @Override
             protected void onPostExecute(Event passedEvent) {
                 if (passedEvent!=null) {
-                    Log.d(TAG, "user is now attending: " + passedEvent.title);
+                    Log.d(TAG, "user is now attending: " + passedEvent.getTitle());
                     int numAttendees = getArguments().getInt("numAttendees");
                     setNumAttending(numAttendees + 1, mView, passedEvent);
                     // Overwrite the old event in the MapsActivity to have the new list of attendees
