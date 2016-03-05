@@ -127,7 +127,7 @@ public final class DBManager {
     public static void addEventWithAttendance(Event event) throws SQLException, ClassNotFoundException {
         Connection conn = openConnection();
         addEvent(conn, event);
-        for (Account account: event.attending) {
+        for (Account account: event.getAttending()) {
             addAccountToEvent(conn, account, event);
         }
         closeConnection(conn);
@@ -141,14 +141,14 @@ public final class DBManager {
     private static void addEvent(Connection conn, Event event) throws SQLException, ClassNotFoundException {
         PreparedStatement addEventStatement = conn.prepareStatement(ADD_EVENT_SQL);
         addEventStatement.clearParameters();
-        addEventStatement.setInt(1, event.eid);
-        addEventStatement.setString(2, event.title);
-        addEventStatement.setDouble(3, event.location.getLongitude());
-        addEventStatement.setDouble(4, event.location.getLatitude());
-        addEventStatement.setLong(5, event.time.getTime());
-        addEventStatement.setInt(6, event.duration);
-        addEventStatement.setLong(7, event.timeCreated.getTime());
-        addEventStatement.setString(8, event.description);
+        addEventStatement.setInt(1, event.getEid());
+        addEventStatement.setString(2, event.getTitle());
+        addEventStatement.setDouble(3, event.getLocation().getLongitude());
+        addEventStatement.setDouble(4, event.getLocation().getLatitude());
+        addEventStatement.setLong(5, event.getTime().getTime());
+        addEventStatement.setInt(6, event.getDuration());
+        addEventStatement.setLong(7, event.getTimeCreated().getTime());
+        addEventStatement.setString(8, event.getDescription());
         addEventStatement.executeUpdate();
     }
 
@@ -181,7 +181,7 @@ public final class DBManager {
         if (event == null) {
             return null;
         }
-        event.attending = getAccountsAttendingEvent(conn, event);
+        event.setAttending(getAccountsAttendingEvent(conn, event));
         closeConnection(conn);
         return event;
     }
@@ -232,7 +232,7 @@ public final class DBManager {
     private static void removeEvent(Connection conn, Event event) throws SQLException, ClassNotFoundException {
         PreparedStatement getEventByIdStatement = conn.prepareStatement(REMOVE_EVENT_SQL);
         getEventByIdStatement.clearParameters();
-        getEventByIdStatement.setInt(1, event.eid);
+        getEventByIdStatement.setInt(1, event.getEid());
         getEventByIdStatement.executeUpdate();
     }
 
@@ -275,7 +275,7 @@ public final class DBManager {
         PreparedStatement getEventByIdStatement = conn.prepareStatement(REMOVE_ATTENDANCE_SQL);
         getEventByIdStatement.clearParameters();
         getEventByIdStatement.setInt(1, account.getUid());
-        getEventByIdStatement.setInt(2, event.eid);
+        getEventByIdStatement.setInt(2, event.getEid());
         getEventByIdStatement.executeUpdate();
     }
 
@@ -297,7 +297,7 @@ public final class DBManager {
     private static void removeEventAttendance(Connection conn, Event event) throws SQLException, ClassNotFoundException {
         PreparedStatement getEventByIdStatement = conn.prepareStatement(REMOVE_EVENT_ATTENDANCE_SQL);
         getEventByIdStatement.clearParameters();
-        getEventByIdStatement.setInt(1, event.eid);
+        getEventByIdStatement.setInt(1, event.getEid());
         getEventByIdStatement.executeUpdate();
     }
 
@@ -376,7 +376,7 @@ public final class DBManager {
         Connection conn = openConnection();
         List<Event> list = getEventsInRadius(conn, location, radius);
         for (Event e : list) {
-            e.attending = getAccountsAttendingEvent(conn, e);
+            e.setAttending(getAccountsAttendingEvent(conn, e));
         }
         closeConnection(conn);
         return list;
@@ -431,7 +431,7 @@ public final class DBManager {
         PreparedStatement st = conn.prepareStatement(ADD_ACCOUNT_TO_EVENT_SQL);
         st.clearParameters();
         st.setInt(1, account.getUid());
-        st.setInt(2, event.eid);
+        st.setInt(2, event.getEid());
         st.executeUpdate();
     }
 
@@ -509,7 +509,7 @@ public final class DBManager {
         PreparedStatement st = conn.prepareStatement(GET_COUNT_OF_ACCOUNTS_ATTENDING_EVENT_SQL);
         int count = 0;
         st.clearParameters();
-        st.setInt(1, event.eid);
+        st.setInt(1, event.getEid());
         ResultSet rs = st.executeQuery();
         if (rs.next()) {
             count = rs.getInt(1);
@@ -537,7 +537,7 @@ public final class DBManager {
         PreparedStatement st = conn.prepareStatement(GET_ACCOUNTS_ATTENDING_EVENT_SQL);
         List<Account> list = new ArrayList<>();
         st.clearParameters();
-        st.setInt(1, event.eid);
+        st.setInt(1, event.getEid());
         ResultSet rs = st.executeQuery();
         while (rs.next()) {
             int uid = rs.getInt("uid");
@@ -558,13 +558,13 @@ public final class DBManager {
         PreparedStatement statement = conn.prepareStatement(CHECK_ATTENDANCE_SQL);
         statement.clearParameters();
         statement.setInt(1, account.getUid());
-        statement.setInt(2, event.eid);
+        statement.setInt(2, event.getEid());
         ResultSet rs = statement.executeQuery();
         closeConnection(conn);
         if (rs.next()) {
             int uid = rs.getInt("uid");
             int eid = rs.getInt("eid");
-            if (uid == account.getUid() && eid == event.eid) {
+            if (uid == account.getUid() && eid == event.getEid()) {
                 return true;
             }
         }

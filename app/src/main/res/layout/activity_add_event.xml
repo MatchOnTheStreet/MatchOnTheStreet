@@ -50,8 +50,10 @@
             android:id="@+id/durationET"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="1"
             android:hint="Duration"
-            android:gravity="right"/>
+            android:gravity="right"
+            android:inputType="numberDecimal"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

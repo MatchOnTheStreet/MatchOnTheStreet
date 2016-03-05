@@ -34,8 +34,8 @@ public class ListViewSorter {
 
         @Override
         public int compare(Event lhs, Event rhs) {
-            float dist1 = lhs.location.distanceTo(centralLocation);
-            float dist2 = rhs.location.distanceTo(centralLocation);
+            float dist1 = lhs.getLocation().distanceTo(centralLocation);
+            float dist2 = rhs.getLocation().distanceTo(centralLocation);
 
             if(dist1 > dist2) {
                 return 1;
@@ -51,7 +51,7 @@ public class ListViewSorter {
 
         @Override
         public int compare(Event lhs, Event rhs) {
-            return lhs.time.compareTo(rhs.time);
+            return lhs.getTime().compareTo(rhs.getTime());
         }
     }
 }

@@ -98,7 +98,7 @@ public class UserProfileActivity extends NavActivity {
                     Log.d(TAG, "empty events");
                 } else {
                     for (Event e : events) {
-                        Log.d(TAG, e.title);
+                        Log.d(TAG, e.getTitle());
                     }
                 }
                 return events;

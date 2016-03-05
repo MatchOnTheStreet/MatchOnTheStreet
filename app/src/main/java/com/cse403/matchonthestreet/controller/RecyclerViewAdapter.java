@@ -107,15 +107,15 @@ public class RecyclerViewAdapter
         // Set the title and description of the listed item
         viewHolder.txtDesc.setText(event.getDescription());
         viewHolder.txtTitle.setText(event.getTitle());
-        viewHolder.txtDate.setText(new SimpleDateFormat("EEE, MM/dd, yy", Locale.US).format(event.time));
+        viewHolder.txtDate.setText(new SimpleDateFormat("EEE, MM/dd, yy", Locale.US).format(event.getTime()));
 
         String bestMatchIconPath = SportsIconFinder.getInstance().matchString(context, event.getTitle().toLowerCase());
         Drawable drawable = SportsIconFinder.getAssetImage(context, bestMatchIconPath);
         if (drawable != null) {
             drawable.setColorFilter(
-                    Color.rgb(event.title.hashCode() % 255,
-                            event.description.hashCode() % 255,
-                            event.time.hashCode() % 255),
+                    Color.rgb(event.getTitle().hashCode() % 255,
+                            event.getDescription().hashCode() % 255,
+                            event.getTime().hashCode() % 255),
                     PorterDuff.Mode.MULTIPLY
             );
         }
@@ -178,12 +178,12 @@ public class RecyclerViewAdapter
                 @Override
                 public void onClick(View v) {
                     Intent showOnMapIntent = new Intent(context, MapsActivity.class);
-                    showOnMapIntent.putExtra(context.toString() + ".VIEW_EVENT", currentItem.eid);
+                    showOnMapIntent.putExtra(context.toString() + ".VIEW_EVENT", currentItem.getEid());
                     showOnMapIntent.putExtra("fromListItem", true);
-                    showOnMapIntent.putExtra("selectedEid", currentItem.eid);
+                    showOnMapIntent.putExtra("selectedEid", currentItem.getEid());
                     showOnMapIntent.putExtra("selectedEvent", currentItem);
-                    showOnMapIntent.putExtra("selectedEventLocation", currentItem.location);
-                    Log.d("Recycler", "passing eid: " + currentItem.eid);
+                    showOnMapIntent.putExtra("selectedEventLocation", currentItem.getLocation());
+                    Log.d("Recycler", "passing eid: " + currentItem.getEid());
                     context.startActivity(showOnMapIntent);
                 }
             });
@@ -241,7 +241,7 @@ public class RecyclerViewAdapter
             for (Event item : originalList) {
                 String title = item.getTitle().toLowerCase();
                 String desc = item.getDescription().toLowerCase();
-                Date eventDate = item.time;
+                Date eventDate = item.getTime();
 
                 boolean matchesKeyword = title.contains(keyword) || desc.contains(keyword);
                 boolean withinDate = (fromDate == null || toDate == null) ||
@@ -251,7 +251,7 @@ public class RecyclerViewAdapter
                     Location userLocation = new Location("");
                     userLocation.setLatitude(lat);
                     userLocation.setLongitude(lon);
-                    float distance = item.location.distanceTo(userLocation);
+                    float distance = item.getLocation().distanceTo(userLocation);
                     withinRadius = distance <= (radius * 1000); // Convert to meters
                 }
 

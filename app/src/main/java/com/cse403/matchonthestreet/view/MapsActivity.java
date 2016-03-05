@@ -58,6 +58,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.SearchView;
@@ -144,8 +145,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     /** If continuous location updates are needed */
     private boolean mRequestingLocationUpdates = true;
 
-    //private Map<Marker, Event> mapMarkerEvent = new HashMap<>();
-
+    /** Manages the events and their markers on the map */
     private ClusterManager<Event> clusterManager;
 
     /** ViewController used to get the list of working events */
@@ -195,12 +195,15 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
         fl.setVisibility(View.GONE);
 
-        // Disable the automatic keyboard popup
-        /*InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(findViewById(R.id.map_search_bar).getWindowToken(), 0);*/
+
 
     }
 
+    /**
+     * Sets up the searchbar so users can search for a location
+     * @param menu the menu where the searchView is located
+     * @return if the menu should be displayed or not
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -376,8 +379,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             centerOnLocation = false;
             Event event = intent.getParcelableExtra("selectedEvent");
             if (event != null ) {
-                Log.d(TAG, "Maps was passed the event: " + event.title);
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(event.location.getLatitude(), event.location.getLongitude()), ZOOM_IN_MAGNITUDE));
+                Log.d(TAG, "Maps was passed the event: " + event.getTitle());
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(event.getLocation().getLatitude(), event.getLocation().getLongitude()), ZOOM_IN_MAGNITUDE));
                 displayMarkerInfo(event);
             } else {
                 centerOnLocation = true;
@@ -392,6 +395,9 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             reloadPinsOnScreen();
             FIRST_LAUNCH = false;
         }
+        // Disable the automatic keyboard popup
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(findViewById(R.id.map_search_bar).getWindowToken(), 0);
     }
 
     /**
@@ -459,7 +465,10 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
     }
 
-
+    /**
+     * If somehow the connection to the google maps api is suspended try to reconnect
+     * @param cause the error code for why the connection was suspended
+     */
     @Override
     public void onConnectionSuspended(int cause) {
         // The connection to Google Play services was lost for some reason. We call connect() to
@@ -552,21 +561,16 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         });
 
         // The button that moves to the ListViewActivity
-       // if (!FROM_LIST && !FROM_LIST_ITEM) {
-            FloatingActionButton fabListMap = (FloatingActionButton) findViewById(R.id.fab_map_to_list);
-            fabListMap.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Log.d(TAG, "map to list pressed");
-                    Intent intent = new Intent(MapsActivity.this, ListViewActivity.class);
+        FloatingActionButton fabListMap = (FloatingActionButton) findViewById(R.id.fab_map_to_list);
+        fabListMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "map to list pressed");
+                Intent intent = new Intent(MapsActivity.this, ListViewActivity.class);
 
-                    startActivity(intent);
-                }
-            });
-     //   } else {
-            //FloatingActionButton fabListMap = (FloatingActionButton) findViewById(R.id.fab_map_to_list);
-            //fabListMap.hide();
-     //   }
+                startActivity(intent);
+            }
+        });
 
         // The button to pull the newest events from the database
         FloatingActionButton fabRefresh = (FloatingActionButton) findViewById(R.id.fab_refresh);
@@ -713,27 +717,27 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         Bundle args = new Bundle();
         args.putString("detailText", event.getTitle());
         args.putParcelable("eventObject", event);
-        if (event.time != null) {
-            String formattedDate = new SimpleDateFormat("MM/dd/yy", Locale.US).format(event.time);
+        if (event.getTime() != null) {
+            String formattedDate = new SimpleDateFormat("MM/dd/yy hh:mm", Locale.US).format(event.getTime());
             DecimalFormat oneDigit = new DecimalFormat("#,##0.0");
-            args.putString("date", formattedDate + " for " + oneDigit.format(event.duration/60.0) + " hours");
+            args.putString("date", formattedDate + " for " + oneDigit.format(event.getDuration()/60.0) + " hours");
         } else {
-            Log.d(TAG, "Event has null date " + event.title);
+            Log.d(TAG, "Event has null date " + event.getTitle());
         }
-        if (event.description != null)
-            args.putString("description", event.description);
-        if (event.attending != null && event.attending.size() > 0) {
+        if (event.getDescription() != null)
+            args.putString("description", event.getDescription());
+        if (event.getAttending() != null && event.getAttending().size() > 0) {
             Log.d(TAG, "Event has attendees");
-            List<Account> attendees = event.attending;
+            List<Account> attendees = event.getAttending();
             args.putInt("numAttendees", attendees.size());
             Log.d(TAG, attendees.toString());
             Account accnt = ((MOTSApp) getApplication()).getMyAccount();
             if (accnt != null) {
                 if (attendees.contains(accnt)) {
-                    Log.d(TAG, "I am already attending the event: " + event.title);
+                    Log.d(TAG, "I am already attending the event: " + event.getTitle());
                     args.putBoolean("amAttending", true);
                 } else {
-                    Log.d(TAG, "I am not currently attending the event: " + event.title);
+                    Log.d(TAG, "I am not currently attending the event: " + event.getTitle());
                     args.putBoolean("amAttending", false);
                 }
             }
@@ -758,12 +762,11 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     }
 
     /**
-     * Removes all the markers from the map and resets the map of markers to events
+     * Removes all the markers from the map and resets the cluster manager
      */
     private void removeAllMarkers() {
         mMap.clear();
         clusterManager.clearItems();
-        //mapMarkerEvent.clear();
     }
 
     /**
@@ -818,10 +821,10 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             ArrayList<Event> listEvent = data.getParcelableArrayListExtra("eventList");
 
             if (listEvent != null && listEvent.size() > 0) {
-                Log.d(TAG, "event list has: " + listEvent.get(0).title);
+                Log.d(TAG, "event list has: " + listEvent.get(0).getTitle());
                 passedEvent = listEvent.get(0);
                 addEventsToMap(listEvent);
-                Location loc = listEvent.get(0).location;
+                Location loc = listEvent.get(0).getLocation();
                 // move the camera to the added events location
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(loc.getLatitude(), loc.getLongitude()), ZOOM_IN_MAGNITUDE));
                 centerOnLocation = false;
@@ -850,7 +853,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
         if (passedEvent != null) {
             displayMarkerInfo(passedEvent);
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(passedEvent.location.getLatitude(), passedEvent.location.getLongitude()), ZOOM_IN_MAGNITUDE));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(passedEvent.getLocation().getLatitude(), passedEvent.getLocation().getLongitude()), ZOOM_IN_MAGNITUDE));
             passedEvent = null;
         }
     }
@@ -899,25 +902,12 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             }
         }
 
-        protected Bitmap makeIcon(Event event) {
-            String iconPath = viewController.getEventIconPath(event);
-            if (iconPath != null) {
-                BitmapDrawable iconDrawable = (BitmapDrawable) SportsIconFinder.getAssetImage(getApplicationContext(), iconPath);
-                if (iconDrawable != null) {
-                    Bitmap iconBitmap = iconDrawable.getBitmap();
-                    Point screenRes = MOTSApp.getScreenRes();
-                    int size = Math.max(Math.min(screenRes.x, screenRes.y) / 17, 24);
-                    iconBitmap = Bitmap.createScaledBitmap(iconBitmap, size, size, false);
-                    BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(iconBitmap);
-                } else {
-                    Log.d(TAG, "Icon file not found!");
-                }
-            }
-            return null;
-        }
-
     }
 
+    /**
+     * Called when passed an intent when there is already an existing task that contains the MapsActivity
+     * @param intent the intent containing an event to display
+     */
     @Override
     public void onNewIntent(Intent intent) {
         Log.d(TAG, "onNewIntent");
@@ -929,16 +919,6 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             Log.d(TAG, "From List in onNewIntent");
             centerOnLocation = false;
             passedEvent = intent.getParcelableExtra("selectedEvent");
-           /* Event event = intent.getParcelableExtra("selectedEvent");
-            if (event != null ) {
-                Log.d(TAG, "Maps was passed the event: " + event.title);
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(event.location.getLatitude(), event.location.getLongitude()), ZOOM_IN_MAGNITUDE));
-                displayMarkerInfo(event);
-            } else {
-                centerOnLocation = true;
-                if (mCurrentLocation != null)
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), ZOOM_IN_MAGNITUDE));
-            }*/
         }
     }
 }

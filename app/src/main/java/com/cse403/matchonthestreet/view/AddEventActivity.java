@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.LinearGradient;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.SeekBar;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.cse403.matchonthestreet.R;
 import com.cse403.matchonthestreet.backend.DBManager;
@@ -161,6 +163,17 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
+        EditText titleET = (EditText)findViewById(R.id.event_title);
+        EditText eventDescET = (EditText)findViewById(R.id.event_description);
+
+        if (fromDateET.getText().toString().matches("") || fromTimeET.getText().toString().matches("") ||
+                durationET.getText().toString().matches("") || titleET.getText().toString().matches("")
+                || eventDescET.getText().toString().matches("")) {
+            Log.d("AddEventActivity", "incomplete fields");
+            Toast incompleteToast = Toast.makeText(getApplicationContext(), "Please fill in all fields", Toast.LENGTH_SHORT);
+            incompleteToast.show();
+            return;
+        }
 
         String timerange = fromDateET.getText().toString() + " " + fromTimeET.getText().toString();
 
@@ -176,17 +189,17 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
         }
         Log.d("AddEventActivity", "Date toString is: " + date.toString());
 
-        EditText titleET = (EditText)findViewById(R.id.event_title);
+
 
         String title = titleET.getText().toString();
 
-        EditText eventDescET = (EditText)findViewById(R.id.event_description);
+
         String description = eventDescET.getText().toString();
 
 
         float duration = Float.parseFloat(durationET.getText().toString()) * 60;
-        // TODO: Add duration attribute
-        Event event = new Event(title, location, date, (int)duration, calendar.getTime(), description);
+
+        Event event = new Event(title, location, date, (int)duration, description);
 
         // Adds this newly added event to ViewController
         // So that it appears in the list view as well
@@ -195,7 +208,7 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
 
         Intent resultIntent = new Intent(); 
 
-        Log.d("AddEventActivity", "Date toString is: " + event.time.getTime());
+        Log.d("AddEventActivity", "Date toString is: " + event.getTime().getTime());
 
         Account me = ((MOTSApp) getApplication()).getMyAccount();
         event.addAttendee(me);
@@ -207,7 +220,6 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
             @Override
             protected Event doInBackground(Event[] params) {
                 try {
-                    Account accnt = ((MOTSApp) getApplication()).getMyAccount();
                     Event e = params[0];
                     if (e != null) {
                         DBManager.addEventWithAttendance(e);
