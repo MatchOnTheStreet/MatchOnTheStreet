@@ -9,7 +9,33 @@ https://homes.cs.washington.edu/~liuh25/matchonthestreet/
 
 ## [Documents](https://github.com/MatchOnTheStreet/Docs)
 
-# Current release: [Feature Complete (v0.5)](https://github.com/MatchOnTheStreet/MatchOnTheStreet/releases/tag/v0.5)
+# Current release: [Release Candidate (v0.8)](https://github.com/MatchOnTheStreet/MatchOnTheStreet/releases/tag/v0.8)
+
+## Major Changes:
+### v0.5 -> v0.8
+* Resolved marker clustering issues
+* Introduced mechanisms to delete old events automatically and periodically
+* Icons are clear and no longer randomly chosen
+* Bugs with the filtering have been resolved
+* Transitions between the map and the list view are better aligned with what the user would expect.
+* Removed the google maps buttons that would appear behind the details of an event
+* The names of the people attending an event are now visible 
+* Added hours to the event details.
+* Keyboard is dismissed when entering the Maps view
+* Miscellaneous bug fixes.
+
+### v0.1 -> v0.5
+* Name changes:
+  * ListActivity ⇒  ListViewActivity
+  * EventDetailsFragment ⇒ MapDetailFragment
+  * SideBarActivity ⇒ NavActivity
+* Added MOTSApp class for cross-activity references.
+* Added duration, timestamp, and uniqueID properties to Event class.
+* In the map view, “Add event” button was removed. User can tap and hold on the map to call the AddEventActivity.
+* In the list view, “Filter” button was removed. User can scroll down from the top of list to access filter/search fields.
+* Used a Singleton DBManager instead of separating into EventDBManager and AccountDBManager.
+* For the backend we changed our hosting from cubist to AWS, since we found that cubist databases do not support connections from outside the department.
+
 ## Features Working
 * Creating Events!
 * Identifying User Location!
@@ -25,17 +51,5 @@ https://homes.cs.washington.edu/~liuh25/matchonthestreet/
 * Tag Search!
 * Event Garbage Collection!
 
-## Features Not Working
 
-## Major Changes:
-* Name changes:
-  * ListActivity ⇒  ListViewActivity
-  * EventDetailsFragment ⇒ MapDetailFragment
-  * SideBarActivity ⇒ NavActivity
-* Added MOTSApp class for cross-activity references.
-* Added duration, timestamp, and uniqueID properties to Event class.
-* In the map view, “Add event” button was removed. User can tap and hold on the map to call the AddEventActivity.
-* In the list view, “Filter” button was removed. User can scroll down from the top of list to access filter/search fields.
-* Used a Singleton DBManager instead of separating into EventDBManager and AccountDBManager.
-* For the backend we changed our hosting from cubist to AWS, since we found that cubist databases do not support connections from outside the department.
 
