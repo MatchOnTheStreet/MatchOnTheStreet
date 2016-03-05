@@ -35,6 +35,9 @@ import java.util.Locale;
 
 /**
  * Created by larioj on 2/7/16.
+ *
+ * This view is displayed when the user wants to add an event. It has
+ * elements that allow the user to enter the event information.
  */
 public class AddEventActivity extends NavActivity implements OnClickListener {
 
@@ -54,11 +57,15 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
 
     private Location location;
 
+    /*
+     * Intializes the various items in the view.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_event);
 
+        // get location from the intent
         Intent intent = getIntent();
         double lat = intent.getDoubleExtra("latitude", 0.0);
         double lon = intent.getDoubleExtra("longitude", 0.0);
@@ -68,9 +75,11 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
         location.setLongitude(lon);
 
 
+        // We will need to format the date later.
         calendar  = Calendar.getInstance();
         dateFormatter = new SimpleDateFormat("dd-MM-yy", Locale.US);
 
+        // setup the date box, and register the handler.
         fromDateET = (EditText) findViewById(R.id.event_from_date);
         fromDateET.setInputType(InputType.TYPE_NULL);
         fromDateET.setOnClickListener(this);
@@ -87,16 +96,14 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
                 calendar.get(Calendar.DAY_OF_MONTH));
 
 
+        // setup the time box, and register the handler for when the user attempts to
+        // enter time.
         fromTimeET = (EditText) findViewById(R.id.event_from_time);
         fromTimeET.setInputType(InputType.TYPE_NULL);
         fromTimeET.setOnClickListener(this);
         fromTimePD = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                //Calendar time = Calendar.getInstance();
-                //time.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                //time.set(Calendar.MINUTE, minute);
-                //fromTimeET.setText(timeFormatter.format(time.getTime()));
                 String pad = "";
                 if (minute < 10) pad = "0";
                 String time = hourOfDay + ":" + pad + minute;
@@ -123,6 +130,7 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
 //        });
 
 
+        // seekbar for picking the duration.
         seekBar = (SeekBar) findViewById(R.id.duration_seek_bar);
         seekBar.setMax(timeValues.length - 1);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -145,6 +153,9 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
 
     }
 
+    /*
+     * handles the click events on the date and time elements.
+     */
     @Override
     public void onClick(View v) {
         if (v == fromDateET) {
@@ -154,6 +165,9 @@ public class AddEventActivity extends NavActivity implements OnClickListener {
         }
     }
 
+    /*
+     * Handles the creation of an activity.
+     */
     public void createEvent(View view) {
         Log.d("AddEventActivity", "createEvent running");
         //TODO: Check that all the fields were filled out
