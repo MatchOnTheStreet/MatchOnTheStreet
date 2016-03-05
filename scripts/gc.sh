@@ -6,7 +6,7 @@ time="$(java GetTime)"
 rm GetTime.class
 
 # Sql Queries
-removeOldSql="DELETE FROM Events WHERE (start_time + (duration * 1000)) < ${time};"
+removeOldSql="DELETE FROM Events WHERE (start_time + (duration * 60 * 1000)) < ${time};"
 removeOrphanedSql="DELETE FROM Attending WHERE eid NOT IN (SELECT e.eid FROM Events e);"
 
 # Update the file that contains the sql
