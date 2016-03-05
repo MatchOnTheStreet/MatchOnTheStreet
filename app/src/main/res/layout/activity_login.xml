@@ -7,6 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
+        android:id="@+id/login_background"
         android:src="@drawable/login_background"
         android:contentDescription="@string/login_bk_desc"/>
 
