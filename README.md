@@ -18,14 +18,14 @@ https://homes.cs.washington.edu/~liuh25/matchonthestreet/
 * Location Pins!
 * User Athentication!
 * Personal Information!
-* Joining Events
-* Filtering
-* Title Search
-* Time Search
-* Tag Search
+* Joining Events!
+* Filtering!
+* Title Search!
+* Time Search!
+* Tag Search!
+* Event Garbage Collection!
 
 ## Features Not Working
-* Event Garbage Collection
 
 ## Major Changes:
 * Name changes:
@@ -38,6 +38,4 @@ https://homes.cs.washington.edu/~liuh25/matchonthestreet/
 * In the list view, “Filter” button was removed. User can scroll down from the top of list to access filter/search fields.
 * Used a Singleton DBManager instead of separating into EventDBManager and AccountDBManager.
 * For the backend we changed our hosting from cubist to AWS, since we found that cubist databases do not support connections from outside the department.
-
-
 
