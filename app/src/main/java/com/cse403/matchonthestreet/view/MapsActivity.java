@@ -394,8 +394,12 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             FIRST_LAUNCH = false;
         }
         // Disable the automatic keyboard popup
+        View curView = this.getCurrentFocus();
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(findViewById(R.id.map_search_bar).getWindowToken(), 0);
+        //imm.hideSoftInputFromWindow(findViewById(R.id.map_search_bar).getWindowToken(), 0);
+        if (curView != null && imm != null) {
+            imm.hideSoftInputFromWindow(curView.getWindowToken(), 0);
+        }
     }
 
     /**
@@ -634,6 +638,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
                     addEventsToMap(eventArrayList);
                     // dismiss the progress notification
                     progress.dismiss();
+                    Toast noLocationToast = Toast.makeText(getApplicationContext(), "" + eventArrayList.size() + " Events Found!", Toast.LENGTH_SHORT);
+                    noLocationToast.show();
 
                 }
             }
@@ -851,6 +857,9 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
         if (passedEvent != null) {
             displayMarkerInfo(passedEvent);
+            //TODO: add the event to the cluster manager if the event is not already there
+
+            clusterManager.addItem(passedEvent);
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(passedEvent.getLocation().getLatitude(), passedEvent.getLocation().getLongitude()), ZOOM_IN_MAGNITUDE));
             passedEvent = null;
         }

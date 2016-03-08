@@ -75,10 +75,13 @@ public class LoginActivity extends NavActivity {
 
             @Override
             public void onSuccess(LoginResult loginResult) {
+                Log.d(TAG, "onSuccess");
                 if (Profile.getCurrentProfile() == null) {
+                    Log.d(TAG, "current profile is null");
                     mProfileTracker = new ProfileTracker() {
                         @Override
                         protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
+                            Log.d(TAG, "currentProfileChanged");
                             Log.d(TAG, currentProfile.getName());
                             mProfileTracker.stopTracking();
 
@@ -94,6 +97,7 @@ public class LoginActivity extends NavActivity {
                     };
                     mProfileTracker.startTracking();
                 } else {
+                    Log.d(TAG,"current profile is not null");
                     Profile profile = Profile.getCurrentProfile();
                     Account me = new Account((int) Long.parseLong(profile.getId()), profile.getName());
                     ((MOTSApp) getApplication()).setMyAccount(me);
@@ -106,15 +110,6 @@ public class LoginActivity extends NavActivity {
                 }
                 info.setText("User ID:  " + loginResult.getAccessToken().getUserId());
 
-
-
-                // Saves the userID to the sharedpreferences which saves to the device memory
-                // so we can verify that a user has logged in with FB. probably a better way
-                // to do this using the facebook API. --Lance
-                SharedPreferences mPrefs = getSharedPreferences("userPrefs", 0);
-                SharedPreferences.Editor mEditor = mPrefs.edit();
-                mEditor.putString("userID", loginResult.getAccessToken().getUserId());
-                mEditor.commit();
 
                 Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
                 startActivity(intent);
