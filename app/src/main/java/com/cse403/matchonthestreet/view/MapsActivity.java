@@ -156,7 +156,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
     private Event passedEvent;
 
     /** Used to show the loading dialog when querying the database */
-    private ProgressDialog progress;
+    public ProgressDialog progress;
 
 
     /**
@@ -194,8 +194,6 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         // Set the DetailFragment to be invisible
         FrameLayout fl = (FrameLayout)findViewById(R.id.fragment_container);
         fl.setVisibility(View.GONE);
-
-
 
     }
 

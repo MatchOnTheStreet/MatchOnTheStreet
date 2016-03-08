@@ -120,6 +120,9 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
                 attendanceText.setText("0 attending");
             }
             String text = "" + numAttending + " attending: " + attendees;
+            if (event != null) {
+                text = "" + event.getAttending().size() + " attending: " + attendees;
+            }
             attendanceText.setText(text);
             mView.invalidate();
         } else if (mView != null) {
@@ -169,9 +172,11 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
                     setNumAttending(numAttendees - 1, mView, passedEvent);
                     // Overwrite the old event in the MapsActivity to have the new list of attendees
                     ((MapsActivity) getActivity()).addEventToMap(passedEvent);
+                    ((MapsActivity) getActivity()).progress.dismiss();
                 }
             }
         };
+        ((MapsActivity) getActivity()).progress.show();
         task.execute(event);
 
     }
@@ -182,9 +187,11 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
      */
     private void attendEvent(Event event) {
         AsyncTask<Event, Event, Event> task = new AsyncTask<Event, Event, Event>() {
+
             @Override
             protected Event doInBackground(Event[] params) {
                 Account accnt = ((MOTSApp) getActivity().getApplication()).getMyAccount();
+
                 if (accnt != null) {
                     Log.d(TAG, "Account: " + accnt.getName() + " found");
                     try {
@@ -214,9 +221,11 @@ public class MapDetailFragment extends android.support.v4.app.Fragment {
                     setNumAttending(numAttendees + 1, mView, passedEvent);
                     // Overwrite the old event in the MapsActivity to have the new list of attendees
                     ((MapsActivity) getActivity()).addEventToMap(passedEvent);
+                    ((MapsActivity) getActivity()).progress.dismiss();
                 }
             }
         };
+        ((MapsActivity) getActivity()).progress.show();
         task.execute(event);
 
     }
