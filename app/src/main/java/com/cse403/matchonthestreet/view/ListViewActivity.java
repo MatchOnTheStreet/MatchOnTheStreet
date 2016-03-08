@@ -32,6 +32,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
+import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
+
 //import android.support.v7.app.AppCompatActivity;
 
 /**
@@ -42,6 +46,8 @@ import java.util.Locale;
  *
  */
 public class ListViewActivity extends AppCompatActivity {
+
+    private static final String TUTORIAL_ID = "List view tutorial";
 
     public static final String EXTRA_MESSAGE = ".ListViewActivity.MESSAGE";
 
@@ -137,40 +143,9 @@ public class ListViewActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        getTutorialSequence().start();
     }
-
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.map_search, menu);
-
-        // Associate searchable configuration with the SearchView
-        SearchManager searchManager =
-                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-
-        SearchView searchView =
-                (SearchView) findViewById(R.id.filter_search_bar);
-
-        searchView.setSearchableInfo(
-                searchManager.getSearchableInfo(getComponentName())
-        );
-
-        searchView.setSubmitButtonEnabled(true);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                filterByInput();
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
-
-        return true;
-    }*/
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent motionEvent) {
@@ -224,6 +199,43 @@ public class ListViewActivity extends AppCompatActivity {
                 radius + "::" + latLong);
 
 
+    }
+
+    protected MaterialShowcaseSequence getTutorialSequence() {
+        ShowcaseConfig config = new ShowcaseConfig();
+        config.setDelay(300);
+        config.setDismissTextColor(R.color.colorPrimary);
+
+        MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(this, TUTORIAL_ID);
+        sequence.setConfig(config);
+
+
+
+        sequence.addSequenceItem(
+                new MaterialShowcaseView.Builder(this)
+                        .setTarget(findViewById(R.id.list_recyclerView))
+                        .setContentText(getString(R.string.tutorial_list_recy))
+                        .setDismissText("OK")
+                        .setDismissTextColor(R.color.colorPrimary)
+                        .withoutShape()
+                        .setDismissOnTouch(true)
+                        .build()
+        );
+
+        sequence.addSequenceItem(
+                new MaterialShowcaseView.Builder(this)
+                        .setTarget(findViewById(R.id.toolbar))
+                        .setContentText(getString(R.string.tutorial_list_filter))
+                        .setDismissText("GOT IT")
+                        .setDismissTextColor(R.color.colorPrimary)
+                        .withRectangleShape()
+                        .build()
+        );
+
+        sequence.addSequenceItem(findViewById(R.id.fab_list_to_map),
+                getString(R.string.tutorial_ltm_button), "GOT IT");
+
+        return sequence;
     }
 
     /**

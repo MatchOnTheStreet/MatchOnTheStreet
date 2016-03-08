@@ -27,7 +27,7 @@ import com.cse403.matchonthestreet.R;
 public class NavActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private String TAG = "NavActivity";
 
-    private ActionBarDrawerToggle mDrawerToggle;
+    protected ActionBarDrawerToggle mDrawerToggle;
 
 
     @Override

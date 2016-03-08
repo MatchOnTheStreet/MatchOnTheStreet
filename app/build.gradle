@@ -32,6 +32,11 @@ repositories {
     maven {
         url 'http://dl.bintray.com/amulyakhare/maven'
     }
+    jcenter()
+    maven {
+        url "https://jitpack.io"
+    }
+
 }
 
 dependencies {
@@ -52,6 +57,10 @@ dependencies {
 
     // For the text icons
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
+
+    // For the tutorial screen
+    compile 'com.github.amlcurran.showcaseview:library:5.4.1'
+    compile 'com.github.deano2390:MaterialShowcaseView:1.0.6'
 
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2') {
         exclude group: 'com.android.support', module: 'support-annotations'

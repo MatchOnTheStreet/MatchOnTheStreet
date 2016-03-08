@@ -125,4 +125,13 @@
     <string name="button_text_apply">Apply</string>
     <string name="text_username">Username</string>
     <string name="text_logout">Logout</string>
+    <string name="tutorial_location_button">This is the location button.\nYou can tap on it to zoom into your current location.</string>
+    <string name="tutorial_mtl_button">This is the list view button.\nUse it to view available events in a list.\nYou can further search and filter down the events in this view.</string>
+    <string name="tutorial_refresh_button">This is the refresh button.\nUse this button to fetch newest events on current mapped area.</string>
+    <string name="tutorial_location_search">Tap here to start a search by location.</string>
+    <string name="tutorial_toolbar">This is the toolbar.\nYou can swipe from the left edge of the screen or tap on the hamburger button to bring out the drawer, where you can access more options.\nYou can also start a search by location by tapping on the search button on the right.</string>
+    <string name="tutorial_map">In the map: You can pan around and look for events which are displayed as different markers, depending on their title.\nTapping on the marker will bring up its detailed information.</string>
+    <string name="tutorial_list_filter">Scroll down from the top of the list to bring up search/filters.</string>
+    <string name="tutorial_list_recy">Welcome to list view! The events that were displayed on the map are all listed here.</string>
+    <string name="tutorial_ltm_button">Use this button to display the events in the list on the map.</string>
 </resources>
