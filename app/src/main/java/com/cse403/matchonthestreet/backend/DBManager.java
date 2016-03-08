@@ -460,6 +460,24 @@ public final class DBManager {
         createAccountStatement.executeUpdate();
     }
 
+     /*
+     * Gets the list of events attended by account. Every event in the list
+     * returned is populated with the list of accounts attending it.
+     *
+     * @requires account be in the database.
+     *
+     */
+    public static List<Event> getEventsAttendedByAccountWithAccounts(Account account) throws SQLException, ClassNotFoundException {
+        Connection conn = openConnection();
+        List<Event> list = getEventsAttendedByAccount(conn, account);
+        for (Event e: list) {
+            List<Account> accounts = getAccountsAttendingEvent(e);
+            e.setAttending(accounts);
+        }
+        closeConnection(conn);
+        return list;
+    }
+
     /*
      * Gets the list of events attended by account.
      *
