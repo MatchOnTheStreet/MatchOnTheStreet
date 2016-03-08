@@ -20,6 +20,7 @@ import com.cse403.matchonthestreet.controller.MOTSApp;
 import com.cse403.matchonthestreet.controller.RecyclerViewAdapter;
 import com.cse403.matchonthestreet.models.Account;
 import com.cse403.matchonthestreet.models.Event;
+import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
@@ -34,10 +35,14 @@ import java.util.List;
  * name and a list of events they are currently signed up to attend.
  */
 public class UserProfileActivity extends NavActivity {
-    private Button button;
-    private RecyclerView recyclerView;
-    protected RecyclerViewAdapter recyclerViewAdapter;
 
+    // The Logout button
+    private Button button;
+
+    // View that stores the list of events
+    private RecyclerView recyclerView;
+
+    // Tag for debugging purposes
     private static final String TAG = "UserProfileActivity";
 
 
@@ -54,7 +59,7 @@ public class UserProfileActivity extends NavActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, null));
 
-        button = (Button) findViewById(android.R.id.button1);
+        button = (Button) findViewById(R.id.logout_button);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 LoginManager.getInstance().logOut();
@@ -79,26 +84,34 @@ public class UserProfileActivity extends NavActivity {
     }
 
 
-
+    /**
+     * Adds events to the view.
+     *
+     * @param events The list of events to add
+     */
     private void addEventsToList(List<Event> events) {
         RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, events);
         recyclerView.setAdapter(adapter);
 
     }
 
+    /**
+     * Queries the database for a List of Events and sets them in the view.
+     */
     private class setListEventsTask extends AsyncTask<Integer, Integer, List<Event>> {
 
         @Override
         protected List<Event> doInBackground(Integer... params) {
             try {
                 Account account = ((MOTSApp) getApplication()).getMyAccount();
-                List<Event> events = DBManager.getEventsAttendedByAccount(account);
+                List<Event> events = DBManager.getEventsAttendedByAccountWithAccounts(account);
                 Log.d(TAG, account.getName());
                 if (events.isEmpty()) {
                     Log.d(TAG, "empty events");
                 } else {
                     for (Event e : events) {
                         Log.d(TAG, e.getTitle());
+                        Log.d(TAG, "# of Attendees: " + e.getAttending().size());
                     }
                 }
                 return events;
@@ -117,6 +130,6 @@ public class UserProfileActivity extends NavActivity {
 
         }
 
-    };
+    }
 
 }
