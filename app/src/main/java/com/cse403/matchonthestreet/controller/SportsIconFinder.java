@@ -43,9 +43,12 @@ public class SportsIconFinder {
                             split("_");
 
                     ArrayList<String> tokenList = new ArrayList<String>(Arrays.asList(drawableTokens));
-                    String[] badWords = new String[]{"and", "a", "on", "with", "up", "down", "out",
+                    String[] badWords = new String[]{
+                            "and", "a", "on", "with", "up", "down", "out", "view", "side",
                             "of", "ball", "person", "player", "group", "team", "playing", "like",
-                            "game", "couple", "at", "the", "from", "between", "among", "within"};
+                            "game", "couple", "at", "the", "from", "between", "among", "within",
+                            "in", "black", "silhouette"
+                    };
                     for (String w : badWords) {
                         while (tokenList.contains(w) || Pattern.matches("\\d", w)) {
                             tokenList.remove(w);

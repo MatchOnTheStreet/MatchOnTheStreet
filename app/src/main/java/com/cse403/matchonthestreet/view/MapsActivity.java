@@ -33,13 +33,13 @@
 package com.cse403.matchonthestreet.view;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -56,6 +56,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -73,6 +74,9 @@ import com.cse403.matchonthestreet.controller.SportsIconFinder;
 import com.cse403.matchonthestreet.controller.ViewController;
 import com.cse403.matchonthestreet.models.Account;
 import com.cse403.matchonthestreet.models.Event;
+import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -83,7 +87,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -104,6 +107,10 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
 
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
+import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
+
 
 public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
@@ -112,12 +119,17 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
     /** Check if the intent was passed from AddEventActivity */
     public static final int ADD_EVENT_REQUEST_CODE = 1;
+
     /** Check if intent is from the listactivity */
     private boolean FROM_LIST;
+
     /** Check if the intent is from the recycleviewadapter (selecting an item in the listactivity)*/
     private boolean FROM_LIST_ITEM;
+
     /** Check if the app is being launched for the first time */
     private static boolean FIRST_LAUNCH = true;
+
+    private static final String TUTORIAL_ID = "Map activity tutorial";
 
     public static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 10;
 
@@ -147,6 +159,8 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
 
     /** Manages the events and their markers on the map */
     private ClusterManager<Event> clusterManager;
+
+    //private List<ShowcaseView> tutorialList;
 
     /** ViewController used to get the list of working events */
     private ViewController viewController;
@@ -400,6 +414,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         if (curView != null && imm != null) {
             imm.hideSoftInputFromWindow(curView.getWindowToken(), 0);
         }
+        getTutorialSequence().start();
     }
 
     /**
@@ -649,6 +664,47 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         // Assumes our app is only used in portrait
         task.execute(Math.abs(top - bottom) / 1.2, cLat, cLon);
 
+    }
+
+    protected MaterialShowcaseSequence getTutorialSequence() {
+        ShowcaseConfig config = new ShowcaseConfig();
+        config.setDelay(300);
+        config.setDismissTextColor(R.color.colorPrimaryDark);
+
+        MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(this, TUTORIAL_ID);
+        sequence.setConfig(config);
+
+        sequence.addSequenceItem(findViewById(R.id.fab_update_location),
+                getString(R.string.tutorial_location_button), "GOT IT");
+
+        sequence.addSequenceItem(findViewById(R.id.fab_map_to_list),
+                getString(R.string.tutorial_mtl_button), "GOT IT");
+
+        sequence.addSequenceItem(findViewById(R.id.fab_refresh),
+                getString(R.string.tutorial_refresh_button), "GOT IT");
+
+        sequence.addSequenceItem(
+                new MaterialShowcaseView.Builder(this)
+                        .setTarget(findViewById(R.id.toolbar))
+                        .setContentText(getString(R.string.tutorial_toolbar))
+                        .setDismissText("...YEAH SURE")
+                        .setDismissTextColor(R.color.colorPrimary)
+                        .withRectangleShape()
+                        .build()
+        );
+
+        sequence.addSequenceItem(
+                new MaterialShowcaseView.Builder(this)
+                        .setTarget(findViewById(R.id.map))
+                        .setContentText(getString(R.string.tutorial_map))
+                        .setDismissText("OK ENOUGH")
+                        .setDismissTextColor(R.color.colorPrimary)
+                        .withoutShape()
+                        .setDismissOnTouch(true)
+                        .build()
+        );
+
+        return sequence;
     }
 
 

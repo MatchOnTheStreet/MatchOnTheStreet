@@ -35,9 +35,16 @@ import java.util.List;
  */
 public class LoginActivity extends NavActivity {
 
+    // Callback manager for the Facebook login button
     private CallbackManager callbackManager;
+
+    // Sets information for user on cancelled or failed login
     private TextView info;
+
+    // Facebook login button
     private LoginButton loginButton;
+
+    // Tag for debugging purposes
     private static final String TAG = "LoginActivity";
 
 
@@ -127,6 +134,9 @@ public class LoginActivity extends NavActivity {
         });
     }
 
+    /**
+     * Gets a user out from the database.
+     */
     private void getUserFromDB() {
         Log.d(TAG, "GetUserFromDB");
         SharedPreferences mPrefs = getSharedPreferences("userPrefs", 0);
@@ -164,6 +174,12 @@ public class LoginActivity extends NavActivity {
         task.execute(Integer.parseInt(mString));
 
     }
+
+    /**
+     * Saves the ID of a given account to the database
+     *
+     * @param account The account to save the id of
+     */
     private void saveUserIDtoDB(Account account) {
 
         SharedPreferences mPrefs = getSharedPreferences("userPrefs", 0);
