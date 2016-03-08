@@ -47,8 +47,10 @@ import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
  */
 public class ListViewActivity extends AppCompatActivity {
 
+    /** The Unique ID for the tutorial to ensure it is only run once */
     private static final String TUTORIAL_ID = "List view tutorial";
 
+    /** The message for the intent to MapActivity */
     public static final String EXTRA_MESSAGE = ".ListViewActivity.MESSAGE";
 
     /** The current instance of ViewController, for loading data */
@@ -201,6 +203,10 @@ public class ListViewActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Acquire the sequence of tutorial showcase view
+     * @return the MaterialShowcaseSequence for the list activity
+     */
     protected MaterialShowcaseSequence getTutorialSequence() {
         ShowcaseConfig config = new ShowcaseConfig();
         config.setDelay(300);
