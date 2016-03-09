@@ -38,9 +38,6 @@ import java.util.List;
  */
 public class UserProfileActivity extends NavActivity {
 
-    // The Logout button
-    private Button button;
-
     // The swipe refresh layout
     private SwipeRefreshLayout swipeRefresh;
 
@@ -73,16 +70,7 @@ public class UserProfileActivity extends NavActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, null));
         addEventsToList(new ArrayList<Event>());
-
-        button = (Button) findViewById(R.id.logout_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                LoginManager.getInstance().logOut();
-                Intent intent = new Intent(UserProfileActivity.this, LoginActivity.class);
-                startActivity(intent);
-            }
-        });
-
+        
         Profile profile = Profile.getCurrentProfile();
 
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
