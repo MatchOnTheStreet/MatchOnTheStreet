@@ -847,6 +847,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
      */
     public void addEventToMap(Event event) {
         clusterManager.addItem(event);
+        //clusterManager.cluster();
     }
 
     /**
@@ -914,8 +915,13 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
         if (passedEvent != null) {
             displayMarkerInfo(passedEvent);
             //TODO: add the event to the cluster manager if the event is not already there
-
-            clusterManager.addItem(passedEvent);
+            if (!viewController.getEventSet().contains(passedEvent)) {
+                Log.d(TAG, "view controller does not already have the passed event");
+                addEventToMap(passedEvent);
+                clusterManager.cluster();
+            } else {
+                Log.d(TAG, "View controller already has the passed event");
+            }
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(passedEvent.getLocation().getLatitude(), passedEvent.getLocation().getLongitude()), ZOOM_IN_MAGNITUDE));
             passedEvent = null;
         }
