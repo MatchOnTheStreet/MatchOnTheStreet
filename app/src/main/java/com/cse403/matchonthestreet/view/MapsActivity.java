@@ -917,6 +917,7 @@ public class MapsActivity extends NavActivity implements OnMapReadyCallback,
             //TODO: add the event to the cluster manager if the event is not already there
             if (!viewController.getEventSet().contains(passedEvent)) {
                 Log.d(TAG, "view controller does not already have the passed event");
+                viewController.addEventToSet(passedEvent);
                 addEventToMap(passedEvent);
                 clusterManager.cluster();
             } else {
