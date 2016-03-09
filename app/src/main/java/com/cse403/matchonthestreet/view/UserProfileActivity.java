@@ -58,7 +58,7 @@ public class UserProfileActivity extends NavActivity {
         setContentView(R.layout.activity_user_profile);
 
         swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
-        swipeRefresh.setColorSchemeColors(Color.GREEN, Color.BLUE);
+        swipeRefresh.setColorSchemeColors(R.color.colorAccent, R.color.colorPrimary);
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
