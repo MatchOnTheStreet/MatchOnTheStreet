@@ -36,9 +36,6 @@ import java.util.List;
  */
 public class UserProfileActivity extends NavActivity {
 
-    // The Logout button
-    private Button button;
-
     // View that stores the list of events
     private RecyclerView recyclerView;
 
@@ -58,15 +55,6 @@ public class UserProfileActivity extends NavActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, null));
-
-        button = (Button) findViewById(R.id.logout_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                LoginManager.getInstance().logOut();
-                Intent intent = new Intent(UserProfileActivity.this, LoginActivity.class);
-                startActivity(intent);
-            }
-        });
 
         Profile profile = Profile.getCurrentProfile();
 

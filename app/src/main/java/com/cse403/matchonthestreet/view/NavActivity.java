@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.cse403.matchonthestreet.R;
+import com.facebook.login.LoginManager;
 
 public class NavActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private String TAG = "NavActivity";
@@ -113,11 +114,10 @@ public class NavActivity extends AppCompatActivity implements NavigationView.OnN
             }
 
         } else if (id == R.id.login) {
-            if (this.getClass() != LoginActivity.class) {
-                Intent intent = new Intent(this, LoginActivity.class);
-                intent.putExtra("fromSidebar", true);
-                startActivity(intent);
-            }
+            LoginManager.getInstance().logOut();
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.putExtra("fromSidebar", true);
+            startActivity(intent);
 
         } else if (id == R.id.report_bug) {
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://docs.google.com/forms/d/1CPT7NxY8I8A-K2fMJThhLn5p-UrRfgzGDtRDrNRUhhY/viewform"));

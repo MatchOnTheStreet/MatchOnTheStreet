@@ -1,6 +1,7 @@
 package com.cse403.matchonthestreet.view;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
@@ -12,11 +13,13 @@ import com.cse403.matchonthestreet.backend.DBManager;
 import com.cse403.matchonthestreet.controller.MOTSApp;
 import com.cse403.matchonthestreet.models.Account;
 import com.cse403.matchonthestreet.models.Event;
+import com.facebook.AccessToken;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.login.widget.LoginButton;
 
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
@@ -33,13 +36,11 @@ import java.util.List;
 /**
  * Simple facebook login page. Allows the user to log into the app through Facebook.
  */
-public class LoginActivity extends NavActivity {
+public class LoginActivity extends Activity {
 
     // Callback manager for the Facebook login button
     private CallbackManager callbackManager;
 
-    // Sets information for user on cancelled or failed login
-    private TextView info;
 
     // Facebook login button
     private LoginButton loginButton;
@@ -60,7 +61,6 @@ public class LoginActivity extends NavActivity {
         FacebookSdk.sdkInitialize(getApplicationContext());
 
         setContentView(R.layout.activity_login);
-        info = (TextView)findViewById(R.id.info);
         loginButton = (LoginButton)findViewById(R.id.login_button);
         loginButton.setReadPermissions("public_profile");
         callbackManager = CallbackManager.Factory.create();
@@ -115,7 +115,6 @@ public class LoginActivity extends NavActivity {
                     Log.d(TAG, profile.getName());
 
                 }
-                info.setText("User ID:  " + loginResult.getAccessToken().getUserId());
 
 
                 Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
@@ -124,12 +123,12 @@ public class LoginActivity extends NavActivity {
 
             @Override
             public void onCancel() {
-                info.setText("Login attempt cancelled.");
+                Log.d(TAG, "Login attempted canceled.");
             }
 
             @Override
             public void onError(FacebookException e) {
-                info.setText("Login attempt failed.");
+                Log.d(TAG, "Login attempt failed.");
             }
         });
     }
