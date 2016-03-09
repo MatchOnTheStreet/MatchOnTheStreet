@@ -13,6 +13,11 @@
     tools:context=".view.UserProfileActivity"
     android:weightSum="1">
 
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
@@ -21,5 +26,6 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_weight="0.53" />
 
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </LinearLayout>

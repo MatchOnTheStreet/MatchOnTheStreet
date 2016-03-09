@@ -1,9 +1,11 @@
 package com.cse403.matchonthestreet.view;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -36,6 +38,9 @@ import java.util.List;
  */
 public class UserProfileActivity extends NavActivity {
 
+    // The swipe refresh layout
+    private SwipeRefreshLayout swipeRefresh;
+
     // View that stores the list of events
     private RecyclerView recyclerView;
 
@@ -52,10 +57,20 @@ public class UserProfileActivity extends NavActivity {
 
         setContentView(R.layout.activity_user_profile);
 
+        swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+        swipeRefresh.setColorSchemeColors(Color.GREEN, Color.BLUE);
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshContent();
+            }
+        });
+
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, null));
-
+        addEventsToList(new ArrayList<Event>());
+        
         Profile profile = Profile.getCurrentProfile();
 
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
@@ -68,7 +83,14 @@ public class UserProfileActivity extends NavActivity {
                 getSupportActionBar().setTitle("Not logged in!");
             }
         }
-        (new setListEventsTask()).execute();
+
+        // show the "refreshing" indicator
+        swipeRefresh.post(new Runnable() {
+            @Override public void run() {
+                swipeRefresh.setRefreshing(true);
+            }
+        });
+        refreshContent();
     }
 
 
@@ -81,6 +103,11 @@ public class UserProfileActivity extends NavActivity {
         RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, events);
         recyclerView.setAdapter(adapter);
 
+    }
+
+    private void refreshContent() {
+        //swipeRefresh.setRefreshing(true);
+        (new setListEventsTask()).execute();
     }
 
     /**
@@ -115,7 +142,7 @@ public class UserProfileActivity extends NavActivity {
 
         protected void onPostExecute(List<Event> events) {
             addEventsToList(events);
-
+            swipeRefresh.setRefreshing(false);
         }
 
     }
