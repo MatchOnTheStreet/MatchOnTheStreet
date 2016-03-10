@@ -9,9 +9,13 @@ https://homes.cs.washington.edu/~liuh25/matchonthestreet/
 
 ## [Documents](https://github.com/MatchOnTheStreet/Docs)
 
-# Current release: [Release Candidate (v0.8)](https://github.com/MatchOnTheStreet/MatchOnTheStreet/releases/tag/v0.8)
+# Current release: [Final Release (v1.0)](https://github.com/MatchOnTheStreet/MatchOnTheStreet/releases/tag/v1.0)
 
 ## Major Changes:
+### v0.8 -> v1.0
+* Added tutorial
+* Bug fixes
+
 ### v0.5 -> v0.8
 * Resolved marker clustering issues
 * Introduced mechanisms to delete old events automatically and periodically
